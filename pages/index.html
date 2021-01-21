@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+	<head>
+		<title>Sample Page</title>
+
+		<link rel="stylesheet" href="/static/style/sample.css" />
+	</head>
+
+	<body>
+		<p>sample_var = {{ sample_var }}</p>
+
+		<p>sample_obj.name = {{ sample_obj.name }}</p>
+
+		{% if sample_obj.shouldShowSecret %}
+			<p>sample_obj.secret = {{ sample_obj.secret }}</p>
+		{% else %}
+			<p>No secret's in here</p>
+		{% endif %}
+
+		{% for value in sample_obj.values %}
+			<p>values[{{ loop.index }}] = {{ value }}</p>
+		{% endfor %}
+
+	</body>
+
+</html>
