@@ -1,3 +1,8 @@
+### Install following to run properly
+### pip install pprintpp
+### pip install beautifulsoup4
+
+
 import re
 import json
 from bs4 import BeautifulSoup
