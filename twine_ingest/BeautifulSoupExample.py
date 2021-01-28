@@ -2,13 +2,12 @@
 ### pip install pprintpp
 ### pip install beautifulsoup4
 
-
 import re
 import json
 from bs4 import BeautifulSoup
 from pprint import pprint
 
-INPUT_FILE_NAME = "demo story.html"
+INPUT_FILE_NAME = "demo-story.html"
 OUTPUT_FILE_NAME = "data.json"
 
 with open(INPUT_FILE_NAME, 'r') as file:
