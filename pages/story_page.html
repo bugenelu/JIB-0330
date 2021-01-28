@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>{{ page['page-name'] }}</title>
+
+		<link rel="stylesheet" href="/static/style/sample.css" />
+	</head>
+
+	<body>
+		<p>{{ page['page-body-text'] | safe }}</p>
+
+		{% for child in page['page-children'] %}
+			<p><a href="/story/{{ story }}/{{ child }}">{{ page['page-children'][child]['link-text'] }}</a></p>
+		{% endfor %}
+
+	</body>
+
+</html>
