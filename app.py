@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-import os, json
+import os, json, sys
 
 
 # Initialize the Flask application
@@ -82,5 +82,12 @@ def story_page(story, page_id):
 		return render_template("story_page.html", story=story, page=page)
 
 
+# Default to running on port 80
+port = 80
+
+# Check for port argument from command line
+if len(sys.argv) >= 2:
+	port = int(sys.argv[1])
+
 # Run the application on the specified IP address and port
-app.run(host="127.0.0.1", port=80, debug=True)
+app.run(host="127.0.0.1", port=port, debug=True)
