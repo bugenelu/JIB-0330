@@ -8,10 +8,10 @@
 	</head>
 
 	<body>
-		<p>{{ page['page-body-text'] | safe }}</p>
+		<p class="storytext">{{ page['page-body-text'] | safe }}</p>
 
 		{% for child in page['page-children'] %}
-			<p><a href="/story/{{ story }}/{{ child }}">{{ page['page-children'][child]['link-text'] }}</a></p>
+			<p class="storytext"><a href="/story/{{ story }}/{{ child }}">{{ page['page-children'][child]['link-text'] }}</a></p>
 		{% endfor %}
 
 	</body>

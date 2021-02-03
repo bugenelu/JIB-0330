@@ -13,9 +13,13 @@ body {
 p {
 	text-align: center;
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 3em;
+	font-size: 2em;
 	color: white;
 	text-shadow: 2px 2px 5px black;
+}
+
+p.storytext {
+	font-size: 3em;
 }
 
 a:link, a:visited, a:active {
