@@ -1,0 +1,1 @@
+## Read data.json into dictionary, basically create two StoryGraph, append them, output final json, and print results
