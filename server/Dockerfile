@@ -7,4 +7,6 @@ WORKDIR /app
 
 ENV PORT 8080
 
+ENV PLATFORM gcloud
+
 CMD exec gunicorn --bind :$PORT app:app

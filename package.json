@@ -1,0 +1,23 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Greenhouse Accelerator Interactive Knowledge Hub<br>\r <br>\r Python Version: 3.9.1<br>\r Twine Version: 2.3.9 (Desktop)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shivamshah1999/JIB-0330.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shivamshah1999/JIB-0330/issues"
+  },
+  "homepage": "https://github.com/shivamshah1999/JIB-0330#readme",
+  "devDependencies": {
+    "firebase-tools": "^9.3.0"
+  }
+}

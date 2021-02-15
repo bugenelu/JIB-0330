@@ -2,8 +2,14 @@ from flask import Flask, render_template
 import os, json, sys
 
 
+# Checks which platform we are running on to use the correct static folder
+platform = os.environ.get('PLATFORM', 'local')
+static_folder = ''
+if platform == 'local':
+	static_folder = '../../static'
+
 # Initialize the Flask application
-app = Flask(__name__, template_folder='pages')
+app = Flask(__name__, template_folder='pages', static_folder=static_folder)
 
 
 # Sample class
