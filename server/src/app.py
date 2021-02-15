@@ -26,8 +26,15 @@ def hello():
 @app.route('/home_loggedin.html')
 def logged_in():
 
-	# Returns the index.html template with the given values
+	# Returns the home_loggedin.html template with the given values
 	return render_template("home_loggedin.html", sample_story="data")
+
+# Serves the upload page
+@app.route('/upload')
+def upload():
+
+	# Returns the file_upload.html template with the given values
+	return render_template("file_upload.html")
 
 # Serves the root page of the specified story
 @app.route('/story/<story>')
