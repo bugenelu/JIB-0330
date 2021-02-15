@@ -19,15 +19,15 @@ class Sample():
 @app.route('/')
 def hello():
 
-	# Creates a sample variable to pass to the HTML template
-	sample_var = 'This variable holds a single string'
+	# Returns the index.html template with the given values
+	return render_template("home.html")
 
-	# Creates a sample object to pass to the HTML template
-	sample_obj = Sample()
+# Serves the logged in home page
+@app.route('/home_loggedin.html')
+def logged_in():
 
 	# Returns the index.html template with the given values
-	return render_template("index.html", sample_var=sample_var, sample_obj=sample_obj, sample_story="data")
-
+	return render_template("home_loggedin.html", sample_story="data")
 
 # Serves the root page of the specified story
 @app.route('/story/<story>')

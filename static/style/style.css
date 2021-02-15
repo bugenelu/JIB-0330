@@ -2,30 +2,125 @@ html {
 	height = 100%;
 }
 
-body {
-	height = 100%;
-	background-color: lightgreen;
-	background-image: linear-gradient(150deg, lightgreen, green);
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+:root {
+	--offwhite: rgba(255, 255, 255, 0.90);
+	--darkgray: #2D3030;
+	--palegreen: #8DD883;
 }
 
-p {
-	text-align: center;
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 2em;
-	color: white;
-	text-shadow: 2px 2px 5px black;
+@font-face {
+	font-family: Muli;
+	src: url("Muli Font/Muli.ttf");
+}
+
+@font-face {
+	font-family: Muli;
+	src: url("Muli Font/Muli-Bold.ttf");
+	font-weight: bold;
+}
+
+body {
+  background: linear-gradient(145deg, var(--darkgray), #101515, var(--darkgray), #101515);
+  background-size: 300% 300%;
+  animation: gradientscroll 8s linear infinite;
+  padding-bottom: 60px;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding:0;
+  margin:0px;
+}
+
+nav {
+  float: right;
+  margin:30px 90px;
+}
+nav ul {
+  list-style: none;
+}
+nav ul li {
+  font-family: Muli;
+  float: left;
+}
+nav ul li a {
+  text-decoration: none;
+  color: var(--palegreen);
+  font-size: 20px;
+  margin-left:16px;
+}
+nav ul li:hover {
+  font-style: italic;
+  font-weight: bold;
+}
+
+header{
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.header-content {
+  font-family: Muli;
+  margin-top: 15%;
+  text-align: center;
+  color: var(--offwhite);
+}
+.header-content h1{
+  color: var(--palegreen);
+  text-transform: uppercase;
+  font-size: 3em;
+  letter-spacing: 1px;
+}
+.header-content p {
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 20px auto;
+}
+.header-content button{
+  width: 140px;
+  margin: 20px 10px;
+  color: var(--darkgray);
+  font-family: Muli;
+  font-size: 18px;
+  border: 1px solid var(--palegreen);
+  font-weight: 500;
+  background: var(--palegreen);
+  border-radius: 20px;
+  padding: 10px;
+  cursor:pointer;
+}
+.header-content button:hover{
+  font-style: italic;
+  font-weight: bold;
+}
+
+@keyframes gradientscroll {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 p.storytext {
+	text-align: center;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 2em;
+	color: var(--palegreen);
+	text-shadow: 2px 2px 5px black;
 	font-size: 3em;
 }
 
 a:link, a:visited, a:active {
-	color: blue;
+	color: var(--offwhite);
 }
 
 a:hover {
-	color: yellow;
+	color: blue;
 }
