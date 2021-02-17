@@ -29,7 +29,7 @@ def hello():
 	return render_template("home.html")
 
 # Serves the logged in home page
-@app.route('/home_loggedin.html')
+@app.route('/loggedin')
 def logged_in():
 
 	# Returns the home_loggedin.html template with the given values
