@@ -1,13 +1,11 @@
-html {
-	height = 100%;
-}
-
+/*Declare Color Variables*/
 :root {
 	--offwhite: rgba(255, 255, 255, 0.90);
 	--darkgray: #2D3030;
 	--palegreen: #8DD883;
 }
 
+/*Add Custom Font Family*/
 @font-face {
 	font-family: Muli;
 	src: url("Muli Font/Muli.ttf");
@@ -19,6 +17,12 @@ html {
 	font-weight: bold;
 }
 
+/*Specify Webpage Height*/
+html {
+  height = 100%;
+}
+
+/*Style Background of Webpages*/
 body {
   background: linear-gradient(145deg, var(--darkgray), #101515, var(--darkgray), #101515);
   background-size: 300% 300%;
@@ -33,6 +37,25 @@ body {
   margin:0px;
 }
 
+@keyframes gradientscroll {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/*Style Default Links*/
+a {
+  color: var(--offwhite);
+}
+
+a:hover {
+  color: blue;
+}
+
+/*Style Navigation Bar*/
 nav {
   float: right;
   margin:30px 90px;
@@ -55,6 +78,7 @@ nav ul li:hover {
   font-weight: bold;
 }
 
+/*Style Homepage Header Content*/
 header{
   position: absolute;
   top: 0%;
@@ -99,28 +123,57 @@ header{
   font-weight: bold;
 }
 
-@keyframes gradientscroll {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
-}
-
+/*Style Story Text */
 p.storytext {
 	text-align: center;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Muli, Helvetica, sans-serif;
 	font-size: 2em;
 	color: var(--palegreen);
 	text-shadow: 2px 2px 5px black;
-	font-size: 3em;
 }
 
-a:link, a:visited, a:active {
-	color: var(--offwhite);
+
+/*Style Centered Boxes*/
+.centerbox {
+  border-radius: 10px;
+  background-color: var(--offwhite);
+  padding: 50px;
+  width: 30%;
+  margin: auto;
+  margin-top: 50px;
+  text-align: center;
+  vertical-align: middle;
 }
 
-a:hover {
-	color: blue;
+/*Style Input Forms*/
+form {
+  font-family: Muli;
+  font-size: 30px;
+  color: var(--darkgray);
+  opacity: 1;
+}
+
+input[type=file], select {
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 2px solid var(--palegreen);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  background-color: var(--palegreen);
+  color: var(--darkgray);
+  font-size: 18px;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  font-style: italic;
+  font-weight: bold;
 }

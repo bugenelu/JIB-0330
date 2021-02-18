@@ -3,16 +3,22 @@
 <head>
 	<meta charset="utf-8">
 	<title>Upload file</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
 </head>
 <body>
 
 	<!-- This is the file upload page. -->
 
 	<!-- The "file upload" button and corresponding functionality -->
+	<div class="centerbox">
 	<form>
-		<p><label>Upload file:  <input type="file" value="Select File" multiple></label></p>
-		<input type="submit" value="Upload File">
+		<label for="selectfile">Select File:</label>
+		<br>
+		<input type="file" id ="selectfile" value="Select File" multiple>
+		<br>
+		<input type="submit" id="submitfile" value="Upload File">
 	</form>
+	</div>
 
 
 </body>
