@@ -23,7 +23,8 @@ class PageNode:
         if (type(newChildLink) is not ChildLink):
             return -1
 
-        self.page_children.append(newChildLink)
+        self.page_children[newChildLink.child_id] = newChildLink
+        
         return 0
         
     def updateBodyText(self, newBodyText):

@@ -17,10 +17,19 @@ with open('subtree.json', 'r') as subtree_file:
 subtree = StoryGraph(subtree_data)
 
 # test append subtree
-# WE STOPPED HERE ON MONDAY
-# TODO: Check the append subtree function to make sure we are passing the right parameters to involved constructors
+newTree = story.addSubTree(subtree, story.page_nodes['0-5'], 'Made a new link!!')
+
+with open('new_tree.json', 'w') as file:
+    file.write(newTree.graphToJson())
 
 # test edit PageNode text
+# newTree.getNodeList()['1-3'].updateBodyText('My text has been updated cause Nick is cool - Matthew')
+newTree_2 = newTree.updatePageNodeText('1-3', 'Matthew is cool - Nick')
 
 # test edit Link
+newTree_3 = newTree.updatePageLinkText('0-1', '0-2',
+    'I want there to be an even better clown')
 
+# TODO: test add page node
+# TODO: enumerate editor functions (mf)
+# TODO: Create paper prototype editor ui
