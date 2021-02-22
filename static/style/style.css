@@ -138,7 +138,7 @@ p.storytext {
   border-radius: 10px;
   background-color: var(--offwhite);
   padding: 50px;
-  width: 30%;
+  width: 20%;
   margin: auto;
   margin-top: 50px;
   text-align: center;
@@ -153,16 +153,17 @@ form {
   opacity: 1;
 }
 
-input[type=file], select {
+input[type=file], input[type=text], input[type=password], select {
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
   border: 2px solid var(--palegreen);
   border-radius: 4px;
   box-sizing: border-box;
+  width: 70%;
 }
 
-input[type=submit] {
+input[type=submit], input[type=button] {
   background-color: var(--palegreen);
   color: var(--darkgray);
   font-size: 18px;
@@ -173,7 +174,34 @@ input[type=submit] {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type=submit]:hover, input[type=button]:hover {
   font-style: italic;
   font-weight: bold;
 }
+
+.horizontaltext {
+  font-size: 25px;
+}
+
+.horizontaltext:before,
+.horizontaltext:after {
+  background-color: #000;
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 30%;
+}
+
+.horizontaltext:before {
+  right: 0.5em;
+  margin-left: -30%;
+}
+
+.horizontaltext:after {
+  left: 0.5em;
+  margin-right: -30%;
+}
+
+
