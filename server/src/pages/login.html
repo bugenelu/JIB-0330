@@ -6,23 +6,17 @@
 	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
 </head>
 <body>
-
-	<!-- This is the file upload page. -->
-
-	<!-- The "file upload" button and corresponding functionality -->
 	<div class="centerbox">
+		<h1>Login:</h1>
 	<form>
-		<label for="username">Username:</label>
+		<input type="text" placeholder="Email">
 		<br>
-		<input type="text" id ="username" placeholder="Type Here">
-		<br>
-		<label for="password">Password:</label>
-		<br>
-		<input type="password" id ="password" placeholder="Type Here">
+		<input type="password" placeholder="Password">
 		<br>
 		<input type="button" value="Login" onclick="window.location.href='/loggedin';">
-		<p class="horizontaltext">or</p>
-		<input type="button" value="Signup" onclick="window.location.href='/loggedin';">
+		<br>
+		<p class="smalltext">Don't have an account?</p>
+		<a class="smalltext" href="/signup">Sign up here.</a>
 	</form>
 	</div>
 

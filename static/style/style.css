@@ -46,6 +46,13 @@ body {
   }
 }
 
+h1 {
+  font-family: Muli;
+  font-size: 40px;
+  font-weight: normal;
+  color: var(--darkgray);
+}
+
 /*Style Default Links*/
 a {
   color: var(--offwhite);
@@ -138,7 +145,7 @@ p.storytext {
   border-radius: 10px;
   background-color: var(--offwhite);
   padding: 50px;
-  width: 20%;
+  width: 30%;
   margin: auto;
   margin-top: 50px;
   text-align: center;
@@ -160,7 +167,7 @@ input[type=file], input[type=text], input[type=password], select {
   border: 2px solid var(--palegreen);
   border-radius: 4px;
   box-sizing: border-box;
-  width: 70%;
+  width: 82%;
 }
 
 input[type=submit], input[type=button] {
@@ -179,29 +186,17 @@ input[type=submit]:hover, input[type=button]:hover {
   font-weight: bold;
 }
 
-.horizontaltext {
-  font-size: 25px;
+.smalltext {
+  display: inline;
+  color: var(--darkgray);
+  font-size: 15px;
 }
 
-.horizontaltext:before,
-.horizontaltext:after {
-  background-color: #000;
-  content: "";
-  display: inline-block;
-  height: 1px;
-  position: relative;
-  vertical-align: middle;
-  width: 30%;
+#firstName {
+  padding-right: 10px;
+  width: 40%;
 }
 
-.horizontaltext:before {
-  right: 0.5em;
-  margin-left: -30%;
+#lastName {
+  width: 40%;
 }
-
-.horizontaltext:after {
-  left: 0.5em;
-  margin-right: -30%;
-}
-
-

@@ -35,6 +35,13 @@ def login():
 	# Returns the login.html template with the given values
 	return render_template("login.html")
 
+# Serves the sign up page
+@app.route('/signup')
+def signup():
+
+	# Returns the signup.html template with the given values
+	return render_template("signup.html")
+
 # Serves the logged in home page
 @app.route('/loggedin')
 def logged_in():
