@@ -21,7 +21,7 @@ def twine_parse(twine_data, import_id):
             rootName = passage['name']
             break
 
-    storyName = str(import_id) + '-' + storyattr['name']
+    storyName = str(importid) + '-' + storyattr['name']
     rootID = str(import_id) + '-' + storyattr['startnode']
     rootName = str(import_id) + '-' + rootName
     """

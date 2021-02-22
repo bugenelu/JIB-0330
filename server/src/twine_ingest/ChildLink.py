@@ -5,8 +5,7 @@ class ChildLink:
 
         Parameters:
         -----------
-        link_text (str): Text of the links to the child
-        child_node (str): The unique page-id of the child node
+        child_data (dic):
         """
         self.link_text = child_data['link-text']
         self.child_id = child_data['child-ID']
