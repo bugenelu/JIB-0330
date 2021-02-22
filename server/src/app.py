@@ -28,6 +28,13 @@ def hello():
 	# Returns the index.html template with the given values
 	return render_template("home.html")
 
+# Serves the login page
+@app.route('/login')
+def login():
+
+	# Returns the login.html template with the given values
+	return render_template("login.html")
+
 # Serves the logged in home page
 @app.route('/loggedin')
 def logged_in():
