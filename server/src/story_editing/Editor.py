@@ -26,7 +26,7 @@ Be careful when implementing functions that are meant to *read* from StoryGraphs
 """
 
 from collections import deque
-import StoryGraph
+from StoryGraph import StoryGraph
 
 
 # TODO: This class is a work-in-progress. See below...
@@ -71,6 +71,9 @@ class Editor:
             return -1
         self.openStories[parentID].push(version)
         return 0
+
+    # TODO: Define two page deletes-- one removes a single node. one removes a node and all of its descendants.
+    # TODO: consider bidirectional edges.
 
 
 

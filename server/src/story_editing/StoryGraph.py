@@ -28,6 +28,9 @@ class StoryGraph:
             # self.page_nodes is a dict ['page-ID': PageNode] of PageNodes in this StoryGraph
             for page_node in story_data['page-nodes'].values():
                 self.page_nodes[page_node['page-ID']] = PageNode(page_node)
+            for page_node in self.page_nodes.values():
+                for link in page_node.page_children:
+                    self.page_nodes[link].page_parents.append(page_node.page_id)
         else:
             pass
 
@@ -38,19 +41,21 @@ class StoryGraph:
         """
         returns: A dictionary of import id, story name, root id and root name
         """
-        return {"import_id": self.import_id, "root_id": self.root_id, 
-            "root-name": self.root_name, "story-name": self.story_name}
+        return {"import_id": self.import_id, "root_id": self.root_id,
+                "root-name": self.root_name, "story-name": self.story_name}
 
     def addNode(self, new_node, parent_node, link_text):
         if type(new_node) is not PageNode or type(parent_node) is not PageNode or type(link_text) is not str:
             return -1
 
+        newID = new_node.page_id
         graph_copy = copy.deepcopy(self)
         graph_copy.page_nodes[new_node.page_id] = copy.deepcopy(new_node)
+        graph_copy.page_nodes[newID].page_parents.append(parent_node.page_id)
 
         parent_node = graph_copy.page_nodes[parent_node.page_id]
         parent_node.addLink(ChildLink({'link-text': link_text,
-            'child-ID': new_node.page_id, 'child-name': new_node.page_name}))
+                                       'child-ID': new_node.page_id, 'child-name': new_node.page_name}))
 
         return graph_copy
 
@@ -58,7 +63,9 @@ class StoryGraph:
         if type(subtree) is not StoryGraph or type(parent_node) is not PageNode or type(link_text) is not str:
             return -1
 
+        subtreeRoot = subtree.root_id
         subtree = copy.deepcopy(subtree)
+        subtree.page_nodes[subtreeRoot].page_parents.append(parent_node.page_id)
         parent_graph = copy.deepcopy(self)
 
         parent_node = parent_graph.page_nodes[parent_node.page_id]
@@ -69,13 +76,14 @@ class StoryGraph:
                 # print(type(pageNode))
                 # print(pageNode.page_id)
                 parent_graph.page_nodes[pageNode.page_id] = pageNode
-        
+
         # Create link and apply
-        parent_node.addLink(ChildLink({'link-text': link_text, 'child-ID': subtree.root_id, 
-            'child-name': subtree.root_name}))
+
+        parent_node.addLink(ChildLink({'link-text': link_text, 'child-ID': subtree.root_id,
+                                       'child-name': subtree.root_name}))
 
         return parent_graph
-    
+
     def updatePageNodeText(self, page_id, new_text):
         graph_copy = copy.deepcopy(self)
         graph_copy.page_nodes[page_id].updateBodyText(new_text)

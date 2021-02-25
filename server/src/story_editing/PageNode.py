@@ -15,6 +15,7 @@ class PageNode:
         self.page_id = page_data['page-ID']
         self.page_name = page_data['page-name']
         self.page_body_text = page_data['page-body-text']
+        self.page_parents = []
         self.page_children = {}
         for child in page_data['page-children'].values():
             self.page_children[child['child-ID']] = ChildLink(child)
