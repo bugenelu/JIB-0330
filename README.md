@@ -18,11 +18,7 @@ Twine Version: 2.3.9 (Desktop)
 1. Run 'gcloud init'
 
 ## Run each time
-1. Navigate to the server folder
-2. Run 'gcloud builds submit --tag gcr.io/ga-knowledge-hub/knowledge-hub'
-3. Run 'gcloud beta run deploy --image gcr.io/ga-knowledge-hub/knowledge-hub'
-4. Navigate to the root folder of the project
-5. Run './node_modules/.bin/firebase deploy'
+1. Run 'deploy'
 
 
 # User data structure

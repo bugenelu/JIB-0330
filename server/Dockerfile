@@ -1,6 +1,6 @@
 FROM python:3.7
 
-RUN pip install Flask gunicorn
+RUN pip install Flask gunicorn Flask-Login firebase-admin fireo Flask-Session redis
 
 COPY src/ /app
 WORKDIR /app

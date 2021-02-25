@@ -1,4 +1,16 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+# from flask_session import Session
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# import redis
+
+from fireo.models import Model
+from fireo.fields import TextField, BooleanField, ListField, MapField, IDField
+
 import os, json, sys
 
 
@@ -10,6 +22,52 @@ if platform == 'local':
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
+login_manager = LoginManager()
+login_manager.init_app(app)
+app.config['SECRET_KEY'] = 'something unique and secret'
+# app.config['SESSION_TYPE'] = 'redis'
+# app.config['SESSION_REDIS'] = redis.from_url(environ.get('SESSION_REDIS'))
+# session = Session(app)
+
+# Use the application default credentials
+cred = credentials.ApplicationDefault()
+firebase_app = firebase_admin.initialize_app(cred, {
+  'projectId': 'ga-knowledge-hub',
+})
+
+db = firestore.client()
+
+
+class User(Model):
+
+	email = TextField()
+	password = TextField()
+	first_name = TextField()
+	last_name = TextField()
+	authenticated = BooleanField()
+	admin = BooleanField()
+	favorites = ListField()
+	history = ListField()
+
+	def is_active(self):
+		return True
+	
+	def is_authenticated(self):
+		return self.authenticated
+		
+	def is_anonymous(self):
+		return False
+	
+	def get_id(self):
+		return self.email
+		
+	@staticmethod
+	def get(user_id):
+		return 1
+
+@login_manager.user_loader
+def load_user(user_id):
+	return User.collection.filter(email=user_id).get()
 
 
 # Sample class
@@ -26,35 +84,60 @@ class Sample():
 def hello():
 
 	# Returns the index.html template with the given values
-	return render_template("home.html")
+	return render_template('home.html')
 
 # Serves the login page
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+	if request.method == 'POST':
+		user = User.collection.filter(email=request.form['email']).get()
+		if user:
+			if request.form["password"] == user.password:
+				user.authenticated = True
+				user.save()
+				login_user(user, remember=True)
+				return redirect('https://gaknowledgehub.web.app/loggedin')
+		return render_template('unsuccessful-login.html')
 
 	# Returns the login.html template with the given values
-	return render_template("login.html")
+	return render_template('login.html')
 
 # Serves the sign up page
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
+	if request.method == 'POST':
+		if User.collection.filter(email=request.form['email']).get():
+			# TODO: Add error page for account already exists
+			pass
+		user = User()
+		user.email = request.form['email']
+		user.password = request.form['password']
+		user.first_name = request.form['first-name']
+		user.last_name = request.form['last-name']
+		user.authenticated = True
+		user.admin = False
+		user.favorites = []
+		user.history = []
+		user.save()
+		login_user(user, remember=True)
+		return redirect('https://gaknowledgehub.web.app/loggedin')
 
 	# Returns the signup.html template with the given values
-	return render_template("signup.html")
+	return render_template('signup.html')
 
 # Serves the logged in home page
 @app.route('/loggedin')
 def logged_in():
 
 	# Returns the home_loggedin.html template with the given values
-	return render_template("home_loggedin.html", sample_story="data")
+	return render_template('home_loggedin.html', first_name='Joseph', sample_story='data')
 
 # Serves the upload page
 @app.route('/upload')
 def upload():
 
 	# Returns the file_upload.html template with the given values
-	return render_template("file_upload.html")
+	return render_template('file_upload.html')
 
 # Serves the root page of the specified story
 @app.route('/story/<story>')
@@ -106,7 +189,7 @@ def story_page(story, page_id):
 		page = story_data['page-nodes'][page_id]
 
 		# Returns the story_page.html template with the specified page
-		return render_template("story_page.html", story=story, page=page)
+		return render_template('story_page.html', story=story, page=page)
 
 
 # # Default to running on port 80
@@ -116,6 +199,6 @@ def story_page(story, page_id):
 # if len(sys.argv) >= 2:
 # 	port = int(sys.argv[1])
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	# Run the application on the specified IP address and port
-	app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 8080)), debug=True)
+	app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)

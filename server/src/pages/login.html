@@ -8,12 +8,12 @@
 <body>
 	<div class="centerbox">
 		<h1>Login:</h1>
-	<form>
-		<input type="text" placeholder="Email">
+	<form method="POST" action="/login">
+		<input type="text" name="email" placeholder="Email">
 		<br>
-		<input type="password" placeholder="Password">
+		<input type="password" name="password" placeholder="Password">
 		<br>
-		<input type="button" value="Login" onclick="window.location.href='/loggedin';">
+		<input type="submit" value="Login">
 		<br>
 		<p class="smalltext">Don't have an account?</p>
 		<a class="smalltext" href="/signup">Sign up here.</a>
