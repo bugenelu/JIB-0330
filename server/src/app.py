@@ -144,7 +144,7 @@ def upload():
 def story_root(story):
 
 	# Creates file path to the story's JSON file
-	filepath = os.path.join('twine_ingest', story + '.json')
+	filepath = os.path.join('story_editing', story + '.json')
 
 	# Checks whether or not the story exists
 	if not os.path.exists(filepath):
@@ -172,7 +172,7 @@ def story_root(story):
 def story_page(story, page_id):
 
 	# Creates file path to the story's JSON file
-	filepath = os.path.join('twine_ingest', story + '.json')
+	filepath = os.path.join('story_editing', story + '.json')
 
 	# Checks whether or not the story exists
 	if not os.path.exists(filepath):

@@ -28,8 +28,14 @@ newTree_2 = newTree.updatePageNodeText('1-3', 'Matthew is cool - Nick')
 
 # test edit Link
 newTree_3 = newTree.updatePageLinkText('0-1', '0-2',
-    'I want there to be an even better clown')
+                                       'I want there to be an even better clown')
 
-# TODO: test add page node
-# TODO: enumerate editor functions (mf)
-# TODO: Create paper prototype editor ui
+newNodeDict = {
+    'page-ID': 10000,
+    'page-name': 'mr. hello world page',
+    'page-body-text': 'I am yoaur friendleeee new paaaage. Also I am drunk.',
+    'page-children': {}
+}
+
+misterNewPage = PageNode(newNodeDict)
+newNodeTestTree = newTree.addNode(misterNewPage, newTree.page_nodes['0-5'], 'go toa drunk node.')

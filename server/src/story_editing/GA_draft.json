@@ -1,0 +1,812 @@
+{
+    "import-ID": "5002",
+    "story-name": "5002-GA's Next Steps to Sustainable Practices",
+    "root-ID": "5002-1",
+    "root-name": "5002-MY PATH TO SUSTAINABLE PRACTICES",
+    "page-nodes": {
+        "5002-1": {
+            "page-ID": "5002-1",
+            "page-name": "5002-MY PATH TO SUSTAINABLE PRACTICES",
+            "page-body-text": "WELCOME NN!\n    You are looking at a wealth of resources that help you make responsible decisions.\n    This decision-making tool is not meant to tell you what to do, it does not lead you to an off-the-shelf solution.\n    Instead, on the path to that solution, at every fork along the way, it will suggest questions you may want to ask yourself.\n    Your answers to these questions will lead you to your own solution, the one that recognizes your particular circumstances.\n    ...and it will be a solution that considers the full range of the impacts of your actions.\n\n    TAKE YOUR FIRST STEP:\n    YOUR PROFILE - what kind of company are you working for:\n    ",
+            "page-children": {
+                "5002-2": {
+                    "child-name": "5002-$100m with sust experts",
+                    "link-text": "our revenue is above '$100m'; we employ sustainability experts",
+                    "child-ID": "5002-2"
+                },
+                "5002-3": {
+                    "child-name": "5002-$100m no sust experts",
+                    "link-text": "our revenue is above '$100m'; we don't employ sustainability experts",
+                    "child-ID": "5002-3"
+                },
+                "5002-5": {
+                    "child-name": "5002-$10m with sust experts",
+                    "link-text": "our revenue is below '$10m'; we employ sustainability experts",
+                    "child-ID": "5002-5"
+                },
+                "5002-7": {
+                    "child-name": "5002-$10m no sust experts",
+                    "link-text": "our revenue is above '$10m' but below '$100m'; we don't employ sustainability experts",
+                    "child-ID": "5002-7"
+                },
+                "5002-8": {
+                    "child-name": "5002-10m no sust experts",
+                    "link-text": "our revenue is below '$10m'; we don't employ sustainability experts",
+                    "child-ID": "5002-8"
+                },
+                "5002-6": {
+                    "child-name": "5002-startup with sust experts",
+                    "link-text": "we are a startup; we employ sustainability experts",
+                    "child-ID": "5002-6"
+                },
+                "5002-12": {
+                    "child-name": "5002-Startup; without its own sustainability experts",
+                    "link-text": "we are a startup; we don't employ sustainability experts",
+                    "child-ID": "5002-12"
+                }
+            }
+        },
+        "5002-2": {
+            "page-ID": "5002-2",
+            "page-name": "5002-$100m with sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-3": {
+            "page-ID": "5002-3",
+            "page-name": "5002-$100m no sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-4": {
+            "page-ID": "5002-4",
+            "page-name": "5002-$10m with sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-5": {
+            "page-ID": "5002-5",
+            "page-name": "5002-$10m with sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-6": {
+            "page-ID": "5002-6",
+            "page-name": "5002-startup with sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-7": {
+            "page-ID": "5002-7",
+            "page-name": "5002-$10m no sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-8": {
+            "page-ID": "5002-8",
+            "page-name": "5002-10m no sust experts",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-9": {
+            "page-ID": "5002-9",
+            "page-name": "5002-Cars and Trucks",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-10": {
+            "page-ID": "5002-10",
+            "page-name": "5002-Shoes",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-11": {
+            "page-ID": "5002-11",
+            "page-name": "5002-Health Care",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-12": {
+            "page-ID": "5002-12",
+            "page-name": "5002-Startup; without its own sustainability experts",
+            "page-body-text": "YOUR PROFILE - our activities cover these industries:\n",
+            "page-children": {
+                "5002-14": {
+                    "child-name": "5002-Cleaning Products",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-14"
+                },
+                "5002-9": {
+                    "child-name": "5002-Cars and Trucks",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-9"
+                },
+                "5002-10": {
+                    "child-name": "5002-Shoes",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-10"
+                },
+                "5002-11": {
+                    "child-name": "5002-Health Care",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-11"
+                },
+                "5002-13": {
+                    "child-name": "5002-Paper",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-13"
+                }
+            }
+        },
+        "5002-13": {
+            "page-ID": "5002-13",
+            "page-name": "5002-Paper",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-14": {
+            "page-ID": "5002-14",
+            "page-name": "5002-Cleaning Products",
+            "page-body-text": "YOUR PROFILE - our customers are...\n",
+            "page-children": {
+                "5002-15": {
+                    "child-name": "5002-BtoB",
+                    "link-text": "Businesses",
+                    "child-ID": "5002-15"
+                },
+                "5002-16": {
+                    "child-name": "5002-BtoC",
+                    "link-text": "Consumers",
+                    "child-ID": "5002-16"
+                }
+            }
+        },
+        "5002-15": {
+            "page-ID": "5002-15",
+            "page-name": "5002-BtoB",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-16": {
+            "page-ID": "5002-16",
+            "page-name": "5002-BtoC",
+            "page-body-text": "YOUR PROFILE - the problem in front of me concerns...\n",
+            "page-children": {
+                "5002-17": {
+                    "child-name": "5002-Defining Our Strategy",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-17"
+                },
+                "5002-28": {
+                    "child-name": "5002-Measuring Our Impacts",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-28"
+                },
+                "5002-63": {
+                    "child-name": "5002-Buying Packaging Materials",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-63"
+                },
+                "5002-64": {
+                    "child-name": "5002-Manufacturing Products",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-64"
+                }
+            }
+        },
+        "5002-17": {
+            "page-ID": "5002-17",
+            "page-name": "5002-Defining Our Strategy",
+            "page-body-text": "IN ORDER TO DEFINE YOUR STRATEGY YOU MIGHT WANT TO ASK...\n",
+            "page-children": {
+                "5002-18": {
+                    "child-name": "5002-Purpose",
+                    "link-text": "what is my company';s vision/purpose",
+                    "child-ID": "5002-18"
+                },
+                "5002-19": {
+                    "child-name": "5002-Mission",
+                    "link-text": "what is my company';s mission",
+                    "child-ID": "5002-19"
+                },
+                "5002-20": {
+                    "child-name": "5002-Values",
+                    "link-text": "what are myy company';s values",
+                    "child-ID": "5002-20"
+                },
+                "5002-65": {
+                    "child-name": "5002-Business Model",
+                    "link-text": "what is my company';s business model",
+                    "child-ID": "5002-65"
+                }
+            }
+        },
+        "5002-18": {
+            "page-ID": "5002-18",
+            "page-name": "5002-Purpose",
+            "page-body-text": "HERE ARE A FEW POINTERS ABOUT DEFINING YOUR COMPANY';S PURPOSE...\n\nONCE YOU HAVE ALL THE STRATEGY ELEMENTS TOGETHER...\n",
+            "page-children": {
+                "5002-21": {
+                    "child-name": "5002-Implementation Strategies",
+                    "link-text": "you can begin thinking about implementing it",
+                    "child-ID": "5002-21"
+                }
+            }
+        },
+        "5002-19": {
+            "page-ID": "5002-19",
+            "page-name": "5002-Mission",
+            "page-body-text": "HERE ARE A FEW POINTERS ABOUT DEFINING YOUR MISSION...\n\n\nONCE YOU HAVE ALL THE STRATEGY ELEMENTS TOGETHER...\n",
+            "page-children": {
+                "5002-21": {
+                    "child-name": "5002-Implementation Strategies",
+                    "link-text": "you can begin thinking about implementing it",
+                    "child-ID": "5002-21"
+                }
+            }
+        },
+        "5002-20": {
+            "page-ID": "5002-20",
+            "page-name": "5002-Values",
+            "page-body-text": "HERE ARE A FEW POINTERS ABOUT DEFINING YOUR COMPANY';S VALUES...\n\n\nONCE YOU HAVE ALL THE STRATEGY ELEMENTS TOGETHER...\n",
+            "page-children": {
+                "5002-21": {
+                    "child-name": "5002-Implementation Strategies",
+                    "link-text": "you can begin thinking about implementing it",
+                    "child-ID": "5002-21"
+                }
+            }
+        },
+        "5002-21": {
+            "page-ID": "5002-21",
+            "page-name": "5002-Implementation Strategies",
+            "page-body-text": "YOUR PROFILE - WHAT IS YOUR ROLE IN IMPLEMENTING YOUR COMPANY';S STRATEGY?\n",
+            "page-children": {
+                "5002-24": {
+                    "child-name": "5002-Designing the Product",
+                    "link-text": "I design our products",
+                    "child-ID": "5002-24"
+                },
+                "5002-64": {
+                    "child-name": "5002-Manufacturing Products",
+                    "link-text": "I am responsible for manufacturing",
+                    "child-ID": "5002-64"
+                },
+                "5002-27": {
+                    "child-name": "5002-Identifying the Channels",
+                    "link-text": "I am responsible for the distribution of our products",
+                    "child-ID": "5002-27"
+                },
+                "5002-25": {
+                    "child-name": "5002-Understanding Use of Product",
+                    "link-text": "I manage our product-in-use strategy",
+                    "child-ID": "5002-25"
+                },
+                "5002-26": {
+                    "child-name": "5002-Disposition Post Use",
+                    "link-text": "I am responsible for the post-use disposition of our products",
+                    "child-ID": "5002-26"
+                }
+            }
+        },
+        "5002-22": {
+            "page-ID": "5002-22",
+            "page-name": "5002-Product Target",
+            "page-body-text": "THERE ARE A FEW KEY CHARACTERISTICS OF THE USERS OF YOUR PRODUCTS THAT YOU MIGHT WANT TO DESCRIBE IN SOME MORE DETAIL:\n",
+            "page-children": {
+                "5002-45": {
+                    "child-name": "5002-User Geographies",
+                    "link-text": "where do our users live?",
+                    "child-ID": "5002-45"
+                },
+                "5002-46": {
+                    "child-name": "5002-User Demographics",
+                    "link-text": "how else can I describe them? ",
+                    "child-ID": "5002-46"
+                }
+            }
+        },
+        "5002-23": {
+            "page-ID": "5002-23",
+            "page-name": "5002-Product Benefits",
+            "page-body-text": "BEYOND THE USUAL ATTRIBUTES, HERE ARE SOME THAT COVER THE PRODUCT';S SUSTAINABILIT PERFORMANCE...\n",
+            "page-children": {
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                }
+            }
+        },
+        "5002-24": {
+            "page-ID": "5002-24",
+            "page-name": "5002-Designing the Product",
+            "page-body-text": "IN ORDER TO PROPERLY DESIGN YOUR PRODUCT, YOU MAY WANT TO CLARIFY ITS VALUE PROPOSITION - YOU MAY WANT TO ASK...\n",
+            "page-children": {
+                "5002-22": {
+                    "child-name": "5002-Product Target",
+                    "link-text": "who is the target?",
+                    "child-ID": "5002-22"
+                },
+                "5002-23": {
+                    "child-name": "5002-Product Benefits",
+                    "link-text": "what benefits does the product deliver",
+                    "child-ID": "5002-23"
+                }
+            }
+        },
+        "5002-25": {
+            "page-ID": "5002-25",
+            "page-name": "5002-Understanding Use of Product",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-26": {
+            "page-ID": "5002-26",
+            "page-name": "5002-Disposition Post Use",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-27": {
+            "page-ID": "5002-27",
+            "page-name": "5002-Identifying the Channels",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-28": {
+            "page-ID": "5002-28",
+            "page-name": "5002-Measuring Our Impacts",
+            "page-body-text": "IN ORDER TO RESPONISIBLY MANAGE AND REPORT ON YOUR ACTIVITIES YOU SHOULD CONSIDER THEIR IMPACTS ON THE RESOURCES/ASSETS THAT YOU DEPLOY IN THE PROCESS OF MAKING THEM...\n",
+            "page-children": {
+                "5002-29": {
+                    "child-name": "5002-Financial Resources",
+                    "link-text": "the money you need",
+                    "child-ID": "5002-29"
+                },
+                "5002-30": {
+                    "child-name": "5002-Natural Resources",
+                    "link-text": "the materials you need",
+                    "child-ID": "5002-30"
+                },
+                "5002-31": {
+                    "child-name": "5002-Human Resources",
+                    "link-text": "the people you need",
+                    "child-ID": "5002-31"
+                }
+            }
+        },
+        "5002-29": {
+            "page-ID": "5002-29",
+            "page-name": "5002-Financial Resources",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-30": {
+            "page-ID": "5002-30",
+            "page-name": "5002-Natural Resources",
+            "page-body-text": "WHICH NATURAL RESOURCES ARE MOST SIGNIFICANT TO YOUR ACTIVITIES?\n",
+            "page-children": {
+                "5002-32": {
+                    "child-name": "5002-Water",
+                    "link-text": "I am mostly concerned about the water we consume",
+                    "child-ID": "5002-32"
+                },
+                "5002-33": {
+                    "child-name": "5002-Air",
+                    "link-text": "I am mostly concerned about the air we pollute",
+                    "child-ID": "5002-33"
+                },
+                "5002-34": {
+                    "child-name": "5002-Materials",
+                    "link-text": "I am mostly concerned about materials that we use",
+                    "child-ID": "5002-34"
+                }
+            }
+        },
+        "5002-31": {
+            "page-ID": "5002-31",
+            "page-name": "5002-Human Resources",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-32": {
+            "page-ID": "5002-32",
+            "page-name": "5002-Water",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-33": {
+            "page-ID": "5002-33",
+            "page-name": "5002-Air",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-34": {
+            "page-ID": "5002-34",
+            "page-name": "5002-Materials",
+            "page-body-text": "WHAT COULD BE HELPFUL IN DEFINING THE BEST METRICS?\n",
+            "page-children": {
+                "5002-35": {
+                    "child-name": "5002-Software",
+                    "link-text": "you may want to learn more about available software",
+                    "child-ID": "5002-35"
+                },
+                "5002-36": {
+                    "child-name": "5002-Concepts",
+                    "link-text": "you may want to learn more about methodologies and concepts",
+                    "child-ID": "5002-36"
+                },
+                "5002-37": {
+                    "child-name": "5002-Industry Standards",
+                    "link-text": "you may want to learn more about applicable standards in your industry",
+                    "child-ID": "5002-37"
+                },
+                "5002-38": {
+                    "child-name": "5002-Success Stories",
+                    "link-text": "you may want to hear about sustainable practices that were successfully executed",
+                    "child-ID": "5002-38"
+                },
+                "5002-39": {
+                    "child-name": "5002-Best Practices",
+                    "link-text": "you may want to see some best practices",
+                    "child-ID": "5002-39"
+                },
+                "5002-40": {
+                    "child-name": "5002-Value Chain",
+                    "link-text": "you may want to understand the expectations that the various actors in your value chain have",
+                    "child-ID": "5002-40"
+                }
+            }
+        },
+        "5002-35": {
+            "page-ID": "5002-35",
+            "page-name": "5002-Software",
+            "page-body-text": "HERE ARE SOME PROVIDERS OF SOFTWARE WHO MIGHT BE HELPFUL TO YOU:\n",
+            "page-children": {
+                "5002-47": {
+                    "child-name": "5002-SAS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-47"
+                },
+                "5002-48": {
+                    "child-name": "5002-SAP",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-48"
+                },
+                "5002-49": {
+                    "child-name": "5002-HARA",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-49"
+                },
+                "5002-50": {
+                    "child-name": "5002-Enviance",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-50"
+                }
+            }
+        },
+        "5002-36": {
+            "page-ID": "5002-36",
+            "page-name": "5002-Concepts",
+            "page-body-text": "HERE ARE A FEW SYSTEMATIC CONCEPTS THAT COULD HELP YOU STRUCTURE, ANALYSE AND EVALUATE YOUR ISSUE?\n",
+            "page-children": {
+                "5002-51": {
+                    "child-name": "5002-3BL",
+                    "link-text": "Triple Bottom Line",
+                    "child-ID": "5002-51"
+                },
+                "5002-52": {
+                    "child-name": "5002-LCA",
+                    "link-text": "Lifecycle Analysis",
+                    "child-ID": "5002-52"
+                },
+                "5002-53": {
+                    "child-name": "5002-Natural Capital",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-53"
+                },
+                "5002-54": {
+                    "child-name": "5002-Human/Social Capital",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-54"
+                },
+                "5002-55": {
+                    "child-name": "5002-True Cost",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-55"
+                },
+                "5002-56": {
+                    "child-name": "5002-SDGs",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-56"
+                }
+            }
+        },
+        "5002-37": {
+            "page-ID": "5002-37",
+            "page-name": "5002-Industry Standards",
+            "page-body-text": "THESE ORGANIZATIONS HAVE DEVELOPED REPORTING STANDARDS FOR THE KIND OF IMPACTS THAT YOU WANT TO MEASURE:\n",
+            "page-children": {
+                "5002-41": {
+                    "child-name": "5002-GRI",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-41"
+                },
+                "5002-42": {
+                    "child-name": "5002-FASB",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-42"
+                },
+                "5002-43": {
+                    "child-name": "5002-SASB",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-43"
+                },
+                "5002-44": {
+                    "child-name": "5002-WEF",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-44"
+                }
+            }
+        },
+        "5002-38": {
+            "page-ID": "5002-38",
+            "page-name": "5002-Success Stories",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-39": {
+            "page-ID": "5002-39",
+            "page-name": "5002-Best Practices",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-40": {
+            "page-ID": "5002-40",
+            "page-name": "5002-Value Chain",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-41": {
+            "page-ID": "5002-41",
+            "page-name": "5002-GRI",
+            "page-body-text": "MORE ON GRI IS HERE:\n",
+            "page-children": {
+                "5002-57": {
+                    "child-name": "5002-VIDEO CLIPS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-57"
+                },
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                },
+                "5002-61": {
+                    "child-name": "5002-LINKS TO WEBSITES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-61"
+                }
+            }
+        },
+        "5002-42": {
+            "page-ID": "5002-42",
+            "page-name": "5002-FASB",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-43": {
+            "page-ID": "5002-43",
+            "page-name": "5002-SASB",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-44": {
+            "page-ID": "5002-44",
+            "page-name": "5002-WEF",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-45": {
+            "page-ID": "5002-45",
+            "page-name": "5002-User Geographies",
+            "page-body-text": "THE GEOGRAPHIC LOCATION OF YOUR CUSTOMERS HAS IMPLICATIONS FOR THE SUSTAINABILITY OF YOUR OFFEREINGS...\n",
+            "page-children": {
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                },
+                "5002-61": {
+                    "child-name": "5002-LINKS TO WEBSITES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-61"
+                }
+            }
+        },
+        "5002-46": {
+            "page-ID": "5002-46",
+            "page-name": "5002-User Demographics",
+            "page-body-text": "HERE ARE SOME QUESTIONS AROUND USER DEMOGRAPHICS THAT ADDRESS SUSTAINABILITY CONSIDERATIONS?\n",
+            "page-children": {
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                },
+                "5002-61": {
+                    "child-name": "5002-LINKS TO WEBSITES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-61"
+                }
+            }
+        },
+        "5002-47": {
+            "page-ID": "5002-47",
+            "page-name": "5002-SAS",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-48": {
+            "page-ID": "5002-48",
+            "page-name": "5002-SAP",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-49": {
+            "page-ID": "5002-49",
+            "page-name": "5002-HARA",
+            "page-body-text": "HOW CAN I FIND OUT MORE ABOUT THE COMPANY AND ITS PRODUCTS?\n",
+            "page-children": {
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                },
+                "5002-61": {
+                    "child-name": "5002-LINKS TO WEBSITES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-61"
+                },
+                "5002-58": {
+                    "child-name": "5002-AUDIO INTERVIEWS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-58"
+                }
+            }
+        },
+        "5002-50": {
+            "page-ID": "5002-50",
+            "page-name": "5002-Enviance",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-51": {
+            "page-ID": "5002-51",
+            "page-name": "5002-3BL",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-52": {
+            "page-ID": "5002-52",
+            "page-name": "5002-LCA",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-53": {
+            "page-ID": "5002-53",
+            "page-name": "5002-Natural Capital",
+            "page-body-text": "MUCH WORK HAS BEEN CARRIED OUT TO DEFINE AND QUANTIFY THE VALUE OF NATURAL CAPITAL - HERE ARE A FEW EXAMPLES:\n",
+            "page-children": {
+                "5002-57": {
+                    "child-name": "5002-VIDEO CLIPS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-57"
+                },
+                "5002-58": {
+                    "child-name": "5002-AUDIO INTERVIEWS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-58"
+                },
+                "5002-59": {
+                    "child-name": "5002-TEXT DOCUMENTS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-59"
+                },
+                "5002-60": {
+                    "child-name": "5002-GRAPHIC DESCRIPTIONS",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-60"
+                },
+                "5002-61": {
+                    "child-name": "5002-LINKS TO WEBSITES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-61"
+                },
+                "5002-62": {
+                    "child-name": "5002-PICTURES",
+                    "link-text": "Some link text",
+                    "child-ID": "5002-62"
+                }
+            }
+        },
+        "5002-54": {
+            "page-ID": "5002-54",
+            "page-name": "5002-Human/Social Capital",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-55": {
+            "page-ID": "5002-55",
+            "page-name": "5002-True Cost",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-56": {
+            "page-ID": "5002-56",
+            "page-name": "5002-SDGs",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-57": {
+            "page-ID": "5002-57",
+            "page-name": "5002-VIDEO CLIPS",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-58": {
+            "page-ID": "5002-58",
+            "page-name": "5002-AUDIO INTERVIEWS",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-59": {
+            "page-ID": "5002-59",
+            "page-name": "5002-TEXT DOCUMENTS",
+            "page-body-text": "The protocol to measure impacts on Natural Capital is here: file:///C:\\Users\\User\\Documents\\~WORK\\SUSTAINABILITY\\GREENHOUSE\\Greenhouse%20Accompagneurs\\Greenhouse%20Gardening%20-%20Responsible%20Decision-Making,%20protocol%20for%20NATURAL%20CAPITAL,%202018.pdf \n\nSuccess stories are here: ... \n\nExcerpts from annual/sustainability reports are here: \u00e2\u20ac\u00a6 \n\nCase stories on company initiatives are here:...",
+            "page-children": {}
+        },
+        "5002-60": {
+            "page-ID": "5002-60",
+            "page-name": "5002-GRAPHIC DESCRIPTIONS",
+            "page-body-text": "Comic book ';The Value of Natural Capital'; by NN, ..., is available here: ...\n\nData Two / \n\nData Three /",
+            "page-children": {}
+        },
+        "5002-61": {
+            "page-ID": "5002-61",
+            "page-name": "5002-LINKS TO WEBSITES",
+            "page-body-text": "Company Website: http://www.hara.com \n\nThe website of the ';Natural Capital Coalition'; is here: https://naturalcapitalcoalition.org/hub/\n\nWebcasts by ';GreenBiz'; are here: https://www.greenbiz.com/webcasts",
+            "page-children": {}
+        },
+        "5002-62": {
+            "page-ID": "5002-62",
+            "page-name": "5002-PICTURES",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-63": {
+            "page-ID": "5002-63",
+            "page-name": "5002-Buying Packaging Materials",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-64": {
+            "page-ID": "5002-64",
+            "page-name": "5002-Manufacturing Products",
+            "page-body-text": "",
+            "page-children": {}
+        },
+        "5002-65": {
+            "page-ID": "5002-65",
+            "page-name": "5002-Business Model",
+            "page-body-text": "HERE ARE A FEW POINTERS ON HOW TO BUILD YOUR COMPANY';S BUSINESS MODEL...\n\n\nONCE YOU HAVE ALL THE STRATEGY ELEMENTS TOGETHER...\n",
+            "page-children": {
+                "5002-21": {
+                    "child-name": "5002-Implementation Strategies",
+                    "link-text": "you can begin thinking about implementing it",
+                    "child-ID": "5002-21"
+                }
+            }
+        }
+    }
+}
