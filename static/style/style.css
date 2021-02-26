@@ -24,7 +24,7 @@ html {
 
 /*Style Background of Webpages*/
 body {
-  background-image: linear-gradient(145deg, var(--darkgray), #101515;
+  background-image: linear-gradient(145deg, var(--darkgray), #101515);
   padding-bottom: 60px;
   position: relative;
   height: 100vh;
