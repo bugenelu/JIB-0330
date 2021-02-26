@@ -147,7 +147,7 @@ def upload():
 			if file.filename == '':
 				flash('No selected file')
 				return redirect(request.url)
-			if '.' in filename and file.filename.rsplit('.', 1)[1].lower() in {'html' pdf jpeg png tgif svg mp4 mp3}:
+			if '.' in filename and file.filename.rsplit('.', 1)[1].lower() in {'html', 'pdf', 'jpeg', 'png', 'tgif', 'svg', 'mp4', 'mp3'}:
 				filename = secure_filename(file.filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		if len(files) == 1:
