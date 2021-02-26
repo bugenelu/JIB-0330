@@ -11,14 +11,22 @@
 
 	<!-- The "file upload" button and corresponding functionality -->
 	<div class="centerbox">
-	<form>
+	<form enctype="multipart/form-data" method="post">
 		<label for="selectfile">Select File:</label>
 		<br>
-		<input type="file" id ="selectfile" value="Select File" multiple>
+		<input type="file" id ="selectfile" name="files" value="Select File" multiple>
 		<br>
 		<input type="submit" id="submitfile" value="Upload File">
 	</form>
 	</div>
+
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+	      <p>{{ message }}</p>
+	    {% endfor %}
+	  {% endif %}
+	{% endwith %}
 
 
 </body>

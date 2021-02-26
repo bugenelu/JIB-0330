@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 # from flask_session import Session
 
@@ -13,6 +13,8 @@ from fireo.fields import TextField, BooleanField, ListField, MapField, IDField
 
 import os, json, sys
 
+from werkzeug.utils import secure_filename
+
 
 # Checks which platform we are running on to use the correct static folder
 platform = os.environ.get('PLATFORM', 'local')
@@ -22,6 +24,7 @@ if platform == 'local':
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
+app.config['UPLOAD_FOLDER'] = 'file_uploads'
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'something unique and secret'
@@ -133,9 +136,25 @@ def logged_in():
 	return render_template('home_loggedin.html', first_name='Joseph', sample_story='data')
 
 # Serves the upload page
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
-
+	if request.method == 'POST':
+		if 'files' not in request.files:
+			flash('No file part')
+			return redirect(request.url)
+		files = request.files.getlist['files']
+		for file in files:
+			if file.filename == '':
+				flash('No selected file')
+				return redirect(request.url)
+			if '.' in filename and file.filename.rsplit('.', 1)[1].lower() in {'html' pdf jpeg png tgif svg mp4 mp3}:
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		if len(files) == 1:
+			flash('File uploaded successfully')
+		else:
+			flash('Files uploaded successfully')
+		redirect(request.url)
 	# Returns the file_upload.html template with the given values
 	return render_template('file_upload.html')
 
