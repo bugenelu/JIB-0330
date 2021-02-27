@@ -1,5 +1,6 @@
 from ChildLink import ChildLink
 
+
 class PageNode:
 
     def __init__(self, page_data):
@@ -21,15 +22,15 @@ class PageNode:
             self.page_children[child['child-ID']] = ChildLink(child)
 
     def addLink(self, newChildLink):
-        if (type(newChildLink) is not ChildLink):
+        if type(newChildLink) is not ChildLink:
             return -1
 
         self.page_children[newChildLink.child_id] = newChildLink
-        
+
         return 0
-        
+
     def updateBodyText(self, newBodyText):
-        if (type(newBodyText) is not str):
+        if type(newBodyText) is not str:
             return -1
 
         self.page_body_text = newBodyText
@@ -47,4 +48,3 @@ class PageNode:
 
 
 ''' End Class '''
-
