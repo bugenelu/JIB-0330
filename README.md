@@ -17,14 +17,16 @@ Twine Version: 2.3.9 (Desktop)
 ## First time setup
 1. Run 'gcloud init'
 
-## Run each time
-1. Run 'deploy'
+## Run to deploy to production
+1. Run 'deploy prod'
 
+## Run to deploy to development
+1. Run 'deploy dev'
 
 # User data structure
 - email - string
 - password - string
-- history: array [map{}
+- history: array [map{
 	page: reference
 	last visited: timestamp
 }]

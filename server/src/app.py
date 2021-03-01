@@ -33,12 +33,13 @@ app.config['UPLOAD_FOLDER'] = 'file_uploads'
 # session = Session(app)
 
 # Use the application default credentials
-cred = credentials.ApplicationDefault()
-firebase_app = firebase_admin.initialize_app(cred, {
-  'projectId': 'ga-knowledge-hub',
-})
+if platform == 'gcloud':
+	cred = credentials.ApplicationDefault()
+	firebase_app = firebase_admin.initialize_app(cred, {
+	  'projectId': 'ga-knowledge-hub',
+	})
 
-db = firestore.client()
+	db = firestore.client()
 
 
 class User(Model):
@@ -93,6 +94,8 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST':
+		if platform == 'local':
+			return redirect('/loggedin')
 		user = User.collection.filter(email=request.form['email']).get()
 		if user:
 			if request.form["password"] == user.password:
@@ -109,6 +112,8 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 	if request.method == 'POST':
+		if platform == 'local':
+			return redirect('/loggedin')
 		if User.collection.filter(email=request.form['email']).get():
 			# TODO: Add error page for account already exists
 			pass
@@ -133,7 +138,7 @@ def signup():
 def logged_in():
 
 	# Returns the home_loggedin.html template with the given values
-	return render_template('home_loggedin.html', first_name='Joseph', sample_story='data')
+	return render_template('home_loggedin.html', first_name="Joseph", sample_story='data')
 
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
