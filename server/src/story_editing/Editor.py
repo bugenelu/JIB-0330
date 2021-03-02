@@ -75,20 +75,40 @@ class Editor:
         return None
 
     # TODO: test
-    def connectTrees(self, parent_graph, child_graph, parent_node, link_text):
-        parentID = parent_graph.story_ID
-        newGraph = parent_graph.addSubtree(child_graph, parent_node, link_text)
-        if newGraph == -1:
+    def connectTrees(self, parent_graph_id, child_graph_id, parent_node_id, link_text):
+    	'''
+    	:param parent_graph_id: A string that is the story_id of the parent graph
+    	:param child_graph_id: A string that is the story_id of the graph to append
+    	:param parent_node_id: A string that is the page_id of the node that will receive the root of the child_graph as a child
+    	:param link_text: A string that is the new link text connecting the graphs
+
+    	:return: 0 on success, -1 on failure to create a new graph
+    	'''
+    	parent_graph = self.openStories[parent_graph_id][-1]		# get latest version of parent graph
+    	child_graph = self.openStories[child_graph_id][-1]			# get latest version of child graph
+    	parent_node = parent_graph.page_nodes[parent_node_id]		# get the node using the node id
+    	new_graph = parent_graph.addSubtree(child_graph, parent_node, link_text)	# get a new graph which is a combination of child and parent graphs
+
+        if new_graph == -1:
             return -1
-        self.openStories[parentID].push(newGraph)
+        self.openStories[parent_graph_id].push(new_graph)			# push the latest graph to the deque
         return 0
 
-    def addNode(self, graph, new_node, parent_node, link_text):
-        graphID = graph.story_ID
+    def addNode(self, graph_id, new_node, parent_node_id, link_text):
+    	'''
+		:param graph_id: A string that is the story_id of the parent graph
+		:param new_node: A PageNode object to append as a child of the parent node in the graph
+    	:param parent_node_id: A string that is the page_id of the node that will receive the new node as a child
+    	:param link_text: A string that is the new link text connecting the graphs
+
+    	:return: 0 on success, -1 on failure to create a new graph
+    	'''
+        parent_graph = self.openStories[graph_id][-1]				# get latest version of parent graph
+        parent_node = parent_graph.page_nodes[parent_node_id]		# get the node using the node id
         newGraph = graph.addNode(new_node, parent_node, link_text)
         if newGraph == -1:
             return -1
-        self.openStories[graphID].push(newGraph)
+        self.openStories[graph_id].push(newGraph)					# push the latest graph to the deque
         return 0
 
     # TODO: Define two page deletes-- one removes a single node. one removes a node and all of its descendants.
