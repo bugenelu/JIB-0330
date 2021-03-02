@@ -36,7 +36,7 @@ app.config['UPLOAD_FOLDER'] = 'file_uploads'
 if platform == 'gcloud':
 	cred = credentials.ApplicationDefault()
 	firebase_app = firebase_admin.initialize_app(cred, {
-	  'projectId': 'ga-knowledge-hub',
+	  'projectId': 'ga-knowledge-hub'
 	})
 
 	db = firestore.client()
@@ -48,19 +48,10 @@ class User(Model):
 	password = TextField()
 	first_name = TextField()
 	last_name = TextField()
-	authenticated = BooleanField()
 	admin = BooleanField()
+	authenticated = BooleanField()
 	favorites = ListField()
 	history = ListField()
-
-	def is_active(self):
-		return True
-	
-	def is_authenticated(self):
-		return self.authenticated
-		
-	def is_anonymous(self):
-		return False
 	
 	def get_id(self):
 		return self.email
@@ -71,7 +62,8 @@ class User(Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-	return User.collection.filter(email=user_id).get()
+	return user_id
+	#return User.collection.get(user_id)
 
 
 # Sample class
@@ -136,6 +128,8 @@ def signup():
 # Serves the logged in home page
 @app.route('/loggedin')
 def logged_in():
+
+	return current_user
 
 	# Returns the home_loggedin.html template with the given values
 	return render_template('home_loggedin.html', first_name="Joseph", sample_story='data')
@@ -212,6 +206,11 @@ def story_page(story, page_id):
 
 		# Returns the story_page.html template with the specified page
 		return render_template('story_page.html', story=story, page=page)
+
+
+@app.route('/admin/editor')
+def editor():
+	
 
 
 # # Default to running on port 80
