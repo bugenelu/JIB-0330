@@ -10,17 +10,17 @@ class StoryGraph:
 
     def __init__(self, story_data=None):
         """ 
-        Constructor for StoryGraph
+        Constructor for StoryGraph. StoryGraph objects are constructed using a dictionary of the StoryGraph's contents
 
         Parameter:
         ----------
-        import_id (int): The specific import verison of Twine
+        story_id (int): The specific import verison of Twine
         root_id (int): The page id of the root node
         root_name (str): The name of root node
         page_nodes (list(PageNode)): List of all PageNodes within StoryGraph
         """
         if story_data is not None:
-            self.import_id = story_data['import-ID']
+            self.story_id = story_data['import-ID']
             self.story_name = story_data['story-name']
             self.root_id = story_data['root-ID']
             self.root_name = story_data['root-name']
@@ -41,7 +41,7 @@ class StoryGraph:
         """
         returns: A dictionary of import id, story name, root id and root name
         """
-        return {"import_id": self.import_id, "root_id": self.root_id,
+        return {"story_id": self.story_id, "root_id": self.root_id,
                 "root-name": self.root_name, "story-name": self.story_name}
 
     def addNode(self, new_node, parent_node, link_text):
@@ -72,9 +72,6 @@ class StoryGraph:
 
         for pageNode in subtree.getNodeList().values():
             if pageNode not in parent_graph.page_nodes:
-                # parent_graph.page_nodes.append(pageNode)
-                # print(type(pageNode))
-                # print(pageNode.page_id)
                 parent_graph.page_nodes[pageNode.page_id] = pageNode
 
         # Create link and apply
@@ -96,11 +93,12 @@ class StoryGraph:
 
         return graph_copy
 
+    # TODO: Update graphToJson() to graphToFirestore() i.e. the database format
     def graphToJson(self):
         page_nodes = {}
         for page_node in self.page_nodes.values():
             page_nodes[page_node.page_id] = page_node.toDict()
-        data = {'import-ID': self.import_id, 'story-name': self.story_name, 'root-ID': self.root_id,
+        data = {'import-ID': self.story_id, 'story-name': self.story_name, 'root-ID': self.root_id,
                 'root-name': self.root_name, 'page-nodes': page_nodes}
         json_string = json.dumps(data, indent=4)
         return json_string
