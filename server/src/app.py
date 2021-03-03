@@ -213,6 +213,20 @@ def story_page(story, page_id):
 		# Returns the story_page.html template with the specified page
 		return render_template('story_page.html', story=story, page=page)
 
+# Serves the profile page
+@app.route('/profile')
+def profile():
+
+	# Returns the profile.html template with the given values
+	return render_template('profile.html', first_name="Joseph", email="test@gmail.com")
+
+# Serves the history page
+@app.route('/history')
+def history():
+
+	# Returns the profile.html template with the given values
+	return render_template('history.html')
+
 
 # # Default to running on port 80
 # port = 80
