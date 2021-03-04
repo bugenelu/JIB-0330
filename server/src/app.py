@@ -1,19 +1,18 @@
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session
-from flask_login import LoginManager, login_user, current_user, logout_user, login_required
-# from flask_session import Session
-
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response
+from flask_login import LoginManager
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-# import redis
+from firebase_admin import credentials, firestore, auth
+from firebase_admin.auth import UserRecord
 
 from fireo.models import Model
-from fireo.fields import TextField, BooleanField, ListField, MapField, IDField
+from fireo.fields import TextField, BooleanField, ListField, MapField, IDField, DateTime
 
-import os, json, sys
+import os, json, sys, requests, uuid
+from datetime import datetime
 
 from werkzeug.utils import secure_filename
+
+# from functools import wraps
 
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 
@@ -24,16 +23,6 @@ static_folder = ''
 if platform == 'local':
     static_folder = '../../static'
 
-# Initialize the Flask application
-app = Flask(__name__, template_folder='pages', static_folder=static_folder)
-login_manager = LoginManager()
-login_manager.init_app(app)
-app.config['SECRET_KEY'] = 'something unique and secret'
-app.config['UPLOAD_FOLDER'] = 'file_uploads'
-# app.config['SESSION_TYPE'] = 'redis'
-# app.config['SESSION_REDIS'] = redis.from_url(environ.get('SESSION_REDIS'))
-# session = Session(app)
-
 # Use the application default credentials
 if platform == 'gcloud':
     cred = credentials.ApplicationDefault()
@@ -43,6 +32,25 @@ if platform == 'gcloud':
 
     db = firestore.client()
 
+# Initialize the Flask application
+app = Flask(__name__, template_folder='pages', static_folder=static_folder)
+app.config['SECRET_KEY'] = 'something unique and secret'
+app.config['SESSION_COOKIE_NAME'] = '__session'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['UPLOAD_FOLDER'] = 'file_uploads'
+login_manager = LoginManager()
+login_manager.init_app(app)
+# Session(app)
+secret_key = 'something unique and secret'
+
+
+# class CustomUserMixin(UserMixin):
+#     class Meta():
+#         abstract = True
+#         field_list = {}
+
+#     _meta = Meta()
+
 
 class User(Model):
 
@@ -50,22 +58,68 @@ class User(Model):
     password = TextField()
     first_name = TextField()
     last_name = TextField()
-    admin = BooleanField()
     authenticated = BooleanField()
+    admin = BooleanField()
     favorites = ListField()
     history = ListField()
-    
-    def get_id(self):
-        return self.email
-        
-    @staticmethod
-    def get(user_id):
-        return 1
+
+    # @staticmethod
+    # def get(user_id):
+    #     return 1
+
+class FirebaseSessionsStorage(Model):
+
+    class Meta:
+        collection_name = 'sessions'
+
+    active_sessions = ListField()
+    runtime = DateTime()
+
+    def add_session(self, user):
+        session_key = str(uuid.uuid4())
+        new_session = {}
+        new_session['session_key'] = session_key
+        new_session['user_id'] = user.email
+        self.active_sessions.append(new_session)
+        self.save()
+        return session_key
+
+    def has_session(self, session_key, user_id):
+        return False
+
+sessions = None
+current_user = None
+
+def login_user(user):
+    global sessions
+    if not sessions:
+        sessions = FirebaseSessionsStorage()
+        sessions.active_sessions = []
+        sessions.runtime = datetime.now()
+        sessions.save()
+    return sessions.add_session(user)
+
+@app.before_request
+def get_current_user():
+    global current_user
+
+    session_key = request.cookies.get('__session')
+    user_id = None
+    for active_session in sessions.active_sessions:
+        if active_session['session_key'] == session_key:
+            user_id = active_session['user_id']
+    current_user = User.collection.filter(email=user_id).get()
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    return user_id
-    #return User.collection.get(user_id)
+    return User.collection.filter(email=user_id).get()
+
+# def login_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         if 
 
 
 # Sample class
@@ -82,6 +136,11 @@ class Sample():
 def hello():
 
     # Returns the index.html template with the given values
+    for (dirpath, dirnames, filenames) in os.walk('./flask_session'):
+        print(dirpath)
+        print(dirnames)
+        print(filenames)
+    sys.stdout.flush()
     return render_template('home.html')
 
 # Serves the login page
@@ -95,9 +154,12 @@ def login():
             if request.form["password"] == user.password:
                 user.authenticated = True
                 user.save()
-                login_user(user, remember=True)
-                return redirect('https://gaknowledgehub.web.app/loggedin')
-        return render_template('unsuccessful-login.html')
+                session_key = login_user(user)
+                response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
+                response.set_cookie('__session', session_key)
+                return response
+
+        # TODO: Add behavior for unsuccessful login
 
     # Returns the login.html template with the given values
     return render_template('login.html')
@@ -116,13 +178,15 @@ def signup():
         user.password = request.form['password']
         user.first_name = request.form['first-name']
         user.last_name = request.form['last-name']
-        user.authenticated = True
+        user.is_authenticated = True
         user.admin = False
         user.favorites = []
         user.history = []
         user.save()
-        login_user(user, remember=True)
-        return redirect('https://gaknowledgehub.web.app/loggedin')
+        session_key = login_user(user)
+        response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
+        response.set_cookie('__session', session_key)
+        return response
 
     # Returns the signup.html template with the given values
     return render_template('signup.html')
@@ -131,10 +195,8 @@ def signup():
 @app.route('/loggedin')
 def logged_in():
 
-    return current_user
-
     # Returns the home_loggedin.html template with the given values
-    return render_template('home_loggedin.html', first_name="Joseph", sample_story='data')
+    return render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data')
 
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
@@ -162,7 +224,7 @@ def upload():
 def story_root(story):
 
     # Creates file path to the story's JSON file
-    filepath = os.path.join('file_uploads', story + '.json')
+    filepath = os.path.join('story_editing', story + '.json')
 
     # Checks whether or not the story exists
     if not os.path.exists(filepath):
@@ -190,7 +252,7 @@ def story_root(story):
 def story_page(story, page_id):
 
     # Creates file path to the story's JSON file
-    filepath = os.path.join('file_uploads', story + '.json')
+    filepath = os.path.join('story_editing', story + '.json')
 
     # Checks whether or not the story exists
     if not os.path.exists(filepath):
