@@ -67,48 +67,38 @@ class User(Model):
     # def get(user_id):
     #     return 1
 
-class FirebaseSessionsStorage(Model):
+class FirebaseSession(Model):
 
     class Meta:
         collection_name = 'sessions'
 
-    active_sessions = ListField()
-    runtime = DateTime()
+    session_key = TextField()
+    user_id = TextField()
 
-    def add_session(self, user):
-        session_key = str(uuid.uuid4())
-        new_session = {}
-        new_session['session_key'] = session_key
-        new_session['user_id'] = user.email
-        self.active_sessions.append(new_session)
-        self.save()
-        return session_key
+    def __init__(self):
+        self.session_key = str(uuid.uuid4())
 
-    def has_session(self, session_key, user_id):
+    @staticmethod
+    def has_session(session_key, user_id):
         return False
 
-sessions = None
 current_user = None
 
 def login_user(user):
-    global sessions
-    if not sessions:
-        sessions = FirebaseSessionsStorage()
-        sessions.active_sessions = []
-        sessions.runtime = datetime.now()
-        sessions.save()
-    return sessions.add_session(user)
+    session = FirebaseSession()
+    session.user_id = user.email
+    session.save()
+    return session
 
 @app.before_request
 def get_current_user():
     global current_user
 
+    current_user = None
     session_key = request.cookies.get('__session')
-    user_id = None
-    for active_session in sessions.active_sessions:
-        if active_session['session_key'] == session_key:
-            user_id = active_session['user_id']
-    current_user = User.collection.filter(email=user_id).get()
+    session = FirebaseSession.collection.filter(session_key=session_key).get()
+    if session:
+        current_user = User.collection.filter(email=session.user_id).get()
 
 
 
@@ -154,9 +144,9 @@ def login():
             if request.form["password"] == user.password:
                 user.authenticated = True
                 user.save()
-                session_key = login_user(user)
+                session = login_user(user)
                 response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
-                response.set_cookie('__session', session_key)
+                response.set_cookie('__session', session.session_key)
                 return response
 
         # TODO: Add behavior for unsuccessful login
@@ -183,9 +173,9 @@ def signup():
         user.favorites = []
         user.history = []
         user.save()
-        session_key = login_user(user)
+        session = login_user(user)
         response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
-        response.set_cookie('__session', session_key)
+        response.set_cookie('__session', session.session_key)
         return response
 
     # Returns the signup.html template with the given values
