@@ -212,7 +212,6 @@ def upload():
 # Serves the root page of the specified story
 @app.route('/story/<story>')
 def story_root(story):
-
     # Creates file path to the story's JSON file
     filepath = os.path.join('story_editing', story + '.json')
 
@@ -229,6 +228,13 @@ def story_root(story):
 
         # Gets the root page's page ID
         page_id = story_data['root-ID']
+
+        # Adds the root page to a new history
+        new_history = {}
+        new_history['last_updated'] = datetime.now()
+        new_history['pages'] = [page_id]
+        current_user.history.append(new_history)
+        current_user.save()
 
         # Gets the page data for the specified page ID
         page = story_data['page-nodes'][page_id]
@@ -254,6 +260,18 @@ def story_page(story, page_id):
 
         # Converts text of file into JSON dictionary
         story_data = json.load(story_json)
+
+
+        url = request.referrer
+        prev_page_id = url[url.rfind('/')+1:]
+        if prev_page_id == story:
+            prev_page_id = story_data['root-ID']
+
+        # Adds the page to the history
+        for history in current_user.history:
+            if history['pages'][-1] == prev_page_id:
+                history['pages'].append(page_id)
+        current_user.save()
 
         # Gets the page data for the specified page ID
         page = story_data['page-nodes'][page_id]
