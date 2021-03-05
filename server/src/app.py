@@ -131,8 +131,6 @@ def signup():
 @app.route('/loggedin')
 def logged_in():
 
-    return current_user
-
     # Returns the home_loggedin.html template with the given values
     return render_template('home_loggedin.html', first_name="Joseph", sample_story='data')
 
@@ -162,7 +160,7 @@ def upload():
 def story_root(story):
 
     # Creates file path to the story's JSON file
-    filepath = os.path.join('file_uploads', story + '.json')
+    filepath = os.path.join('story_editing', story + '.json')
 
     # Checks whether or not the story exists
     if not os.path.exists(filepath):
@@ -190,7 +188,7 @@ def story_root(story):
 def story_page(story, page_id):
 
     # Creates file path to the story's JSON file
-    filepath = os.path.join('file_uploads', story + '.json')
+    filepath = os.path.join('story_editing', story + '.json')
 
     # Checks whether or not the story exists
     if not os.path.exists(filepath):
