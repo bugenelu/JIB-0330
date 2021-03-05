@@ -287,6 +287,27 @@ def editor():
     firestoreTwineConvert(db, input_file_name, import_id)
     return 'Success!'
 
+# Serves the profile page
+@app.route('/profile')
+def profile():
+
+	# Returns the profile.html template with the given values
+	return render_template('profile.html', first_name="Joseph")
+
+# Serves the favorites page
+@app.route('/favorites')
+def favorites():
+
+	# Returns the favorites.html template with the given values
+	return render_template('favorites.html')
+
+# Serves the history page
+@app.route('/history')
+def history():
+
+	# Returns the history.html template with the given values
+	return render_template('history.html')
+
 # # Default to running on port 80
 # port = 80
 
