@@ -1,0 +1,10 @@
+@charset "UTF-8";
+
+.div_class{
+  font-family: sans-serif;
+  width:8em;
+  margin:1em;
+  padding:.2em;
+  background:#9ab5e0;
+  cursor: pointer;
+}

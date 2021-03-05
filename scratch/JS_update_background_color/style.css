@@ -1,0 +1,16 @@
+#box{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+#centerCircle{
+	height: 0px;
+	width: 0px;
+	background-color: #bbb;
+	border-radius: 50%;
+	display: block;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
