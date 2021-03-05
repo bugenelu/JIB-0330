@@ -7,6 +7,9 @@ Twine Version: 2.3.9 (Desktop)
 # Steps to Run Locally:
 ## First time setup
 1. Run 'pip install -r requirements.txt'
+2. Run 'pip install flask_login'
+3. Run 'pip install firebase_admin'
+4. Run 'pip install fireo' (Visual Studios C++ build tool will need to be installed first)
 
 ## Run each time
 1. Run 'python app.py [port]' with the [port] optionally to specify a port other than port 80
