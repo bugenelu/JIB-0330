@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/shivamshah1999/JIB-0330#readme",
   "devDependencies": {
-    "firebase-tools": "^9.3.0"
+    "firebase-tools": "^9.5.0"
   }
 }

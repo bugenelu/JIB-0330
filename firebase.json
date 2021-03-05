@@ -8,11 +8,11 @@
       "**/node_modules/**"
     ],
     "rewrites": [{
-    	"source": "**",
-    	"run" : {
-    		"serviceId": "knowledge-hub",
-    		"region": "us-east4"
-    	}
+      "source": "**",
+      "run" : {
+        "serviceId": "knowledge-hub",
+        "region": "us-east4"
+      }
     }]
   }
 }

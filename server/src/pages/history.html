@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+
+<body>
+	<header>
+		<nav>
+		    <ul>
+		    	<li><a href="/">Logout</a></li>
+		    	<li><a href="/loggedin">Home</a></li>
+		    	<li><a href="/Profile">Profile</a></li>
+		    	<li><a href="/Profile">Library</a></li>
+		    	<li><a href="/upload">File Upload</a></li>
+		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
+			</ul>
+		</nav>
+		<section class="header-content">
+		    <h1>Hello, {{ first_name }}</h1>
+		    <p> View and edit your profile here </p>
+		    <button onclick="window.location.href='/profile';">Return to Profile</button>
+		</section>
+	</header>
+</body>
