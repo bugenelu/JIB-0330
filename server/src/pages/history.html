@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<head>
+    <title> History Test Page </title>
+	<link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="javascript/history.js" defer></script>
+</head>
+
+<body>
+	<header>
+		<nav>
+		    <ul>
+		    	<li><a href="/">Logout</a></li>
+		    	<li><a href="/loggedin">Home</a></li>
+		    	<li><a href="/Profile">Profile</a></li>
+		    	<li><a href="/Profile">Library</a></li>
+		    	<li><a href="/upload">File Upload</a></li>
+		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
+			</ul>
+		</nav>
+		<section class="header-content">
+		    <h1>History Page</h1>
+		    <p> View stories you have previously visited here </p>
+		    <button onclick="window.location.href='/profile';">Return to Profile</button>
+		</section>
+        <div>
+			<!-- Can use jinja to set the variables -->
+			<button class="collapsible"> 1. Last Entry </button>
+			<div id="content">
+				<a href=""><p>Prior Entry</p></a>
+				<a href=""><p>Entry Before Prior</p></a>
+			</div>
+
+			<button class="collapsible"> 2. Last Entry </button>
+			<div id="content">
+				<a href=""><p>Prior Entry</p></a>
+				<a href=""><p>Entry Before Prior</p></a>
+			</div>
+
+			<button class="collapsible"> 3. Last Entry </button>
+			<div id="content">
+				<a href=""><p>Prior Entry</p></a>
+				<a href=""><p>Entry Before Prior</p></a>
+			</div>
+		</div>
+	</header>
+</body>
