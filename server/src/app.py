@@ -330,9 +330,24 @@ def favorites():
 # Serves the history page
 @app.route('/history')
 def history():
+    history = current_user.history
+    history_arr = []
+    # [[(page_id, history)], []]
+
+    # Sort the history
+    for i in range(len(history)):
+        for j in range(i + 1, len(history)):
+            if history[i]['last_updated'] < history[j]['last_updated']:
+                history[i], history[j] = history[j], history[i]
+
+    for hist in history:
+        new_arr = []
+        for page_id in hist['pages']:
+            new_arr.insert(0, (page_id, page_id))
+        history_arr.append(new_arr)
 
 	# Returns the history.html template with the given values
-	return render_response(render_template('history.html'))
+	return render_response(render_template('history.html'), history=history_arr)
 
 # # Default to running on port 80
 # port = 80
