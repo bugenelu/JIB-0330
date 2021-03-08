@@ -90,15 +90,28 @@ def login_user(user):
     session.save()
     return session
 
+def render_response(content, allow_cache=False, cookies=None):
+    response = make_response(content)
+    if not allow_cache:
+        response.headers['Cache-Control'] = 'no-cache, max-age=0, s-maxage=0'
+    if cookies is not None:
+        for cookie in cookies:
+            response.set_cookie(cookie, cookies[cookie])
+    return response
+
 @app.before_request
 def get_current_user():
     global current_user
 
     current_user = None
     session_key = request.cookies.get('__session')
+    print(session_key)
     session = FirebaseSession.collection.filter(session_key=session_key).get()
     if session:
+        print(session.user_id)
         current_user = User.collection.filter(email=session.user_id).get()
+        print(current_user)
+    sys.stdout.flush()
 
 
 
@@ -131,7 +144,7 @@ def hello():
         print(dirnames)
         print(filenames)
     sys.stdout.flush()
-    return render_template('home.html')
+    return render_response(render_template('home.html'))
 
 # Serves the login page
 @app.route('/login', methods=['GET', 'POST'])
@@ -145,14 +158,14 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
+                response = render_response(redirect('https://gaknowledgehub.web.app/loggedin'))
                 response.set_cookie('__session', session.session_key)
                 return response
 
         # TODO: Add behavior for unsuccessful login
 
     # Returns the login.html template with the given values
-    return render_template('login.html')
+    return render_response(render_template('login.html'))
 
 # Serves the sign up page
 @app.route('/signup', methods=['GET', 'POST'])
@@ -174,9 +187,7 @@ def signup():
         user.history = []
         user.save()
         session = login_user(user)
-        response = make_response(redirect('https://gaknowledgehub.web.app/loggedin'))
-        response.set_cookie('__session', session.session_key)
-        return response
+        return render_response(redirect('https://gaknowledgehub.web.app/loggedin'), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
     return render_template('signup.html')
@@ -186,7 +197,7 @@ def signup():
 def logged_in():
 
     # Returns the home_loggedin.html template with the given values
-    return render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data')
+    return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
 
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
@@ -194,20 +205,20 @@ def upload():
     if request.method == 'POST':
         if 'files' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return render_response(redirect(request.url))
         file = request.files['files']
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return render_response(redirect(request.url))
         if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'html', 'pdf', 'jpeg', 'png', 'tgif', 'svg', 'mp4', 'mp3'}:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash('File uploaded successfully')
         else:
             flash('Files uploaded successfully')
-        redirect(request.url)
+        return render_response(redirect(request.url))
     # Returns the file_upload.html template with the given values
-    return render_template('file_upload.html')
+    return render_response(render_template('file_upload.html'))
 
 # Serves the root page of the specified story
 @app.route('/story/<story>')
@@ -230,17 +241,23 @@ def story_root(story):
         page_id = story_data['root-ID']
 
         # Adds the root page to a new history
-        new_history = {}
-        new_history['last_updated'] = datetime.now()
-        new_history['pages'] = [page_id]
-        current_user.history.append(new_history)
+        history_found = False
+        for history in current_user.history:
+            if history['pages'][0] == page_id and len(history['pages']) == 1:
+                history['last_updated'] = datetime.now()
+                history_found = True
+        if not history_found:
+            new_history = {}
+            new_history['last_updated'] = datetime.now()
+            new_history['pages'] = [page_id]
+            current_user.history.append(new_history)
         current_user.save()
 
         # Gets the page data for the specified page ID
         page = story_data['page-nodes'][page_id]
 
         # Returns the story_page.html template with the specified page
-        return render_template("story_page.html", story=story, page=page)
+        return render_response(render_template("story_page.html", story=story, page=page))
 
 
 # Serves the specified page of the specified story
@@ -271,13 +288,22 @@ def story_page(story, page_id):
         for history in current_user.history:
             if history['pages'][-1] == prev_page_id:
                 history['pages'].append(page_id)
+                history['last_updated'] = datetime.now()
+                for h in current_user.history:
+                    history_matches = True
+                    if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
+                        for p in range(len(h['pages'])):
+                            if history['pages'][p] != h['pages'][p]:
+                                history_matches = False
+                        if history_matches:
+                            current_user.history.remove(h)
         current_user.save()
 
         # Gets the page data for the specified page ID
         page = story_data['page-nodes'][page_id]
 
         # Returns the story_page.html template with the specified page
-        return render_template('story_page.html', story=story, page=page)
+        return render_response(render_template('story_page.html', story=story, page=page))
 
 
 @app.route('/admin/editor')
@@ -292,21 +318,21 @@ def editor():
 def profile():
 
 	# Returns the profile.html template with the given values
-	return render_template('profile.html', first_name="Joseph")
+	return render_response(render_template('profile.html', first_name="Joseph"))
 
 # Serves the favorites page
 @app.route('/favorites')
 def favorites():
 
 	# Returns the favorites.html template with the given values
-	return render_template('favorites.html')
+	return render_response(render_template('favorites.html'))
 
 # Serves the history page
 @app.route('/history')
 def history():
 
 	# Returns the history.html template with the given values
-	return render_template('history.html')
+	return render_response(render_template('history.html'))
 
 # # Default to running on port 80
 # port = 80

@@ -13,6 +13,13 @@
         "serviceId": "knowledge-hub",
         "region": "us-east4"
       }
+    }],
+    "headers": [{
+      "source": "*",
+      "headers": [{
+        "key": "Cache-Control",
+        "value": "no-cache, max-age=0, s-maxage=0"
+      }]
     }]
   }
 }
