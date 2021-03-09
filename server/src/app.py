@@ -234,6 +234,12 @@ def editor():
     return 'Success!'
 
 
+@app.route('/admin/dice')
+def dice():
+    # call functions to roll dice from other parts of code
+    return 'okay here is the result'
+
+
 # Serves the profile page
 @app.route('/profile')
 def profile():
