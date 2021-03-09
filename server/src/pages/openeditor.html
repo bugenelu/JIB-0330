@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+	<script>
+		function calledOnClick(id) {
+			// var letters = '0123456789ABCDEF';
+			// var color = '#';
+			// for (var i = 0; i < 6; i++) {
+			// 	color += letters[Math.floor(Math.random() * 16)];
+			// }
+			// var pressedButton = document.getElementById(id);
+			// pressedButton.style.background = color; 
+			var int1 = document.getElementById('int1').value;
+			var int2 = document.getElementById('int2').value;
+			
+		}
+	</script>
+</head>
+
+<body>
+	<div class="parent2">
+		<div class="div5"> </div>
+		<div class="div6"> </div>
+		<div class="div7"> </div>
+		<div class="div8"> 
+			<form action="/action_page.php">
+			  	<label for="int1">Integer 1:</label>
+			  	<input type="text" id="int1" name="int1"><br>
+			  	<label for="int2">Integer 2:</label>
+			  	<input type="text" id="int2" name="int2"><br>
+			</form>
+			<button id=1 onclick="calledOnClick(this.id)">CLICK ME</button>
+		</div>
+	</div>
+</body>

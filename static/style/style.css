@@ -110,7 +110,7 @@ header{
   line-height: 1.5;
   margin: 20px auto;
 }
-.header-content button{
+button {
   width: 140px;
   margin: 20px 10px;
   color: var(--darkgray);
@@ -123,7 +123,7 @@ header{
   padding: 10px;
   cursor:pointer;
 }
-.header-content button:hover{
+button:hover {
   font-style: italic;
   font-weight: bold;
 }
@@ -134,7 +134,7 @@ p.storytext {
 	font-family: Muli, Helvetica, sans-serif;
 	font-size: 2em;
 	color: var(--palegreen);
-	text-shadow: 2px 2px 5px black;
+/*	text-shadow: 2px 2px 5px black;*/
 }
 
 
@@ -158,7 +158,7 @@ form {
   opacity: 1;
 }
 
-input[type=file], input[type=text], input[type=password], select {
+input[type=file], input[type=text], input[type=password], input[type=email], select {
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -197,4 +197,77 @@ input[type=submit]:hover, input[type=button]:hover {
 
 #lastName {
   width: 40%;
+}
+
+.parent {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: 1fr;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height: 100%;
+	text-align: center;
+}
+
+.div1 { 
+	grid-area: 1 / 1 / 2 / 2; 
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: repeat(3, 1fr);
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+}
+
+.div2 { 
+	padding: 100px;
+	grid-area: 1 / 2 / 2 / 4; 
+}
+
+.div3 { 
+	border-radius: 10px;
+	border: 3px solid var(--palegreen);
+	grid-area: 1 / 1 / 2 / 2; 
+}
+.div4 { 
+	border-radius: 10px;
+	border: 3px solid var(--palegreen);
+	grid-area: 2 / 1 / 4 / 2; 
+}
+
+.div2 button {
+	width: 300px;
+	margin-bottom: 30px;
+	font-size: 50px;
+}
+
+.div4 button {
+	margin-bottom: 5px;
+}
+
+.parent2 {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(5, 1fr);
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height: 100%;
+}
+
+.div5 { 
+	background: yellow;
+	grid-area: 1 / 1 / 2 / 6; 
+}
+
+.div6 { 
+	background: cyan;
+	grid-area: 2 / 1 / 3 / 6; 
+}
+
+.div7 { 
+	background: lightgreen;
+	grid-area: 3 / 1 / 6 / 2; 
+}
+
+.div8 { 
+	grid-area: 3 / 2 / 6 / 5; 
 }

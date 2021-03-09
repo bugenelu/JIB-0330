@@ -134,6 +134,24 @@ def logged_in():
     # Returns the home_loggedin.html template with the given values
     return render_template('home_loggedin.html', first_name="Joseph", sample_story='data')
 
+# Serves the editor page
+@app.route('/editor')
+def myedit():
+
+    # Returns the editor.html template with the given values
+    return render_template('editor.html')
+
+# Serves the editor page
+@app.route('/openeditor')
+def openedit():
+
+    # Returns the editor.html template with the given values
+    return render_template('openeditor.html')
+
+@app.route('/forward/', methods=["POST"])
+def move_forward():
+    render_template('openeditor.html', button_color="blue")
+
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
