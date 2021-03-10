@@ -211,7 +211,7 @@ input[type=submit]:hover, input[type=button]:hover {
   color: var(--offwhite);
 }
 
-#content {
+.content {
   padding: 0 18px;
   display: none;
   overflow: hidden;
@@ -224,10 +224,10 @@ input[type=submit]:hover, input[type=button]:hover {
   background-color: #555;
 }
 
-#content a p{
+.content a p{
   color: var(--darkgray);
 }
 
-#content a {
+.content a {
   text-decoration: none;
 }

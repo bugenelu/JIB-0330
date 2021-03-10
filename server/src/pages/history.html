@@ -12,8 +12,8 @@
 		    <ul>
 		    	<li><a href="/">Logout</a></li>
 		    	<li><a href="/loggedin">Home</a></li>
-		    	<li><a href="/Profile">Profile</a></li>
-		    	<li><a href="/Profile">Library</a></li>
+		    	<li><a href="/profile">Profile</a></li>
+		    	<li><a href="/profile">Library</a></li>
 		    	<li><a href="/upload">File Upload</a></li>
 		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
 			</ul>
@@ -30,7 +30,7 @@
 				<button class="collapsible">{{ element[0][0] }}</button>
 				<ul>
 				{% for elem in element %}
-					<li><a href="/story/data/{{ elem[1] }}">{{ elem[0] }}</a></li>
+					<li class="content"><a href="/story/data/{{ elem[1] }}">{{ elem[0] }}</a></li>
 				{% endfor %}
 				</ul>
 			{% endfor %}

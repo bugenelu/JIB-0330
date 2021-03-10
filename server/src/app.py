@@ -85,9 +85,11 @@ class FirebaseSession(Model):
 current_user = None
 
 def login_user(user):
-    session = FirebaseSession()
-    session.user_id = user.email
-    session.save()
+    session = FirebaseSession.collection.filter(user_id=user.email).get()
+    if not session:
+        session = FirebaseSession()
+        session.user_id = user.email
+        session.save()
     return session
 
 def render_response(content, allow_cache=False, cookies=None):
@@ -105,13 +107,9 @@ def get_current_user():
 
     current_user = None
     session_key = request.cookies.get('__session')
-    print(session_key)
     session = FirebaseSession.collection.filter(session_key=session_key).get()
     if session:
-        print(session.user_id)
         current_user = User.collection.filter(email=session.user_id).get()
-        print(current_user)
-    sys.stdout.flush()
 
 
 
@@ -139,11 +137,6 @@ class Sample():
 def hello():
 
     # Returns the index.html template with the given values
-    for (dirpath, dirnames, filenames) in os.walk('./flask_session'):
-        print(dirpath)
-        print(dirnames)
-        print(filenames)
-    sys.stdout.flush()
     return render_response(render_template('home.html'))
 
 # Serves the login page
@@ -158,10 +151,7 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                response = render_response(redirect('https://gaknowledgehub.web.app/loggedin'))
-                response.set_cookie('__session', session.session_key)
-                return response
-
+                return render_response(redirect('https://gaknowledgehub.web.app/loggedin'), cookies={'__session': session.session_key})
         # TODO: Add behavior for unsuccessful login
 
     # Returns the login.html template with the given values
@@ -190,7 +180,7 @@ def signup():
         return render_response(redirect('https://gaknowledgehub.web.app/loggedin'), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
-    return render_template('signup.html')
+    return render_response(render_template('signup.html'))
 
 # Serves the logged in home page
 @app.route('/loggedin')
