@@ -247,7 +247,7 @@ def story_root(story):
         page = story_data['page-nodes'][page_id]
 
         # Returns the story_page.html template with the specified page
-        return render_response(render_template("story_page.html", story=story, page=page))
+        return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
 
 
 # Serves the specified page of the specified story
@@ -293,7 +293,7 @@ def story_page(story, page_id):
         page = story_data['page-nodes'][page_id]
 
         # Returns the story_page.html template with the specified page
-        return render_response(render_template('story_page.html', story=story, page=page))
+        return render_response(render_template('story_page.html', favorited=True, story=story, page=page))
 
 
 @app.route('/admin/editor')
@@ -317,12 +317,39 @@ def favorites():
     # Returns the favorites.html template with the given values
     return render_response(render_template('favorites.html'))
 
+@app.route('/add_favorite', methods=['POST'])
+def add_favorites():
+    current_user.favorites.append({
+        page_id: request.form["page_id"],
+        story_id: request.form["story_id"]
+    })
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+@app.route('/remove_favorite', methods=['POST'])
+def remove_favorite():
+    page_id, story_id = request.form["page_id"], request.form["story_id"]
+
+    removed = False
+    for favorite in current_user.favorites:
+        if favorite["page_id"] == page_id and favorite["story_id"] == story_id:
+            current_user.favorites.remove(favorite)
+            removed = True
+            break
+
+    if removed:
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
 # Serves the history page
 @app.route('/history')
 def history():
     history = current_user.history
     history_arr = []
     # [[(page_id, history)], []]
+
+    # Tracking which story a page belongs to
 
     # Sort the history
     for i in range(len(history)):

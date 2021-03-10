@@ -28,11 +28,11 @@
 			<!-- Dictionary Variable -->
 			{% for element in history %}
 				<button class="collapsible">{{ element[0][0] }}</button>
-				<ul>
+				<div class="content">
 				{% for elem in element %}
-					<li class="content"><a href="/story/data/{{ elem[1] }}">{{ elem[0] }}</a></li>
+					<a href="/story/data/{{ elem[1] }}"><p>{{ elem[0] }}</p></a>
 				{% endfor %}
-				</ul>
+				</div>
 			{% endfor %}
 		</div>
 	</header>

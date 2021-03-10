@@ -11,7 +11,7 @@
       "source": "**",
       "run" : {
         "serviceId": "knowledge-hub",
-        "region": "us-east4"
+        "region": "us-east1"
       }
     }],
     "headers": [{
