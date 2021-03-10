@@ -320,27 +320,24 @@ def favorites():
 @app.route('/add_favorite', methods=['POST'])
 def add_favorites():
     current_user.favorites.append({
-        page_id: request.form["page_id"],
-        story_id: request.form["story_id"]
+        'page_id': request.form['page_id'],
+        'story_id': request.form['story_id']
     })
+    current_user.save()
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 @app.route('/remove_favorite', methods=['POST'])
 def remove_favorite():
-    page_id, story_id = request.form["page_id"], request.form["story_id"]
+    page_id, story_id = request.form['page_id'], request.form['story_id']
 
-    removed = False
     for favorite in current_user.favorites:
-        if favorite["page_id"] == page_id and favorite["story_id"] == story_id:
+        if favorite['page_id'] == page_id and favorite['story_id'] == story_id:
             current_user.favorites.remove(favorite)
-            removed = True
             break
+    current_user.save()
 
-    if removed:
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-    else:
-        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 # Serves the history page
 @app.route('/history')

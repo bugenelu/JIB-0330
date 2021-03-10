@@ -1,5 +1,5 @@
-$("#favorite").click(
-    function() {
+$(function() {
+    $("#favorite").click(function() {
         if ($("#favorite").hasClass("fas")) {
             // Make it not solid
             $.ajax({
@@ -22,5 +22,5 @@ $("#favorite").click(
                 }
             })
         }
-    }
-)
+    })
+})

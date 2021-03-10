@@ -6,8 +6,6 @@
 
 		<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}" />
 		<link rel="stylesheet" href="{{url_for('static', filename='vendor/fontawesome/css/all.min.css')}}" />
-		<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
-		<script src="{{url_for('static', filename='scripts/favorite.js')}}"></script>
 		<meta id="page_id">
 	</head>
 
@@ -24,9 +22,12 @@
 		{% endfor %}
 
 		<form style="display: none">
-			<input name="page_id" value="{{page['page_id']}}">
-			<input name="story_id" value={{story}}>
+			<input name="page_id" type="text" value="{{page['page-ID']}}">
+			<input name="story_id" type="text" value={{story}}>
 		</form>
+
+		<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
+		<script src="{{url_for('static', filename='scripts/favorite.js')}}"></script>
 	</body>
 
 </html>
