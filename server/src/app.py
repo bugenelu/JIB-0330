@@ -317,15 +317,15 @@ def editor():
 @app.route('/profile')
 def profile():
 
-	# Returns the profile.html template with the given values
-	return render_response(render_template('profile.html', first_name="Joseph"))
+    # Returns the profile.html template with the given values
+    return render_response(render_template('profile.html', first_name="Joseph"))
 
 # Serves the favorites page
 @app.route('/favorites')
 def favorites():
 
-	# Returns the favorites.html template with the given values
-	return render_response(render_template('favorites.html'))
+    # Returns the favorites.html template with the given values
+    return render_response(render_template('favorites.html'))
 
 # Serves the history page
 @app.route('/history')
@@ -346,8 +346,8 @@ def history():
             new_arr.insert(0, (page_id, page_id))
         history_arr.append(new_arr)
 
-	# Returns the history.html template with the given values
-	return render_response(render_template('history.html'), history=history_arr)
+    # Returns the history.html template with the given values
+    return render_response(render_template('history.html', history=history_arr))
 
 # # Default to running on port 80
 # port = 80
