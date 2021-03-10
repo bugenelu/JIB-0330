@@ -293,7 +293,7 @@ def story_page(story, page_id):
         page = story_data['page-nodes'][page_id]
 
         # Returns the story_page.html template with the specified page
-        return render_response(render_template('story_page.html', favorited=True, story=story, page=page))
+        return render_response(render_template('story_page.html', favorited=False, story=story, page=page))
 
 
 @app.route('/admin/editor')
