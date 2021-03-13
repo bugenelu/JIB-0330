@@ -1,7 +1,9 @@
 
 <!DOCTYPE html>
 <head>
-	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+    <title> History Test Page </title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+	<script type="text/javascript" src="{{ url_for('static', filename='scripts/history.js') }}" defer></script>
 </head>
 
 <body>
@@ -10,16 +12,29 @@
 		    <ul>
 		    	<li><a href="/">Logout</a></li>
 		    	<li><a href="/loggedin">Home</a></li>
-		    	<li><a href="/Profile">Profile</a></li>
-		    	<li><a href="/Profile">Library</a></li>
+		    	<li><a href="/profile">Profile</a></li>
+		    	<li><a href="/profile">Library</a></li>
 		    	<li><a href="/upload">File Upload</a></li>
 		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
 			</ul>
 		</nav>
 		<section class="header-content">
-		    <h1>Hello, {{ first_name }}</h1>
-		    <p> View and edit your profile here </p>
+		    <h1>History Page</h1>
+		    <p> View stories you have previously visited here </p>
 		    <button onclick="window.location.href='/profile';">Return to Profile</button>
 		</section>
+
+		<div>
+			<!-- Dictionary Variable -->
+			{% for element in history %}
+				<button class="collapsible">{{ element[0][0] }}</button>
+				<div class="content">
+				{% for elem in element %}
+					<a href="/story/data/{{ elem[1] }}"><p>{{ elem[0] }}</p></a>
+				{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
 	</header>
 </body>
+</html>

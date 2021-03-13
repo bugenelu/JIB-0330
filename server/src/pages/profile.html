@@ -18,8 +18,13 @@
 		<section class="header-content">
 		    <h1>Hello, {{ first_name }}</h1>
 		    <p> View and edit your profile here </p>
-		    <button onclick="window.location.href='/profile/{{ email }}';">Edit Profile</button>
+		    <button onclick="window.location.href='/profile/edit';">Edit Profile</button>
+		    <button onclick="window.location.href='/favorites';">Favorites</button>
 		    <button onclick="window.location.href='/history';">History</button>
+		    
+		    <!-- Need to add functionality to the story buttons -->
+		    <button onclick="window.location.href='#';">Resume Story</button>
+		    <button onclick="window.location.href='#';">New Story</button>
 		</section>
 	</header>
 </body>

@@ -5,15 +5,29 @@
 		<title>{{ page['page-name'] }}</title>
 
 		<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}" />
+		<link rel="stylesheet" href="{{url_for('static', filename='vendor/fontawesome/css/all.min.css')}}" />
+		<meta id="page_id">
 	</head>
 
 	<body>
+		{% if favorited %}
+			<i class="fas fa-heart" id="favorite"></i>
+		{% else %}
+			<i class="far fa-heart" id="favorite"></i>
+		{% endif %}
 		<p class="storytext">{{ page['page-body-text'] | safe }}</p>
 
 		{% for child in page['page-children'] %}
 			<p class="storytext"><a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page-children'][child]['link-text'] }}</a></p>
 		{% endfor %}
 
+		<form style="display: none">
+			<input name="page_id" type="text" value="{{page['page-ID']}}">
+			<input name="story_id" type="text" value={{story}}>
+		</form>
+
+		<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
+		<script src="{{url_for('static', filename='scripts/favorite.js')}}"></script>
 	</body>
 
 </html>
