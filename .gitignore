@@ -13,3 +13,7 @@
 .history/
 
 node_modules/*
+database-debug.log
+.gitignore
+firestore-debug.log
+.gitignore
