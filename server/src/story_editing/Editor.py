@@ -27,14 +27,16 @@ Be careful when implementing functions that are meant to *read* from StoryGraphs
 
 """
 
+import copy
 from collections import deque
 from StoryGraph import StoryGraph
+from PageNode import PageNode
+from ChildLink import ChildLink
 
 
 # TODO: how does the editor interact with the database?
 class Editor:
 
-    # TODO: Define fields of Editor...
     # TODO: Syntax for how the database is specified?
     # TODO: determine specific data the Editor needs in order to read from database
     def __init__(self, database=None):
@@ -74,7 +76,7 @@ class Editor:
         pass
 
     # TODO: test
-    def connectTrees(self, parent_graph_id, child_graph_id, parent_node_id, link_text):
+    def connectStoryGraphs(self, parent_graph_id, child_graph_id, parent_node_id, link_text):
         """
         :param parent_graph_id: A string that is the story_id of the parent graph
         :param child_graph_id: A string that is the story_id of the graph to append
@@ -83,31 +85,71 @@ class Editor:
 
         :return: 0 on success, -1 on failure to create a new graph
         """
-        parent_graph = self.openStories[parent_graph_id][-1]		# get latest version of parent graph
-        child_graph = self.openStories[child_graph_id][-1]			# get latest version of child graph
-        parent_node = parent_graph.page_nodes[parent_node_id]		# get the node using the node id
-        new_graph = parent_graph.addSubtree(child_graph, parent_node, link_text)	# get a new graph which is a combination of child and parent graphs
+        parent_graph = self.openStories[parent_graph_id][-1]  # get latest version of parent graph
+        child_graph = self.openStories[child_graph_id][-1]  # get latest version of child graph
+        parent_node = parent_graph.page_nodes[parent_node_id]  # get the node using the node id
+        new_graph = parent_graph.addSubtree(child_graph, parent_node,
+                                            link_text)  # get a new graph which is a combination of child and parent graphs
 
         if new_graph == -1:
             return -1
-        self.openStories[parent_graph_id].push(new_graph)			# push the latest graph to the deque
+        self.openStories[parent_graph_id].push(new_graph)  # push the latest graph to the deque
         return 0
 
-    def addNode(self, graph_id, new_node, parent_node_id, link_text):
+    def addNodeInGraph(self, graph_id, new_node_data, parent_node_id, link_text):
         """
         :param graph_id: A string that is the story_id of the parent graph
-        :param new_node: A PageNode object to append as a child of the parent node in the graph
+        :param new_node_data: dictionary to construct a new PageNode to append
         :param parent_node_id: A string that is the page_id of the node that will receive the new node as a child
         :param link_text: A string that is the new link text connecting the graphs
 
         :return: 0 on success, -1 on failure to create a new graph
         """
-        parent_graph = self.openStories[graph_id][-1]				# get latest version of parent graph
-        parent_node = parent_graph.page_nodes[parent_node_id]		# get the node using the node id
+        new_node = PageNode(new_node_data)
+        parent_graph = self.openStories[graph_id][-1]  # get latest version of parent graph
+        parent_node = parent_graph.page_nodes[parent_node_id]  # get the node using the node id
         newGraph = parent_graph.addNode(new_node, parent_node, link_text)
         if newGraph == -1:
             return -1
-        self.openStories[graph_id].push(newGraph)					# push the latest graph to the deque
+        self.openStories[graph_id].append(newGraph)  # push the latest graph to the deque
         return 0
 
-    # TODO: Define two page deletes-- one removes a single node. one removes a node and all of its descendants.
+    def addLinkInGraph(self, graph_id, parent_id, child_id, link_text):
+        """
+        TODO: Shouldn't some of this implementation be in StoryGraph?
+        :param graph_id:
+        :param parent_id:
+        :param child_id:
+        :param link_text:
+        :return: 0 on success, -1 on failure
+        """
+        new_graph = copy.deepcopy(self.openStories[graph_id][-1])
+        child_name = new_graph.page_nodes[child_id].child_name
+        new_link = ChildLink({'link_text': link_text, 'child_id': child_id, 'child_name': child_name})
+        new_graph.page_nodes[parent_id].addLink(new_link)
+        self.openStories[graph_id].append(new_graph)
+        return
+
+    def deleteNodeFromGraph(self, graph_id, delete_node_id):
+        """
+        TODO: Define a page delete in StoryGraph.py and add an implementation for Editor.py to call.
+        :param graph_id: string identifying the graph to operate on
+        :param delete_node_id: string identifying the node to delete
+        :return: 0 if successful, -1 if failure
+        """
+        if graph_id not in self.openStories:
+            print(f'deleteNode Error: {graph_id} not in open stories.')
+            return -1
+        if delete_node_id not in self.openStories[graph_id][-1].page_nodes:
+            print(f'deleteNode Error: {delete_node_id} not in {graph_id} pages.')
+            return -1
+        else:
+            new_graphs = self.openStories[graph_id][-1].deleteNode(delete_node_id)
+            for graph in new_graphs:
+                if graph.story_id in self.openStories:
+                    self.openStories[graph.story_id].append(graph)
+                else:
+                    new_stack = deque()
+                    new_stack.append(graph)
+                    self.openStories[graph.story_id] = new_stack
+            return 0

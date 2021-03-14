@@ -1,4 +1,16 @@
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response
+"""
+blueprint app.py example implementation from https://realpython.com/flask-blueprint/
+---
+from flask import Flask
+from example_blueprint import example_blueprint
+
+app = Flask(__name__)
+app.register_blueprint(example_blueprint)
+
+"""
+
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, \
+    make_response
 from flask_login import LoginManager
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
@@ -16,6 +28,8 @@ from werkzeug.utils import secure_filename
 
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 
+# blueprint imports
+from editor_blueprint import editor_blueprint
 
 # Checks which platform we are running on to use the correct static folder
 platform = os.environ.get('PLATFORM', 'local')
@@ -43,6 +57,9 @@ login_manager.init_app(app)
 # Session(app)
 secret_key = 'something unique and secret'
 
+# blueprints
+app.register_blueprint(editor_blueprint)
+
 
 # class CustomUserMixin(UserMixin):
 #     class Meta():
@@ -53,7 +70,6 @@ secret_key = 'something unique and secret'
 
 
 class User(Model):
-
     email = TextField()
     password = TextField()
     first_name = TextField()
@@ -67,8 +83,8 @@ class User(Model):
     # def get(user_id):
     #     return 1
 
-class FirebaseSession(Model):
 
+class FirebaseSession(Model):
     class Meta:
         collection_name = 'sessions'
 
@@ -82,7 +98,9 @@ class FirebaseSession(Model):
     def has_session(session_key, user_id):
         return False
 
+
 current_user = None
+
 
 def login_user(user):
     session = FirebaseSession.collection.filter(user_id=user.email).get()
@@ -92,6 +110,7 @@ def login_user(user):
         session.save()
     return session
 
+
 def render_response(content, allow_cache=False, cookies=None):
     response = make_response(content)
     if not allow_cache:
@@ -100,6 +119,7 @@ def render_response(content, allow_cache=False, cookies=None):
         for cookie in cookies:
             response.set_cookie(cookie, cookies[cookie])
     return response
+
 
 @app.before_request
 def get_current_user():
@@ -112,10 +132,10 @@ def get_current_user():
         current_user = User.collection.filter(email=session.user_id).get()
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.collection.filter(email=user_id).get()
+
 
 # def login_required(f):
 #     @wraps(f)
@@ -125,7 +145,6 @@ def load_user(user_id):
 
 # Sample class
 class Sample():
-
     name = 'Sample'
     shouldShowSecret = True
     secret = 'shhh... don\'t tell'
@@ -135,9 +154,9 @@ class Sample():
 # Maps url extension '/' to this function
 @app.route('/')
 def hello():
-
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
+
 
 # Serves the login page
 @app.route('/login', methods=['GET', 'POST'])
@@ -151,11 +170,13 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                return render_response(redirect('https://gaknowledgehub.web.app/loggedin'), cookies={'__session': session.session_key})
+                return render_response(redirect('https://gaknowledgehub.web.app/loggedin'),
+                                       cookies={'__session': session.session_key})
         # TODO: Add behavior for unsuccessful login
 
     # Returns the login.html template with the given values
     return render_response(render_template('login.html'))
+
 
 # Serves the sign up page
 @app.route('/signup', methods=['GET', 'POST'])
@@ -177,35 +198,39 @@ def signup():
         user.history = []
         user.save()
         session = login_user(user)
-        return render_response(redirect('https://gaknowledgehub.web.app/loggedin'), cookies={'__session': session.session_key})
+        return render_response(redirect('https://gaknowledgehub.web.app/loggedin'),
+                               cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
     return render_response(render_template('signup.html'))
 
+
 # Serves the logged in home page
 @app.route('/loggedin')
 def logged_in():
-
     # Returns the home_loggedin.html template with the given values
-    return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
+    return render_response(
+        render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
+
 
 # Serves the editor page
 @app.route('/editor')
 def myedit():
-
     # Returns the editor.html template with the given values
     return render_template('editor.html')
+
 
 # Serves the editor page
 @app.route('/openeditor')
 def openedit():
-
     # Returns the editor.html template with the given values
     return render_template('openeditor.html')
+
 
 @app.route('/forward/', methods=["POST"])
 def move_forward():
     render_template('openeditor.html', button_color="blue")
+
 
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
@@ -218,7 +243,8 @@ def upload():
         if file.filename == '':
             flash('No selected file')
             return render_response(redirect(request.url))
-        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'html', 'pdf', 'jpeg', 'png', 'tgif', 'svg', 'mp4', 'mp3'}:
+        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'html', 'pdf', 'jpeg', 'png', 'tgif',
+                                                                                'svg', 'mp4', 'mp3'}:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash('File uploaded successfully')
@@ -227,6 +253,7 @@ def upload():
         return render_response(redirect(request.url))
     # Returns the file_upload.html template with the given values
     return render_response(render_template('file_upload.html'))
+
 
 # Serves the root page of the specified story
 @app.route('/story/<story>')
@@ -271,7 +298,6 @@ def story_root(story):
 # Serves the specified page of the specified story
 @app.route('/story/<story>/<page_id>')
 def story_page(story, page_id):
-
     # Creates file path to the story's JSON file
     filepath = os.path.join('story_editing', story + '.json')
 
@@ -286,9 +312,8 @@ def story_page(story, page_id):
         # Converts text of file into JSON dictionary
         story_data = json.load(story_json)
 
-
         url = request.referrer
-        prev_page_id = url[url.rfind('/')+1:]
+        prev_page_id = url[url.rfind('/') + 1:]
         if prev_page_id == story:
             prev_page_id = story_data['root-ID']
 
@@ -321,6 +346,7 @@ def editor():
     firestoreTwineConvert(db, input_file_name, import_id)
     return 'Success!'
 
+
 @app.route('/admin/dice')
 def dice():
     # call functions to roll dice from other parts of code
@@ -330,16 +356,16 @@ def dice():
 # Serves the profile page
 @app.route('/profile')
 def profile():
-
     # Returns the profile.html template with the given values
     return render_response(render_template('profile.html', first_name="Joseph"))
+
 
 # Serves the favorites page
 @app.route('/favorites')
 def favorites():
-
     # Returns the favorites.html template with the given values
     return render_response(render_template('favorites.html'))
+
 
 @app.route('/add_favorite', methods=['POST'])
 def add_favorites():
@@ -350,6 +376,7 @@ def add_favorites():
     current_user.save()
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
 
 @app.route('/remove_favorite', methods=['POST'])
 def remove_favorite():
@@ -362,6 +389,7 @@ def remove_favorite():
     current_user.save()
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
 
 # Serves the history page
 @app.route('/history')

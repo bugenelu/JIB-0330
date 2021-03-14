@@ -10,14 +10,14 @@ class StoryGraph:
 
     def __init__(self, story_data=None):
         """ 
-        Constructor for StoryGraph. StoryGraph objects are constructed using a dictionary of the StoryGraph's contents
-
-        Parameter:
+        Constructor for StoryGraph.
+        :param story_data: a dictionary of the StoryGraph's contents read from the database
         ----------
-        story_id (int): The specific import verison of Twine
-        root_id (int): The page id of the root node
+        TODO: set unique identifier schema for stories in the database
+        story_id (str): The story's unique identifier
+        root_id (str): The page id of the root node
         root_name (str): The name of root node
-        page_nodes (list(PageNode)): List of all PageNodes within StoryGraph
+        page_nodes (dict[PageNode]): dict of all PageNodes within StoryGraph
         """
         if story_data is not None:
             self.story_id = story_data['import-ID']
@@ -60,6 +60,13 @@ class StoryGraph:
         return graph_copy
 
     def addSubTree(self, subtree, parent_node, link_text):
+        """
+
+        :param subtree: StoryGraph object to append
+        :param parent_node: the parent_node to receive the appended subtree as a child + descendants
+        :param link_text: string representing text for the link from parent node to child
+        :return: a copy of the graph with the subtree appended
+        """
         if type(subtree) is not StoryGraph or type(parent_node) is not PageNode or type(link_text) is not str:
             return -1
 
@@ -82,26 +89,59 @@ class StoryGraph:
         return parent_graph
 
     def updatePageNodeText(self, page_id, new_text):
+        """
+
+        :param page_id: string identifying the page to receive updated text
+        :param new_text: string representing the new HTML body of the page to edit
+        :return: a copy of the graph with the updated page copy
+        """
         graph_copy = copy.deepcopy(self)
         graph_copy.page_nodes[page_id].updateBodyText(new_text)
 
         return graph_copy
 
     def updatePageLinkText(self, page_id, link_id, new_text):
+        """
+
+        :param page_id: string identifying the page to receive a link update
+        :param link_id: string identifying the link to edit
+        :param new_text: the replacement text for the link
+        :return: a copy of the graph with the updated link
+        """
         graph_copy = copy.deepcopy(self)
         graph_copy.page_nodes[page_id].page_children[link_id].updateLinkText(new_text)
 
         return graph_copy
 
-    # TODO: Update graphToJson() to graphToFirestore() i.e. the database format
-    def graphToJson(self):
+    def toDict(self):
+        """
+
+        :return: a dictionary representing the story graph
+        """
         page_nodes = {}
         for page_node in self.page_nodes.values():
             page_nodes[page_node.page_id] = page_node.toDict()
         data = {'import-ID': self.story_id, 'story-name': self.story_name, 'root-ID': self.root_id,
                 'root-name': self.root_name, 'page-nodes': page_nodes}
+        return data
+
+    def graphToJson(self):
+        """
+
+        :return: a string representing the story graph
+        """
+        data = self.toDict()
         json_string = json.dumps(data, indent=4)
         return json_string
+
+    # TODO: implement graphToFirestore() if toDict() is insufficient...
+    def graphToFirestore(self):
+        """
+        currently redundant with self.toDict()
+        :return: a dictionary representing this story graph
+        """
+        data = self.toDict()
+        return data
 
     def getGraphSize(self):
         return len(self.page_nodes)
