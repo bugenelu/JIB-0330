@@ -19,5 +19,9 @@
   "homepage": "https://github.com/shivamshah1999/JIB-0330#readme",
   "devDependencies": {
     "firebase-tools": "^9.5.0"
+  },
+  "dependencies": {
+    "eslint": "^7.22.0",
+    "firebase": "^8.3.0"
   }
 }
