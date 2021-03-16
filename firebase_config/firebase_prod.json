@@ -28,5 +28,38 @@
         ]
       }
     ]
+  },
+  "emulators": {
+    "auth": {
+      "enabled": false,
+      "port": 9099
+    },
+    "functions": {
+      "enabled": false,
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8081
+    },
+    "database": {
+      "enabled": false,
+      "port": 9000
+    },
+    "hosting": {
+      "enabled": false,
+      "port": 5000
+    },
+    "pubsub": {
+      "enabled": false,
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true
+    }
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ]
   }
 }

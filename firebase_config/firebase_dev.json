@@ -1,0 +1,65 @@
+{
+  "hosting": {
+    "site": "ga-knowledge-hub",
+    "public": "static",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "firebase_config/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "knowledge-hub-dev",
+          "region": "us-east1"
+        }
+      }
+    ],
+    "headers": [
+      {
+        "source": "*",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, max-age=0, s-maxage=0"
+          }
+        ]
+      }
+    ]
+  },
+  "emulators": {
+    "auth": {
+      "enabled": false,
+      "port": 9099
+    },
+    "functions": {
+      "enabled": false,
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8081
+    },
+    "database": {
+      "enabled": false,
+      "port": 9000
+    },
+    "hosting": {
+      "enabled": false,
+      "port": 5000
+    },
+    "pubsub": {
+      "enabled": false,
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true
+    }
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ]
+  }
+}

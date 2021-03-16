@@ -15,21 +15,23 @@ from flask_login import LoginManager
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
 from firebase_admin.auth import UserRecord
+import google.auth.credentials
 
+import fireo
 from fireo.models import Model
 from fireo.fields import TextField, BooleanField, ListField, MapField, IDField, DateTime
 
-import os, json, sys, requests, uuid
+import mock, os, json, sys, requests, uuid
 from datetime import datetime
 
 from werkzeug.utils import secure_filename
 
 # from functools import wraps
 
-from story_editing.TwineIngestFirestore import firestoreTwineConvert
+# from story_editing.TwineIngestFirestore import firestoreTwineConvert
 
 # blueprint imports
-from editor_blueprint import editor_blueprint
+# from editor_blueprint import editor_blueprint
 
 # Checks which platform we are running on to use the correct static folder
 platform = os.environ.get('PLATFORM', 'local')
@@ -37,14 +39,33 @@ static_folder = ''
 if platform == 'local':
     static_folder = '../../static'
 
+    # os.environ["FIRESTORE_DATASET"] = "test"
+    os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8081"
+    # os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "localhost:8081/firestore"
+    # os.environ["FIRESTORE_HOST"] = "http://localhost:8081"
+    # os.environ["FIRESTORE_PROJECT_ID"] = "test"
+    # cred = credentials.createInsecure()
+    # firebase_app = firebase_admin.initialize_app(None, {
+    #     'projectId': 'ga-knowledge-hub-dev',
+    #     'servicePath': 'localhost',
+    #     'port': 8081
+    # })
+
+    credentials = mock.Mock(spec=google.auth.credentials.Credentials)
+    db = firestore.Client(project='ga-knowledge-hub', credentials=credentials)
+
+    url = ''
+
 # Use the application default credentials
-if platform == 'gcloud':
+if platform == 'prod':
     cred = credentials.ApplicationDefault()
     firebase_app = firebase_admin.initialize_app(cred, {
         'projectId': 'ga-knowledge-hub'
     })
 
     db = firestore.client()
+
+    url = 'https://gaknowledgehub.web.app'
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
@@ -58,7 +79,7 @@ login_manager.init_app(app)
 secret_key = 'something unique and secret'
 
 # blueprints
-app.register_blueprint(editor_blueprint)
+# app.register_blueprint(editor_blueprint)
 
 
 # class CustomUserMixin(UserMixin):
@@ -79,35 +100,98 @@ class User(Model):
     favorites = ListField()
     history = ListField()
 
-    # @staticmethod
-    # def get(user_id):
-    #     return 1
+    def __init__(self, email, password, first_name, last_name, authenticated=True, admin=False, favorites=[], history=[]):
+        self.email = email
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+        self.authenticated = authenticated
+        self.admin = admin
+        self.favorites = favorites
+        self.history = history
+
+    def save(self):
+        user_doc = User.get_user(email=self.email)
+        if user_doc:
+            user_doc.update({
+                'email': self.email,
+                'password': self.password,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'authenticated': self.authenticated,
+                'admin': self.admin,
+                'favorites': self.favorites,
+                'history': self.history
+                })
+        else:
+            db.collection('users').add({
+                'email': self.email,
+                'password': self.password,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'authenticated': self.authenticated,
+                'admin': self.admin,
+                'favorites': self.favorites,
+                'history': self.history
+                })
+
+    @staticmethod
+    def get_user(email=None):
+        query = db.collection('users')
+        if email:
+            query = query.where('email', '==', email)
+        query = query.get()
+        if (len(query) == 0):
+            return None
+        return User(email=query[0].get('email'),
+            password=query[0].get('password'),
+            first_name=query[0].get('first_name'),
+            last_name=query[0].get('last_name'),
+            authenticated=query[0].get('authenticated'),
+            admin=query[0].get('admin'),
+            favorites=query[0].get('favorites'),
+            history=query[0].get('history'))
 
 
 class FirebaseSession(Model):
     class Meta:
         collection_name = 'sessions'
 
-    session_key = TextField()
-    user_id = TextField()
-
-    def __init__(self):
-        self.session_key = str(uuid.uuid4())
+    def __init__(self, user_id, session_key=None):
+        self.user_id = user_id
+        if session_key:
+            self.session_key = session_key
+        else:
+            self.session_key = str(uuid.uuid4())
+            db.collection('sessions').add({
+                'session_key': self.session_key,
+                'user_id': self.user_id
+                })
 
     @staticmethod
     def has_session(session_key, user_id):
         return False
+
+    @staticmethod
+    def get_session(session_key=None, user_id=None):
+        query = db.collection('sessions')
+        if session_key:
+            query = query.where('session_key', '==', session_key)
+        if user_id:
+            query = query.where('user_id', '==', user_id)
+        query = query.get()
+        if (len(query) == 0):
+            return None
+        return FirebaseSession(user_id=query[0].get('user_id'), session_key=query[0].get('session_key'))
 
 
 current_user = None
 
 
 def login_user(user):
-    session = FirebaseSession.collection.filter(user_id=user.email).get()
+    session = FirebaseSession.get_session(user_id=user.email)
     if not session:
-        session = FirebaseSession()
-        session.user_id = user.email
-        session.save()
+        session = FirebaseSession(user.email)
     return session
 
 
@@ -127,9 +211,9 @@ def get_current_user():
 
     current_user = None
     session_key = request.cookies.get('__session')
-    session = FirebaseSession.collection.filter(session_key=session_key).get()
+    session = FirebaseSession.get_session(session_key=session_key)
     if session:
-        current_user = User.collection.filter(email=session.user_id).get()
+        current_user = User.get_user(email=session.user_id)
 
 
 @login_manager.user_loader
@@ -154,6 +238,7 @@ class Sample():
 # Maps url extension '/' to this function
 @app.route('/')
 def hello():
+    print(FirebaseSession.get_session('test'))
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
 
@@ -162,15 +247,15 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if platform == 'local':
-            return redirect('/loggedin')
-        user = User.collection.filter(email=request.form['email']).get()
+        # if platform == 'local':
+        #     return redirect('/loggedin')
+        user = User.get_user(email=request.form['email'])
         if user:
             if request.form["password"] == user.password:
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                return render_response(redirect('https://gaknowledgehub.web.app/loggedin'),
+                return render_response(redirect(url + '/loggedin'),
                                        cookies={'__session': session.session_key})
         # TODO: Add behavior for unsuccessful login
 
@@ -182,23 +267,15 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        if platform == 'local':
-            return redirect('/loggedin')
-        if User.collection.filter(email=request.form['email']).get():
-            # TODO: Add error page for account already exists
-            pass
-        user = User()
-        user.email = request.form['email']
-        user.password = request.form['password']
-        user.first_name = request.form['first-name']
-        user.last_name = request.form['last-name']
-        user.is_authenticated = True
-        user.admin = False
-        user.favorites = []
-        user.history = []
+        # if platform == 'local':
+        #     return redirect('/loggedin')
+        # if User.collection.filter(email=request.form['email']).get():
+        #     # TODO: Add error page for account already exists
+        #     pass
+        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'])
         user.save()
         session = login_user(user)
-        return render_response(redirect('https://gaknowledgehub.web.app/loggedin'),
+        return render_response(redirect(url + '/loggedin'),
                                cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
@@ -425,4 +502,7 @@ def history():
 
 if __name__ == '__main__':
     # Run the application on the specified IP address and port
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)
+    if platform == 'local':
+        app.run(host='localhost', port=8080, debug=True)
+    else:
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)

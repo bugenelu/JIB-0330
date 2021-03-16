@@ -1,4 +1,4 @@
-from ChildLink import ChildLink
+from story_editing.ChildLink import ChildLink
 
 
 class PageNode:

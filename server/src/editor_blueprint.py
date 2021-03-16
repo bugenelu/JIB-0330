@@ -12,7 +12,7 @@ def index():
 """
 
 from flask import Blueprint
-from story_editing import Editor
+from story_editing.Editor import Editor
 import random
 
 editor_blueprint = Blueprint('editor_blueprint', __name__)
@@ -41,7 +41,7 @@ def save_story(story_id):
     return f'saved {story_id}'
 
 
-@editor_blueprint.route('editor/edit_story', methods=['POST'])
+@editor_blueprint.route('/editor/edit_story', methods=['POST'])
 def edit_story(story_id, params):
     return f'edited {story_id} with {params}'
 

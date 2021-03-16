@@ -13,8 +13,7 @@
 .history/
 
 node_modules/*
-firestore-debug.log
-ui-debug.log
-pubsub-debug.log
+<<<<<<< HEAD
 database-debug.log
+*-debug.log
 .vscode/launch.json
