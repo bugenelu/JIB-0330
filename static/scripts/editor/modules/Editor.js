@@ -266,17 +266,82 @@ class StoryGraph {
         return new_graph;
     }
     
-    // TODO: deleteNode()
+    /**
+     * deletes a specified page from the tree.
+     * @param {string} page_id - the id of the page to remove.
+     * @returns {StoryGraph[]} array of StoryGraph objects. 1st index is this story graph with node and unreachable descendents removed.
+     */
+    deleteNode(page_id) {
+        let new_graphs = [];
+        let data_from_root = this.getInfo();
+        data_from_root.story_id = data_from_root.story_id.concat("-1");
+        data_from_root.story_name = data_from_root.story_name.concat("-1");
+        if (page_id == data_from_root.root_id) {
+            data_from_root.root_id = null;
+            data_from_root.root_name = null;
+            data_from_root.page_nodes = null;
+            new_graphs.push(new StoryGraph(data_from_root));
+        } else {
+            let page_nodes = this.reachableNodes(this.root_id, [page_id]);
+            data_from_root.page_nodes = page_nodes;
+            new_graphs.push(new StoryGraph(data_from_root));
+        }
+        Object.keys(this.page_nodes[page_id].page_children).forEach(child_id => {
+            let reachable = this.reachableNodes(child_id, [page_id]);
+            let data = {
+                "story_id": this.story_id.concat("-".concat(child_id)),
+                "story_name": this.story_name.concat("-".concat(child_id)),
+                "root_id": child_id,
+                "root_name": this.page_nodes[child_id].page_name,
+            };
+            data.page_nodes = reachable;
+            new_graphs.push(new StoryGraph(data));
+        })
+        return new_graphs
+    }
+
+    /**
+     * Returns an Object[] array representing PageNodes reached from the root. For use in constructing new StoryGraphs after a delete.
+     * @param {string} root_id - id of the start node 
+     * @param {string[]} exclusion_id - the id's of any nodes to ignore if encountered in the BFS
+     * @param {boolean} return_nodes - set to true if return array should be PageNodes instead of Objects. Default is false.
+     * @returns an array of Objects representing PageNodes reached via BFS from the root PageNode.
+     */
+    reachableNodes(root_id, exclusion_ids = null, return_nodes = false) {
+        let visited_list = []
+        let open_list = []
+        if (exclusion_ids == null || (exclusion_ids != null && !exclusion_ids.includes(root_id))) {
+            open_list.push(this.page_nodes[root_id]);
+        }
+        while (open_list.length > 0) {
+            let this_node = open_list[0];
+            if (!visited_list.includes(this_node)) {
+                visited_list.push(this_node);
+            }
+            Object.keys(this_node.page_children).forEach(child_id => {
+                if (!open_list.includes(this.page_nodes[child_id]) 
+                    && !visited_list.includes(this.page_nodes[child_id])) {
+                    if (exclusion_ids != null && (exclusion_ids.includes[child_id])) {
+                        return;
+                    } else {
+                        open_list.push(this.page_nodes[child_id]);
+                    }
+                }
+            });
+            open_list.shift();
+        }
+        data_for_visited_list = {}
+        visited_list.forEach(page => {
+            data_for_visited_list[page.page_id] = page.toJSON();
+        })
+        return data_for_visited_list;
+    }
 }
 
 class PageNode {
     /**
      * 
-     * @param {string} page_id 
-     * @param {string} page_name 
-     * @param {string} page_text - 
-     * @param {string[]} page_parents - list of page parent page_id strings
-     * @param {Object[]} page_children - list of page child Objects with { child_id: string, child_name: string, link_text: string }
+     * @param {Object} page_data - an object representing the contents of this PageNode.
      */
     constructor(page_data) {
         let page = JSON.parse(JSON.stringify(page_data));
