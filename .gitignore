@@ -13,5 +13,7 @@
 .history/
 
 node_modules/*
-database-debug.log
 firestore-debug.log
+ui-debug.log
+pubsub-debug.log
+database-debug.log
