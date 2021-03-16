@@ -1,9 +1,9 @@
 ## Read data.json into dictionary, basically create two StoryGraph, append them, output final json, and print results
 
 import json
-from StoryGraph import StoryGraph
-from PageNode import PageNode
-from ChildLink import ChildLink
+from story_editing.StoryGraph import StoryGraph
+from story_editing.PageNode import PageNode
+from story_editing.ChildLink import ChildLink
 
 createdStories = 0
 

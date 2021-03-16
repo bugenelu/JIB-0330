@@ -29,9 +29,9 @@ Be careful when implementing functions that are meant to *read* from StoryGraphs
 
 import copy
 from collections import deque
-from StoryGraph import StoryGraph
-from PageNode import PageNode
-from ChildLink import ChildLink
+from story_editing.StoryGraph import StoryGraph
+from story_editing.PageNode import PageNode
+from story_editing.ChildLink import ChildLink
 
 
 # TODO: how does the editor interact with the database?

@@ -1,8 +1,8 @@
 ## Make a class the tree, Class Tree, Class Node, Potentially Class Child Link
 
 import json
-from ChildLink import ChildLink
-from PageNode import PageNode
+from story_editing.ChildLink import ChildLink
+from story_editing.PageNode import PageNode
 import copy
 
 

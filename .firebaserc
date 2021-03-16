@@ -1,17 +1,6 @@
 {
   "projects": {
-    "default": "ga-knowledge-hub"
-  },
-  "targets": {
-    "ga-knowledge-hub": {
-      "hosting": {
-        "prod": [
-          "ga-knowledge-hub"
-        ],
-        "dev": [
-          "ga-knowledge-hub-dev"
-        ]
-      }
-    }
+    "dev": "ga-knowledge-hub-dev",
+    "prod": "ga-knowledge-hub"
   }
 }

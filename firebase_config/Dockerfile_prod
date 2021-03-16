@@ -7,6 +7,6 @@ WORKDIR /app
 
 ENV PORT 8080
 
-ENV PLATFORM dev
+ENV PLATFORM prod
 
 CMD exec gunicorn --bind :$PORT app:app
