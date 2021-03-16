@@ -1,0 +1,83 @@
+{
+    "story_id": 1000,
+    "story_name": "1000-demo story",
+    "root_id": "1000-1",
+    "root_name": "1000-START",
+    "page_nodes": {
+        "1000-1": {
+            "page_id": "1000-1",
+            "page_name": "1000-START",
+            "page_body_text": "I want to tell a narrative story.",
+            "page_children": {
+                "1000-2": {
+                    "child_name": "1000-CLOWN",
+                    "link_text": "I want there to be a clown.",
+                    "child_id": "1000-2"
+                },
+                "1000-3": {
+                    "child_name": "1000-RACECAR",
+                    "link_text": "I want there to be a racecar.",
+                    "child_id": "1000-3"
+                }
+            }
+        },
+        "1000-2": {
+            "page_id": "1000-2",
+            "page_name": "1000-CLOWN",
+            "page_body_text": "You are telling a story with a clown.\n",
+            "page_children": {
+                "1000-6": {
+                    "child_name": "1000-WEIRD",
+                    "link_text": "The clown is weird.",
+                    "child_id": "1000-6"
+                },
+                "1000-7": {
+                    "child_name": "1000-FUN",
+                    "link_text": "The clown is fun.",
+                    "child_id": "1000-7"
+                }
+            }
+        },
+        "1000-3": {
+            "page_id": "1000-3",
+            "page_name": "1000-RACECAR",
+            "page_body_text": "You are telling a story with a racecar.\n",
+            "page_children": {
+                "1000-4": {
+                    "child_name": "1000-RED",
+                    "link_text": "It is red.",
+                    "child_id": "1000-4"
+                },
+                "1000-5": {
+                    "child_name": "1000-BLUE",
+                    "link_text": "It is blue.",
+                    "child_id": "1000-5"
+                }
+            }
+        },
+        "1000-4": {
+            "page_id": "1000-4",
+            "page_name": "1000-RED",
+            "page_body_text": "The racecar is <span style=\"color: red\">red</span>",
+            "page_children": {}
+        },
+        "1000-5": {
+            "page_id": "1000-5",
+            "page_name": "1000-BLUE",
+            "page_body_text": "The racecar is <a style=\"color: blue\" href=\"https://www.step2.com/p/hot-wheels-toddler-to-twin-race-car-bed/\">blue</a>",
+            "page_children": {}
+        },
+        "1000-6": {
+            "page_id": "1000-6",
+            "page_name": "1000-WEIRD",
+            "page_body_text": "<a href=\"https://en.wikipedia.org/wiki/2016_clown_sightings\" target=\"_blank\">Weird...</a",
+            "page_children": {}
+        },
+        "1000-7": {
+            "page_id": "1000-7",
+            "page_name": "1000-FUN",
+            "page_body_text": "What a <a href=\"https://www.google.com/search?client=firefox-b-1-d&q=fun+clown\" target=\"_blank\">fun clown</a>",
+            "page_children": {}
+        }
+    }
+}
