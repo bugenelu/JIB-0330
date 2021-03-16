@@ -5,7 +5,7 @@ if %1 == prod goto prod
 	rem call gcloud builds submit --tag gcr.io/ga-knowledge-hub-dev/knowledge-hub-dev
 	rem call gcloud beta run deploy knowledge-hub-dev --image gcr.io/ga-knowledge-hub-dev/knowledge-hub-dev --platform managed
 	rem call cd ..
-	call xcopy /y firebase_config\firebase_dev.json firebase.json
+	rem call xcopy /y firebase_config\firebase_dev.json firebase.json
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:9099"') DO TaskKill.exe /F /PID %%P
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:5001"') DO TaskKill.exe /F /PID %%P
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:8081"') DO TaskKill.exe /F /PID %%P
@@ -21,5 +21,5 @@ if %1 == prod goto prod
 	call gcloud builds submit --tag gcr.io/ga-knowledge-hub/knowledge-hub
 	call gcloud beta run deploy knowledge-hub --image gcr.io/ga-knowledge-hub/knowledge-hub --platform managed
 	call cd ..
-	call xcopy /y firebase_config\firebase_prod.json firebase.json
+	rem call xcopy /y firebase_config\firebase_prod.json firebase.json
 	call node_modules\.bin\firebase deploy --only hosting
