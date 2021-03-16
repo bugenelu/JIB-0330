@@ -1,5 +1,10 @@
 beautifulsoup4==4.9.3
 flask==1.1.2
+flask_login
+firebase_admin
+fireo
+datetime
+werkzeug
 
 # Modules potentially useful for debugging, remove if not needed
 pprintpp
