@@ -1,5 +1,4 @@
 import { PageNode } from "./PageNode";
-import { ChildLink } from "./ChildLink";
 import { clone } from ramda // for making deep copies
 
 export class StoryGraph {
