@@ -11,9 +11,18 @@ Twine Version: 2.3.9 (Desktop)
 3. Run 'pip install firebase_admin'
 4. Run 'pip install fireo' (Visual Studios C++ build tool will need to be installed first)
 
+### Install Firebase Emulator Suite (First Time):
+1. Install Node.js and Java 1.8+
+2. Once Node.js is installed, run 'npm install' in the project root directory.
+
 ## Run each time
-1. Run 'python app.py [port]' with the [port] optionally to specify a port other than port 80
-2. Navigate to 'localhost:[port]'
+1. Run the Firebase Emulator with 'firebase emulators:start --import=local_test_data'
+2. Run 'python app.py'
+3. Navigate to 'localhost:8080' to use the application
+4. Navigate to 'localhost:4000' to see the Firestore Emulator UI, including the emulated
+database.
+5. When you edit your code (Python, JS, etc.) you should see the changes reflected in
+the local application. You might need to refresh your browser.
 
 
 # Steps to Update Hosting:
