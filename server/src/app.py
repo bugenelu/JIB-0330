@@ -9,8 +9,7 @@ app.register_blueprint(example_blueprint)
 
 """
 
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, \
-    make_response
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
 from firebase_admin.auth import UserRecord
@@ -53,7 +52,7 @@ if platform == 'local':
     credentials = mock.Mock(spec=google.auth.credentials.Credentials)
     db = firestore.Client(project='ga-knowledge-hub', credentials=credentials)
 
-    url = ''
+    url = 'http://localhost:8080'
 
 # Use the application default credentials
 if platform == 'prod':
@@ -87,7 +86,7 @@ secret_key = 'something unique and secret'
 
 
 class User(Model):
-    def __init__(self, email, password, first_name, last_name, authenticated=True, admin=False, favorites=[], history=[]):
+    def __init__(self, email, password, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[]):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -98,10 +97,10 @@ class User(Model):
         self.history = history
 
     def save(self):
-        user_doc = db.collection('user').document(db.collection('user').where('email', '==', self.email).get()[0].id)
-        print(user_doc)
+        user_doc = db.collection('user').where('email', '==', self.email).get()
         if user_doc:
-            user_doc.update({
+            user_ref = db.collection('user').document(user_doc[0].id)
+            user_ref.update({
                 'email': self.email,
                 'password': self.password,
                 'first_name': self.first_name,
@@ -183,13 +182,16 @@ def login_user(user):
     return session
 
 
-def render_response(content, allow_cache=False, cookies=None):
+def render_response(content, allow_cache=False, cookies=None, delete_cookies=None):
     response = make_response(content)
     if not allow_cache:
         response.headers['Cache-Control'] = 'no-cache, max-age=0, s-maxage=0'
     if cookies is not None:
         for cookie in cookies:
             response.set_cookie(cookie, cookies[cookie])
+    if delete_cookies is not None:
+        for cookie in delete_cookies:
+            response.set_cookie(cookie, '', expires=0)
     return response
 
 
@@ -199,9 +201,10 @@ def get_current_user():
 
     current_user = None
     session_key = request.cookies.get('__session')
-    session = FirebaseSession.get_session(session_key=session_key)
-    if session:
-        current_user = User.get_user(email=session.user_id)
+    if session_key is not None:
+        session = FirebaseSession.get_session(session_key=session_key)
+        if session:
+            current_user = User.get_user(email=session.user_id)
 
 
 # TODO: Add login required wrapper
@@ -222,9 +225,9 @@ class Sample():
 # Maps url extension '/' to this function
 @app.route('/')
 def hello():
-    if current_user:
+    if current_user is not None:
         # Returns the home_loggedin.html template with the given values
-        render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
+        return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
@@ -243,6 +246,7 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
+                print(url)
                 return render_response(redirect(url), cookies={'__session': session.session_key})
         # TODO: Add behavior for unsuccessful login
 
@@ -260,7 +264,7 @@ def signup():
             # TODO: Add error page for account already exists
             pass
         # TODO: Add password hashing
-        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'])
+        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
         session = login_user(user)
         return render_response(redirect(url), cookies={'__session': session.session_key})
@@ -271,7 +275,7 @@ def signup():
 @app.route('/logout')
 def logout():
     # TODO: Add logout functionality
-    return render_response(redirect(url), cookies={'__session': ''})
+    return render_response(redirect(url), delete_cookies=['__session'])
 
 # Serves the editor page
 @app.route('/editor')
