@@ -13,7 +13,6 @@
 .history/
 
 node_modules/*
-<<<<<<< HEAD
 database-debug.log
 *-debug.log
 .vscode/launch.json

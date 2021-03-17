@@ -91,15 +91,6 @@ secret_key = 'something unique and secret'
 
 
 class User(Model):
-    email = TextField()
-    password = TextField()
-    first_name = TextField()
-    last_name = TextField()
-    authenticated = BooleanField()
-    admin = BooleanField()
-    favorites = ListField()
-    history = ListField()
-
     def __init__(self, email, password, first_name, last_name, authenticated=True, admin=False, favorites=[], history=[]):
         self.email = email
         self.password = password
@@ -111,7 +102,8 @@ class User(Model):
         self.history = history
 
     def save(self):
-        user_doc = User.get_user(email=self.email)
+        user_doc = db.collection('user').document(db.collection('user').where('email', '==', self.email).get()[0].id)
+        print(user_doc)
         if user_doc:
             user_doc.update({
                 'email': self.email,
@@ -124,7 +116,7 @@ class User(Model):
                 'history': self.history
                 })
         else:
-            db.collection('users').add({
+            db.collection('user').add({
                 'email': self.email,
                 'password': self.password,
                 'first_name': self.first_name,
@@ -137,7 +129,7 @@ class User(Model):
 
     @staticmethod
     def get_user(email=None):
-        query = db.collection('users')
+        query = db.collection('user')
         if email:
             query = query.where('email', '==', email)
         query = query.get()

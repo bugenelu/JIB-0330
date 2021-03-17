@@ -12,7 +12,7 @@ if %1 == prod goto prod
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:9000"') DO TaskKill.exe /F /PID %%P
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:5000"') DO TaskKill.exe /F /PID %%P
 	FOR /F "tokens=5 delims= " %%P IN ('netstat -ano ^| findstr /r "TCP[ ]*127\.0\.0\.1:8085"') DO TaskKill.exe /F /PID %%P
-	call node_modules\.bin\firebase emulators:start --import=test_dir
+	call node_modules\.bin\firebase emulators:start --import=local_test_data
 	rem call node_modules\.bin\firebase use dev
 	rem call node_modules\.bin\firebase deploy --only hosting
 	exit /b
