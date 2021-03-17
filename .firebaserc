@@ -1,6 +1,5 @@
 {
   "projects": {
-    "dev": "ga-knowledge-hub-dev",
-    "prod": "ga-knowledge-hub"
+    "default": "ga-knowledge-hub"
   }
 }
