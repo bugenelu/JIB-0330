@@ -11,7 +11,6 @@ app.register_blueprint(example_blueprint)
 
 from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, \
     make_response
-from flask_login import LoginManager
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
 from firebase_admin.auth import UserRecord
@@ -73,9 +72,6 @@ app.config['SECRET_KEY'] = 'something unique and secret'
 app.config['SESSION_COOKIE_NAME'] = '__session'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'file_uploads'
-login_manager = LoginManager()
-login_manager.init_app(app)
-# Session(app)
 secret_key = 'something unique and secret'
 
 # blueprints
