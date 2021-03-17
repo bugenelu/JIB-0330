@@ -208,11 +208,6 @@ def get_current_user():
         current_user = User.get_user(email=session.user_id)
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.collection.filter(email=user_id).get()
-
-
 # def login_required(f):
 #     @wraps(f)
 #     def decorated_function(*args, **kwargs):
@@ -230,7 +225,10 @@ class Sample():
 # Maps url extension '/' to this function
 @app.route('/')
 def hello():
-    print(FirebaseSession.get_session('test'))
+    if current_user:
+        # Returns the home_loggedin.html template with the given values
+        render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
+
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
 
@@ -243,12 +241,12 @@ def login():
         #     return redirect('/loggedin')
         user = User.get_user(email=request.form['email'])
         if user:
+            # TODO: Add password hashing
             if request.form["password"] == user.password:
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                return render_response(redirect(url + '/loggedin'),
-                                       cookies={'__session': session.session_key})
+                return render_response(redirect(url), cookies={'__session': session.session_key})
         # TODO: Add behavior for unsuccessful login
 
     # Returns the login.html template with the given values
@@ -261,26 +259,22 @@ def signup():
     if request.method == 'POST':
         # if platform == 'local':
         #     return redirect('/loggedin')
-        # if User.collection.filter(email=request.form['email']).get():
-        #     # TODO: Add error page for account already exists
-        #     pass
+        if User.get_user(email=request.form['email']):
+            # TODO: Add error page for account already exists
+            pass
+        # TODO: Add password hashing
         user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'])
         user.save()
         session = login_user(user)
-        return render_response(redirect(url + '/loggedin'),
-                               cookies={'__session': session.session_key})
+        return render_response(redirect(url), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
     return render_response(render_template('signup.html'))
 
-
-# Serves the logged in home page
-@app.route('/loggedin')
-def logged_in():
-    # Returns the home_loggedin.html template with the given values
-    return render_response(
-        render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
-
+@app.route('/logout')
+def logout():
+    # TODO: Add logout functionality
+    return render_response(redirect(url), cookies={'__session': ''})
 
 # Serves the editor page
 @app.route('/editor')
