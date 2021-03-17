@@ -10,5 +10,4 @@ if %1 == prod goto prod
 	call gcloud builds submit --tag gcr.io/ga-knowledge-hub/knowledge-hub
 	call gcloud beta run deploy knowledge-hub --image gcr.io/ga-knowledge-hub/knowledge-hub --platform managed
 	call cd ..
-	rem call xcopy /y firebase_config\firebase_prod.json firebase.json
 	call node_modules\.bin\firebase deploy --only hosting

@@ -24,7 +24,7 @@ from datetime import datetime
 
 from werkzeug.utils import secure_filename
 
-# from functools import wraps
+from functools import wraps
 
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 
@@ -37,18 +37,7 @@ static_folder = ''
 if platform == 'local':
     static_folder = '../../static'
 
-    # os.environ["FIRESTORE_DATASET"] = "test"
     os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8081"
-    # os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "localhost:8081/firestore"
-    # os.environ["FIRESTORE_HOST"] = "http://localhost:8081"
-    # os.environ["FIRESTORE_PROJECT_ID"] = "test"
-    # cred = credentials.createInsecure()
-    # firebase_app = firebase_admin.initialize_app(None, {
-    #     'projectId': 'ga-knowledge-hub-dev',
-    #     'servicePath': 'localhost',
-    #     'port': 8081
-    # })
-
     credentials = mock.Mock(spec=google.auth.credentials.Credentials)
     db = firestore.Client(project='ga-knowledge-hub', credentials=credentials)
 
@@ -71,18 +60,14 @@ app.config['SECRET_KEY'] = 'something unique and secret'
 app.config['SESSION_COOKIE_NAME'] = '__session'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'file_uploads'
-secret_key = 'something unique and secret'
+
+# if platform == 'local':
+    # app.config['SERVER_NAME'] = 'http://localhost:8080'
+if platform == 'prod':
+    app.config['SERVER_NAME'] = 'https://gaknowledgehub.web.app'
 
 # blueprints
-# app.register_blueprint(editor_blueprint)
-
-
-# class CustomUserMixin(UserMixin):
-#     class Meta():
-#         abstract = True
-#         field_list = {}
-
-#     _meta = Meta()
+app.register_blueprint(editor_blueprint)
 
 
 class User(Model):
@@ -196,7 +181,7 @@ def render_response(content, allow_cache=False, cookies=None, delete_cookies=Non
 
 
 @app.before_request
-def get_current_user():
+def get_current_user():    
     global current_user
 
     current_user = None
@@ -207,11 +192,13 @@ def get_current_user():
             current_user = User.get_user(email=session.user_id)
 
 
-# TODO: Add login required wrapper
-# def login_required(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         if 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user is None:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Sample class
@@ -224,7 +211,7 @@ class Sample():
 
 # Maps url extension '/' to this function
 @app.route('/')
-def hello():
+def index():
     if current_user is not None:
         # Returns the home_loggedin.html template with the given values
         return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
@@ -237,8 +224,6 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # if platform == 'local':
-        #     return redirect('/loggedin')
         user = User.get_user(email=request.form['email'])
         if user:
             # TODO: Add password hashing
@@ -246,9 +231,9 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                print(url)
-                return render_response(redirect(url), cookies={'__session': session.session_key})
-        # TODO: Add behavior for unsuccessful login
+                return render_response(redirect(url_for('index')), cookies={'__session': session.session_key})
+        # TODO: Include message in login.html for failed login
+        return render_response(render_template('login.html', failed_login=True))
 
     # Returns the login.html template with the given values
     return render_response(render_template('login.html'))
@@ -258,16 +243,14 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        # if platform == 'local':
-        #     return redirect('/loggedin')
         if User.get_user(email=request.form['email']):
-            # TODO: Add error page for account already exists
-            pass
+            # TODO: Include message in login.html for user already exists
+            return render_response(render_template('login.html', user_exists=True))
         # TODO: Add password hashing
         user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
         session = login_user(user)
-        return render_response(redirect(url), cookies={'__session': session.session_key})
+        return render_response(redirect(url_for('index')), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
     return render_response(render_template('signup.html'))
@@ -275,7 +258,7 @@ def signup():
 @app.route('/logout')
 def logout():
     # TODO: Add logout functionality
-    return render_response(redirect(url), delete_cookies=['__session'])
+    return render_response(redirect(url_for('index')), delete_cookies=['__session'])
 
 # Serves the editor page
 @app.route('/editor')
@@ -419,13 +402,15 @@ def dice():
 
 # Serves the profile page
 @app.route('/profile')
+@login_required
 def profile():
     # Returns the profile.html template with the given values
-    return render_response(render_template('profile.html', first_name="Joseph"))
+    return render_response(render_template('profile.html', first_name=current_user.first_name))
 
 
 # Serves the favorites page
 @app.route('/favorites')
+@login_required
 def favorites():
     # Returns the favorites.html template with the given values
     return render_response(render_template('favorites.html'))
@@ -457,6 +442,7 @@ def remove_favorite():
 
 # Serves the history page
 @app.route('/history')
+@login_required
 def history():
     history = current_user.history
     history_arr = []
