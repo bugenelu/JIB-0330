@@ -28,10 +28,10 @@ from werkzeug.utils import secure_filename
 
 # from functools import wraps
 
-# from story_editing.TwineIngestFirestore import firestoreTwineConvert
+from story_editing.TwineIngestFirestore import firestoreTwineConvert
 
 # blueprint imports
-# from editor_blueprint import editor_blueprint
+from editor_blueprint import editor_blueprint
 
 # Checks which platform we are running on to use the correct static folder
 platform = os.environ.get('PLATFORM', 'local')
@@ -208,6 +208,7 @@ def get_current_user():
         current_user = User.get_user(email=session.user_id)
 
 
+# TODO: Add login required wrapper
 # def login_required(f):
 #     @wraps(f)
 #     def decorated_function(*args, **kwargs):
