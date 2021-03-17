@@ -52,8 +52,7 @@ class Editor {
      * 
      * @param {string} database - identifier for the database, to read and write stories
      */
-    constructor(database) {
-        this.database = database;
+    constructor() {
         this.openStories = {};
     }
 
@@ -63,7 +62,8 @@ class Editor {
      */
     openStory(story_data) {
         const new_graph = new StoryGraph(story_data);
-        if (new_graph.story_id in Object.keys(this.openStories)) {
+        console.log(new_graph.story_name in this.openStories)
+        if (new_graph.story_name in this.openStories) {
             this.openStories[new_graph.story_name].push(new_graph);
         } else {
             this.openStories[new_graph.story_name] = [new_graph];
@@ -80,6 +80,17 @@ class Editor {
         if (story_name in Object.keys(this.openStories)) {
             delete this.openStories[story_data];
         }
+    }
+
+    /**
+     * saves the top of a StoryGraph stack to the database and returns the data for use in the UI.
+     * @param {string} story_name - the story to save.
+     * @returns {Object} of StoryGraph contents.
+     */
+     saveStory(story_name) {
+        let story_graph = this.openStories[story_name];
+        let story_data = story_graph[story_graph.length - 1].toJSON();
+        return story_data;
     }
 
     /**
@@ -106,18 +117,6 @@ class Editor {
      */
     undoLast(story_name) {
         return this.openStories[story_name].pop();
-    }
-
-    /**
-     * saves the top of a StoryGraph stack to the database and returns the data for use in the UI.
-     * @param {string} story_name - the story to save.
-     * @returns {Object} of StoryGraph contents.
-     */
-    saveStory(story_name) {
-        let story_graph = this.openStories[story_name];
-        let story_data = story_graph[story_graph.length - 1].toJSON();
-        // save story_data to database;
-        return story_data;
     }
 
     connectStoryGraphs(parent_graph_name, parent_node_id, child_graph_id, link_text) {}
