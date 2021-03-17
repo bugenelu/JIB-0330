@@ -86,7 +86,7 @@ secret_key = 'something unique and secret'
 
 
 class User(Model):
-    def __init__(self, email, password, first_name, last_name, authenticated=True, admin=False, favorites=[], history=[]):
+    def __init__(self, email, password, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[]):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -264,7 +264,7 @@ def signup():
             # TODO: Add error page for account already exists
             pass
         # TODO: Add password hashing
-        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'])
+        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
         session = login_user(user)
         return render_response(redirect(url), cookies={'__session': session.session_key})
