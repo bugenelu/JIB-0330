@@ -22,38 +22,13 @@ Be careful when implementing functions that are meant to *read* from StoryGraphs
 
 */
 
-/**
- * deep copy function based on https://javascript.plainenglish.io/how-to-deep-copy-objects-and-arrays-in-javascript-7c911359b089
- * @param {Object} inObject - the object to deep copy
- * @returns a deep copy of the object
- */
-const deepCopy = (inObject) => {
-    let outObject, value, key
-  
-    if (typeof inObject !== "object" || inObject === null) {
-      return inObject // Return the value if inObject is not an object
-    }
-  
-    // Create an array or object to hold the values
-    outObject = Array.isArray(inObject) ? [] : {}
-  
-    for (key in inObject) {
-      value = inObject[key]
-  
-      // Recursively (deep) copy for nested objects, including arrays
-      outObject[key] = deepCopy(value)
-    }
-  
-    return outObject
-  }
-
 class Editor {
     /**
      * 
      * @param {string} database - identifier for the database, to read and write stories
      */
     constructor() {
-        this.openStories = {};
+        this.openStories = {}; // An Object with a StoryStack for each open StoryGraph
     }
 
     /**
@@ -65,7 +40,7 @@ class Editor {
         if (new_graph.story_name in this.openStories) {
             this.openStories[new_graph.story_name].push(new_graph);
         } else {
-            this.openStories[new_graph.story_name] = [new_graph];
+            this.openStories[new_graph.story_name] = new StoryStack(new_graph);
         }
     }
 
@@ -76,8 +51,8 @@ class Editor {
      * TODO: what about a check to see if the story has been saved so work isn't lost?
      */
     closeStory(story_name) {
-        if (story_name in Object.keys(this.openStories)) {
-            delete this.openStories[story_data];
+        if (story_name in this.openStories) {
+            delete this.openStories[story_name];
         }
     }
 
@@ -86,26 +61,25 @@ class Editor {
      * @param {string} story_name - the story to save.
      * @returns {Object} of StoryGraph contents.
      */
-     saveStory(story_name) {
-        let story_graph = this.openStories[story_name];
-        let story_data = story_graph[story_graph.length - 1].toJSON();
-        return story_data;
+    saveStory(story_name) {
+        return this.openStories[story_name].getCurrent().toJSON();
     }
 
     /**
      * 
      * @param {string} story_name - a name to identify the story
+     * @param {string} story_id - a unique identifier for the story
      */
-    newStory(story_name) {
+    newStory(story_name, story_id) {
         if (!(story_name in Object.keys(this.openStories))) {
             let data = {
-                "story_id": '',
+                "story_id": story_id,
                 "story_name": story_name,
                 "root_id": '',
                 "root_name": '',
                 "page_nodes": {}
             }
-            this.openStories[story_name] = new StoryGraph(data);
+            this.openStories[story_name] = new StoryStack(new StoryGraph(data));
         }
     }
 
@@ -118,24 +92,151 @@ class Editor {
         return this.openStories[story_name].pop();
     }
 
-    connectStoryGraphs(parent_graph_name, parent_node_id, child_graph_id, link_text) {}
+    /**
+     * Connects two open StoryGraphs and adds the result to the parent's stack.
+     * @param {string} parent_graph_name - name of the parent graph
+     * @param {string} parent_node_id - page_id of the page to receive the subtree as descendants
+     * @param {string} child_graph_name - name of the new subtree
+     * @param {string} link_text - text for the new link from parent node to subtree
+     */
+    connectStoryGraphs(parent_graph_name, parent_node_id, child_graph_name, link_text) {
+        let parent_graph = this.openStories[parent_graph_name].getCurrent();
+        let child_graph = this.openStories[child_graph_name].getCurrent(); 
+        let update = parent_graph.addSubtree(child_graph, parent_node_id, link_text);
+        this.openStories[parent_graph_name].push(update);
+    }
 
-    addNodeInGraph(story_name, parent_id, new_node_data, link_text) {}
+    /**
+     * Adds a node to a graph and pushes the update graph to that graph's stack
+     * @param {string} story_name - name of the StoryGraph to receive a new node
+     * @param {string} parent_id - page_id of the page to receive the new node as a child
+     * @param {Object} new_node_data - Object with the data to construct the new PageNode
+     * @param {string} link_text - text for the link to the new node
+     */
+    addNodeInGraph(story_name, parent_id, new_node_data, link_text) {
+        let new_node = new PageNode(new_node_data);
+        let graph = this.openStories[story_name].getCurrent();
+        if (parent_id != null) {
+            let update = graph.addNode(new_node, parent_id, link_text);
+            this.openStories[story_name].push(update);
+        } else if (graph.getGraphSize() == 0) {
+            let update = graph.getCopy();
+            update.root_name = new_node.page_name;
+            update.root_id = new_node.page_id;
+            update.page_nodes[new_node.page_id] = new_node;
+            this.openStories[story_name].push(update);
+        } else {
+            console.log("failed to add node:" 
+                        + "parent_id is null while graph has existing root.");
+        }
+    }
 
-    deleteNodeFromGraph(story_name, node_id) {}
+    /**
+     * Deletes a node from a StoryGraph and pushes the new version to that graph's stack. Unreachable descendants are also removed. 
+     * Opens new stacks for the subtrees of nodes reachable from each child of the deleted node.
+     * @param {string} story_name 
+     * @param {string} node_id 
+     */
+    deleteNodeFromGraph(story_name, node_id) {
+        let graph = this.openStories[story_name].getCurrent();
+        let updates = graph.deleteNode(node_id);
+        stack.push(updates[0]);
+        if (updates.length > 1) {
+            updates.shift();
+            updates.forEach(update => {
+                this.openStories[update.story_name] = new StoryStack(update);
+            });
+        }
+    }
 
+    /**
+     * Update the text of a page in a graph and add the updated version to that graph's stack
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @param {string} new_text 
+     */
+    editPageText(story_name, page_id, new_text) {
+        let current = this.openStories[story_name].getCurrent();
+        let update = current.updatePageText(page_id, new_text);
+        this.openStories[story_name].push(update);
+    }
+
+    /**
+     * Update the text of a link in a graph and add the updated version to that graph's stack
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @param {string} child_id 
+     * @param {string} new_text 
+     */
+    editLinkText(story_name, page_id, child_id, new_text) {
+        let current = this.openStories[story_name].getCurrent();
+        let update = current.updatePageLink(page_id, child_id, new_text);
+        this.openStories[story_name].push(update);
+    }
+
+    /**
+     * 
+     * @returns {Object} with the current state of each StoryGraph in this.openStories
+     */
     getState() {
-        const state = []
-        Object.keys(this.openStories).forEach(stack => {
-            let story_stack = this.openStories[stack];
-            let data = story_stack[story_stack.length - 1].toJSON();
+        let state = []
+        Object.keys(this.openStories).forEach(story => {
+            let data = this.openStories[story].getCurrent().toJSON();
             state.push(data);
         });
         return state;
     }
 
+    /**
+     * 
+     * @param {string} story_name - the story to retreive current state for
+     * @returns {Object} with the current state of the indicated story
+     */
     getStoryState(story_name) {
-        const data = this.openStories[story_name].toJSON();
+        let data = this.openStories[story_name].getCurrent().toJSON();
+        return data;
+    }
+}
+
+
+/**
+ * Custom stack limiting backing array functions and providing convenient access to the current version.
+ */
+class StoryStack {
+
+    /**
+     * 
+     * @param {StoryGraph} story_graph - an optional StoryGraph object to add when the stack is constructed.
+     */
+    constructor(story_graph = null) {
+        this.size = 0,
+        this.versions = []
+        if (story_graph != null) {
+            this.push(story_graph);
+        }
+    }
+
+
+    push(version) {
+        this.versions.push(version);
+        this.size += 1;
+    }
+
+    pop() {
+        if (this.size > 0) {
+            this.size -=1;
+            return this.versions.pop();    
+        } else {
+            return null;
+        }
+    }
+
+    getCurrent() {
+        if (this.size == 0) {
+            return null;
+        } else {
+            return this.versions[this.size - 1];
+        }
     }
 }
 
@@ -145,12 +246,11 @@ class StoryGraph {
      * @param {Object} story_data - Object with { story_id, story_name, root_id, root_name, page_nodes{} }
      */
     constructor(story_data) {
-        let story = JSON.parse(JSON.stringify(story_data));
         this.story_id = story_data.story_id;
         this.story_name = story_data.story_name;
         this.root_id = story_data.root_id;
         this.root_name = story_data.root_name;
-        let pages = JSON.parse(JSON.stringify(story.page_nodes));
+        let pages = story_data.page_nodes;
         this.page_nodes = {};
         Object.values(pages).forEach(page => {
             this.page_nodes[page.page_id] = new PageNode(page);
@@ -197,6 +297,14 @@ class StoryGraph {
         });
         return data;
     }
+    
+    /**
+     * 
+     * @returns {StoryGraph} constructed from representation of this StoryGraph i.e. a deep copy
+     */
+    getCopy() {
+        return new StoryGraph(this.toJSON());
+    }
 
     /**
      * Takes a PageNode and appends it as a child of the 
@@ -207,10 +315,10 @@ class StoryGraph {
      * @returns {StoryGraph} that is the new graph
      */
     addNode(node_to_add, parent_id, link_text) {
-        const new_node = deepCopy(node_to_add);
+        const new_node = new PageNode(node_to_add.toJSON());
         const new_id = new_node.page_id;
         const new_name = new_node.page_name;
-        const new_graph = deepCopy(this);
+        const new_graph = this.getCopy();
         const parent = new_graph.page_nodes[parent_id];
         parent.addLink(new_id, new_name, link_text)
         new_graph.page_nodes[new_id] = new_node;
@@ -225,10 +333,10 @@ class StoryGraph {
      * @returns {StoryGraph} that is the new graph
      */
     addSubtree(subtree_to_add, parent_id, link_text) {
-        const new_subtree = deepCopy(subtree_to_add);
+        const new_subtree = subtree_to_add.getCopy();
         const new_root_id = new_subtree.root_id;
         const new_root_name = new_subtree.root_name;
-        const new_graph = deepCopy(this);
+        const new_graph = this.getCopy();
         const parent = new_graph.page_nodes[parent_id];
         parent.addLink(new_root_id, new_root_name, link_text);
         Object.values(new_subtree.page_nodes).forEach(page => {
@@ -246,7 +354,7 @@ class StoryGraph {
      * @returns {StoryGraph} that is the updated graph.
      */
     updatePageText(page_id, new_text) {
-        const new_graph = deepCopy(this);
+        const new_graph = this.getCopy();
         new_graph.page_nodes[page_id].updateBodyText(new_text);
         return new_graph;
     }
@@ -259,7 +367,7 @@ class StoryGraph {
      * @returns 
      */
     updatePageLink(page_id, child_id, new_text) {
-        const new_graph = deepCopy(this);
+        const new_graph = this.getCopy();
         new_graph.page_nodes[page_id].page_children[child_id].updateLinkText(new_text);
         return new_graph;
     }
@@ -342,12 +450,11 @@ class PageNode {
      * @param {Object} page_data - an object representing the contents of this PageNode.
      */
     constructor(page_data) {
-        let page = JSON.parse(JSON.stringify(page_data));
-        this.page_id = page.page_id;
-        this.page_name = page.page_name;
-        this.page_text = page.page_text;
+        this.page_id = page_data.page_id;
+        this.page_name = page_data.page_name;
+        this.page_body_text = page_data.page_body_text;
         this.page_parents = [];
-        let children = Object.values(page.page_children);
+        let children = Object.values(page_data.page_children);
         this.page_children = {};
         children.forEach(child => {
             this.page_children[child.child_id] = 
@@ -370,7 +477,7 @@ class PageNode {
      * @param {string} new_text - new text for this PageNode
      */
     updateBodyText(new_text) {
-        this.page_text = new_text;
+        this.page_body_text = new_text;
     }
 
     /**
@@ -393,7 +500,7 @@ class PageNode {
         return {
             "page_id": this.page_id,
             "page_name": this.page_name,
-            "page_text": this.page_text,
+            "page_body_text": this.page_body_text,
             "page_parents": this.page_parents,
             "page_children": children
         }
@@ -408,7 +515,7 @@ class ChildLink {
     }
 
     updateLinkText(link_text) {
-        self.link_text = str(link_text);
+        this.link_text = link_text;
         return
     }
 
