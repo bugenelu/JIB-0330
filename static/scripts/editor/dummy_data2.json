@@ -1,6 +1,6 @@
 {
     "story_id": 2000,
-    "story_name": "2000-subtree for testing",
+    "story_name": "story2",
     "root_id": "2000-1",
     "root_name": "2000-START",
     "page_nodes": {
