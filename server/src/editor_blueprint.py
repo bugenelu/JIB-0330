@@ -11,13 +11,20 @@ def index():
     return "This is an example app"
 """
 
+# Flask imports
 from flask import Blueprint
-from story_editing.Editor import Editor
+
+# Built-in modules imports
 import random
 
+# Local imports
+from story_editing.Editor import Editor
+from utils import db
+
+
+
 editor_blueprint = Blueprint('editor_blueprint', __name__)
-database = None
-editor = Editor(database)
+editor = Editor(db)
 
 
 @editor_blueprint.route('/editor/dice', methods=['GET', 'POST'])
@@ -28,7 +35,7 @@ def dice(a=1, b=6):
 
 @editor_blueprint.route('/editor/init_editor', methods=['GET', 'POST'])
 def init_editor():
-    return f'initialized editor with {database}'
+    return f'initialized editor with {db}'
 
 
 @editor_blueprint.route('/editor/open_story', methods=['POST'])
