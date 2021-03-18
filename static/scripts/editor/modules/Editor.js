@@ -62,7 +62,6 @@ class Editor {
      */
     openStory(story_data) {
         const new_graph = new StoryGraph(story_data);
-        console.log(new_graph.story_name in this.openStories)
         if (new_graph.story_name in this.openStories) {
             this.openStories[new_graph.story_name].push(new_graph);
         } else {

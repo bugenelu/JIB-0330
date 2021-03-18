@@ -5,7 +5,7 @@ const tree2 = require('./dummy_data2.json')
 const database = 'database';
 
 story_graph = new Editor.StoryGraph(tree1);
-editor = new Editor.Editor(database);
+editor = new Editor.Editor();
 
 editor.openStory(tree1);
 editor.openStory(tree1);
