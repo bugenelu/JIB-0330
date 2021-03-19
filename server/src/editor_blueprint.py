@@ -20,6 +20,7 @@ import random
 # Local imports
 from story_editing.Editor import Editor
 from utils import db
+from users import current_user
 
 
 
@@ -38,9 +39,12 @@ def init_editor():
     return f'initialized editor with {db}'
 
 
-@editor_blueprint.route('/editor/open_story', methods=['POST'])
+@editor_blueprint.route('/editor/open_story/<story_id>', methods=['GET'])
 def open_story(story_id):
-    return f'opened {story_id}'
+	if (current_user is not None and current_user.admin == True):
+        story_data = db.collection('stories').document(story_id)
+        return story_data
+    return None
 
 
 @editor_blueprint.route('/editor/save_story', methods=['POST'])
