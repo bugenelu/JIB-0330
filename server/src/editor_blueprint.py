@@ -12,10 +12,11 @@ def index():
 """
 
 # Flask imports
-from flask import Blueprint
+from flask import Blueprint, request
 
 # Built-in modules imports
 import random
+import json
 
 # Local imports
 from story_editing.Editor import Editor
@@ -41,15 +42,29 @@ def init_editor():
 
 @editor_blueprint.route('/editor/open_story/<story_id>', methods=['GET'])
 def open_story(story_id):
-	if (current_user is not None and current_user.admin == True):
+    if current_user is not None and current_user.admin == True:
         story_data = db.collection('stories').document(story_id)
-        return story_data
-    return None
+        if story_data.get().exists:
+            return story_data # should return some success code
 
+    return None # should be an error code of some sort
 
-@editor_blueprint.route('/editor/save_story', methods=['POST'])
-def save_story(story_id):
-    return f'saved {story_id}'
+@editor_blueprint.route('/editor/save_story/<story_id>', methods=['POST'])
+def save_story(story_id):    
+    if current_user is not None and current_user.admin == True:
+        stories = db.collection('stories')
+        story_data = stories.document(story_id)
+        if story_data is None:
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
+
+        if story_data.get().exists:
+            # Replace existing story
+            pass
+        else:
+            # Create a new entry
+            pass
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @editor_blueprint.route('/editor/edit_story', methods=['POST'])
