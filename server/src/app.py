@@ -65,8 +65,11 @@ app.register_blueprint(user_blueprint)
 @app.route('/')
 def index():
     if current_user:
-        # Returns the home_loggedin.html template with the given values
-        return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='2000'))
+        if current_user.admin:
+            # Returns the admin homepage
+            return render_response(render_template('admin_homepage.html', first_name=current_user.first_name))
+        # Returns the user homepage
+        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, sample_story='2000'))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))

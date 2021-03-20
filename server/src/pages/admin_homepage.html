@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <head>
 	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
@@ -12,14 +11,10 @@
 		    	<li><a href="/profile">Profile</a></li>
 		    	<li><a href="/upload">File Upload</a></li>
 		    	<li><a href="/editor">Editor</a></li>
-		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
 			</ul>
 		</nav>
 		<section class="header-content">
 		    <h1>Welcome, {{ first_name }}</h1>
-		    <p> Click "Begin Story" to start on your journey <br>
-		        toward sustainable practices</p>
-		    <button onclick="window.location.href='/story/{{ sample_story }}';">Begin Story</button>
 		</section>
 	</header>
 </body>
