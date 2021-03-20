@@ -66,7 +66,7 @@ app.register_blueprint(user_blueprint)
 def index():
     if current_user:
         # Returns the home_loggedin.html template with the given values
-        return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='data'))
+        return render_response(render_template('home_loggedin.html', first_name=current_user.first_name, sample_story='2000'))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
@@ -75,85 +75,81 @@ def index():
 # Serves the root page of the specified story
 @app.route('/story/<story>')
 def story_root(story):
-    # Creates file path to the story's JSON file
-    filepath = os.path.join('story_editing', story + '.json')
+    # Gets the DocumentReference to the story document in Firestore
+    story_ref = db.collection('stories').document(story)
+
+    # Gets the DocumentSnapshot of the story document in Firestore
+    story_doc = story_ref.get()
 
     # Checks whether or not the story exists
-    if not os.path.exists(filepath):
+    if not story_doc.exists:
         # TODO: return an error page
         pass
 
-    # Opens the JSON file corresponding to the story
-    with open(filepath) as story_json:
+    # Gets the root page's page ID
+    page_id = story_doc.get('`root-ID`')
 
-        # Converts text of file into JSON dictionary
-        story_data = json.load(story_json)
+    # Adds the root page to a new history
+    history_found = False
+    for history in current_user.history:
+        if history['pages'][0] == page_id and len(history['pages']) == 1:
+            history['last_updated'] = datetime.now()
+            history_found = True
+    if not history_found:
+        new_history = {}
+        new_history['last_updated'] = datetime.now()
+        new_history['pages'] = [page_id]
+        print(new_history)
+        current_user.history.append(new_history)
+        print(current_user.history)
+    current_user.save()
 
-        # Gets the root page's page ID
-        page_id = story_data['root-ID']
+    # Gets the page data for the specified page ID
+    page = story_doc.get('`page-nodes`.`' + page_id + '`')
 
-        # Adds the root page to a new history
-        history_found = False
-        for history in current_user.history:
-            if history['pages'][0] == page_id and len(history['pages']) == 1:
-                history['last_updated'] = datetime.now()
-                history_found = True
-        if not history_found:
-            new_history = {}
-            new_history['last_updated'] = datetime.now()
-            new_history['pages'] = [page_id]
-            current_user.history.append(new_history)
-        current_user.save()
-
-        # Gets the page data for the specified page ID
-        page = story_data['page-nodes'][page_id]
-
-        # Returns the story_page.html template with the specified page
-        return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
+    # Returns the story_page.html template with the specified page
+    return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
 
 
 # Serves the specified page of the specified story
 @app.route('/story/<story>/<page_id>')
 def story_page(story, page_id):
-    # Creates file path to the story's JSON file
-    filepath = os.path.join('story_editing', story + '.json')
+    # Gets the DocumentReference to the story document in Firestore
+    story_ref = db.collection('stories').document(story)
+
+    # Gets the DocumentSnapshot of the story document in Firestore
+    story_doc = story_ref.get()
 
     # Checks whether or not the story exists
-    if not os.path.exists(filepath):
+    if not story_doc.exists:
         # TODO: return an error page
         pass
 
-    # Opens the JSON file corresponding to the story
-    with open(filepath) as story_json:
+    url = request.referrer
+    prev_page_id = url[url.rfind('/') + 1:]
+    if prev_page_id == story:
+        prev_page_id = story_doc.get('`root-ID`')
 
-        # Converts text of file into JSON dictionary
-        story_data = json.load(story_json)
+    # Adds the page to the history
+    for history in current_user.history:
+        if history['pages'][-1] == prev_page_id:
+            history['pages'].append(page_id)
+            history['last_updated'] = datetime.now()
+            for h in current_user.history:
+                history_matches = True
+                if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
+                    for p in range(len(h['pages'])):
+                        if history['pages'][p] != h['pages'][p]:
+                            history_matches = False
+                    if history_matches:
+                        current_user.history.remove(h)
+    current_user.save()
 
-        url = request.referrer
-        prev_page_id = url[url.rfind('/') + 1:]
-        if prev_page_id == story:
-            prev_page_id = story_data['root-ID']
+    # Gets the page data for the specified page ID
+    page = story_doc.get('`page-nodes`.`' + page_id + '`')
 
-        # Adds the page to the history
-        for history in current_user.history:
-            if history['pages'][-1] == prev_page_id:
-                history['pages'].append(page_id)
-                history['last_updated'] = datetime.now()
-                for h in current_user.history:
-                    history_matches = True
-                    if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
-                        for p in range(len(h['pages'])):
-                            if history['pages'][p] != h['pages'][p]:
-                                history_matches = False
-                        if history_matches:
-                            current_user.history.remove(h)
-        current_user.save()
-
-        # Gets the page data for the specified page ID
-        page = story_data['page-nodes'][page_id]
-
-        # Returns the story_page.html template with the specified page
-        return render_response(render_template('story_page.html', favorited=False, story=story, page=page))
+    # Returns the story_page.html template with the specified page
+    return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
 
 
 

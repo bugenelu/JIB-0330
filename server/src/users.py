@@ -16,16 +16,22 @@ from utils import db, render_response
 
 current_user = LocalProxy(lambda: _get_current_user())
 
+_users = {}
 
 def _get_current_user():
+    global _users
+
     current_user = None
     session_key = request.cookies.get('__session')
     if session_key is not None:
         session = FirebaseSession.get_session(session_key=session_key)
         if session:
+            if session.user_id in _users:
+                return _users[session.user_id]
             current_user = User.get_user(email=session.user_id)
             if not current_user.authenticated:
                 return None
+            _users[session.user_id] = current_user
     return current_user
 
 
@@ -59,6 +65,7 @@ class User():
     def save(self):
         user_doc = db.collection('user').where('email', '==', self.email).get()
         if user_doc:
+            print(self.history)
             user_ref = db.collection('user').document(user_doc[0].id)
             user_ref.update({
                 'email': self.email,
