@@ -197,15 +197,22 @@ def profile():
 @user_blueprint.route('/favorites')
 @login_required
 def favorites():
+    favorites = []
+    for favorite in current_user.favorites:
+        story_ref = db.collection('stories').document(favorite['story'])
+        story_doc = story_ref.get()
+        page = story_doc.get('`page-nodes`.`' + favorite['page_id'] + '`')
+        favorites.insert(0, (page['page-name'], favorite['story'] + "/" + favorite['page_id']))
+
     # Returns the favorites.html template with the given values
-    return render_response(render_template('favorites.html'))
+    return render_response(render_template('favorites.html', first_name=current_user.first_name, favorites=favorites))
 
 
 @user_blueprint.route('/add_favorite', methods=['POST'])
 def add_favorites():
     current_user.favorites.append({
         'page_id': request.form['page_id'],
-        'story_id': request.form['story_id']
+        'story': request.form['story']
     })
     current_user.save()
 
@@ -214,10 +221,10 @@ def add_favorites():
 
 @user_blueprint.route('/remove_favorite', methods=['POST'])
 def remove_favorite():
-    page_id, story_id = request.form['page_id'], request.form['story_id']
+    page_id, story = request.form['page_id'], request.form['story']
 
     for favorite in current_user.favorites:
-        if favorite['page_id'] == page_id and favorite['story_id'] == story_id:
+        if favorite['page_id'] == page_id and favorite['story'] == story:
             current_user.favorites.remove(favorite)
             break
     current_user.save()
@@ -243,8 +250,11 @@ def history():
 
     for hist in history:
         new_arr = []
+        story_ref = db.collection('stories').document(hist['story'])
+        story_doc = story_ref.get()
         for page_id in hist['pages']:
-            new_arr.insert(0, (page_id, page_id))
+            page = story_doc.get('`page-nodes`.`' + page_id + '`')
+            new_arr.insert(0, (page['page-name'], hist['story'] + "/" + page_id))
         history_arr.append(new_arr)
 
     # Returns the history.html template with the given values

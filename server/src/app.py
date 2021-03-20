@@ -95,23 +95,27 @@ def story_root(story):
     # Adds the root page to a new history
     history_found = False
     for history in current_user.history:
-        if history['pages'][0] == page_id and len(history['pages']) == 1:
+        if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
             history['last_updated'] = datetime.now()
             history_found = True
     if not history_found:
         new_history = {}
         new_history['last_updated'] = datetime.now()
+        new_history['story'] = story
         new_history['pages'] = [page_id]
-        print(new_history)
         current_user.history.append(new_history)
-        print(current_user.history)
     current_user.save()
 
     # Gets the page data for the specified page ID
     page = story_doc.get('`page-nodes`.`' + page_id + '`')
 
+    favorited = False
+    for favorite in current_user.favorites:
+        if favorite['story'] == story and favorite['page_id'] == page_id:
+            favorited = True
+
     # Returns the story_page.html template with the specified page
-    return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
+    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page))
 
 
 # Serves the specified page of the specified story
@@ -128,31 +132,49 @@ def story_page(story, page_id):
         # TODO: return an error page
         pass
 
-    url = request.referrer
-    prev_page_id = url[url.rfind('/') + 1:]
-    if prev_page_id == story:
-        prev_page_id = story_doc.get('`root-ID`')
+    if page_id == story_doc.get('`root-ID`'):
+        history_found = False
+        for history in current_user.history:
+            if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                history['last_updated'] = datetime.now()
+                history_found = True
+        if not history_found:
+            new_history = {}
+            new_history['last_updated'] = datetime.now()
+            new_history['story'] = story
+            new_history['pages'] = [page_id]
+            current_user.history.append(new_history)
+    else:
+        url = request.referrer
+        prev_page_id = url[url.rfind('/') + 1:]
+        if prev_page_id == story:
+            prev_page_id = story_doc.get('`root-ID`')
 
-    # Adds the page to the history
-    for history in current_user.history:
-        if history['pages'][-1] == prev_page_id:
-            history['pages'].append(page_id)
-            history['last_updated'] = datetime.now()
-            for h in current_user.history:
-                history_matches = True
-                if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
-                    for p in range(len(h['pages'])):
-                        if history['pages'][p] != h['pages'][p]:
-                            history_matches = False
-                    if history_matches:
-                        current_user.history.remove(h)
+        # Adds the page to the history
+        for history in current_user.history:
+            if history['story'] == story and history['pages'][-1] == prev_page_id:
+                history['pages'].append(page_id)
+                history['last_updated'] = datetime.now()
+                for h in current_user.history:
+                    history_matches = True
+                    if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
+                        for p in range(len(h['pages'])):
+                            if history['pages'][p] != h['pages'][p]:
+                                history_matches = False
+                        if history_matches:
+                            current_user.history.remove(h)
     current_user.save()
 
     # Gets the page data for the specified page ID
     page = story_doc.get('`page-nodes`.`' + page_id + '`')
 
+    favorited = False
+    for favorite in current_user.favorites:
+        if favorite['story'] == story and favorite['page_id'] == page_id:
+            favorited = True
+
     # Returns the story_page.html template with the specified page
-    return render_response(render_template("story_page.html", favorited=False, story=story, page=page))
+    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page))
 
 
 

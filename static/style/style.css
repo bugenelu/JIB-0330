@@ -284,13 +284,16 @@ input[type=submit]:hover, input[type=button]:hover {
   color: var(--offwhite);
 }
 
-.content {
+.content, .collapsible-content {
   padding: 0 18px;
-  display: none;
   overflow: hidden;
   background-color: var(--palegreen);
   width: 100%;
   transform: translate(2%, 0);
+}
+
+.collapsible-content {
+  display: none;  
 }
 
 .active, .collapsible:hover {

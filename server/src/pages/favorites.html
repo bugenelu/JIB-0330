@@ -11,7 +11,6 @@
 		    	<li><a href="/logout">Logout</a></li>
 		    	<li><a href="/">Home</a></li>
 		    	<li><a href="/profile">Profile</a></li>
-		    	<li><a href="/upload">File Upload</a></li>
 		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
 			</ul>
 		</nav>
@@ -25,7 +24,7 @@
 			<!-- Dictionary variable -->
 			{% for element in favorites %}
 			<div class="content">
-			<a href="/story/data/{{ element[1] }}"><p>{{ element[0] }}</p></a>
+			<a href="/story/{{ element[1] }}"><p>{{ element[0] }}</p></a>
 			</div>
 			{% endfor %}
 		</div>

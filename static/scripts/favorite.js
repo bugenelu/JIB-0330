@@ -1,9 +1,9 @@
 $(function() {
     $("#favorite").click(function() {
+        domain = window.location.protocol + "//" + window.location.hostname + (window.location.port == "" ? "" : ":") + window.location.port
         if ($("#favorite").hasClass("fas")) {
-            // Make it not solid
             $.ajax({
-                url: "https://gaknowledgehub.web.app/remove_favorite",
+                url: domain + "/remove_favorite",
                 type: "POST",
                 data: $("form").serialize(),
                 success: function() {
@@ -13,7 +13,7 @@ $(function() {
             })
         } else {
             $.ajax({
-                url: "https://gaknowledgehub.web.app/add_favorite",
+                url: domain + "/add_favorite",
                 type: "POST",
                 data: $("form").serialize(),
                 success: function() {

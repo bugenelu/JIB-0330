@@ -13,7 +13,6 @@
 		    	<li><a href="/logout">Logout</a></li>
 		    	<li><a href="/">Home</a></li>
 		    	<li><a href="/profile">Profile</a></li>
-		    	<li><a href="/upload">File Upload</a></li>
 		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
 			</ul>
 		</nav>
@@ -27,9 +26,9 @@
 			<!-- Dictionary Variable -->
 			{% for element in history %}
 				<button class="collapsible">{{ element[0][0] }}</button>
-				<div class="content">
+				<div class="collapsible-content">
 				{% for elem in element %}
-					<a href="/story/data/{{ elem[1] }}"><p>{{ elem[0] }}</p></a>
+					<a href="/story/{{ elem[1] }}"><p>{{ elem[0] }}</p></a>
 				{% endfor %}
 				</div>
 			{% endfor %}
