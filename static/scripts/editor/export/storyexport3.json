@@ -1,0 +1,44 @@
+{
+    "story_id": "3000",
+    "story_name": "test3",
+    "root_id": "P01",
+    "root_name": "Page 1",
+    "page_nodes": {
+        "P01": {
+            "page_id": "P01",
+            "page_name": "Page 1",
+            "page_body_text": "0000 1111",
+            "page_parents": [],
+            "page_children": {
+                "P02": {
+                    "child_id": "P02",
+                    "child_name": "Page 2",
+                    "link_text": "0000 1111"
+                },
+                "P03": {
+                    "child_id": "P03",
+                    "child_name": "Page 3",
+                    "link_text": "linked p1 to p3"
+                }
+            }
+        },
+        "P02": {
+            "page_id": "P02",
+            "page_name": "Page 2",
+            "page_body_text": "This is Page 2.",
+            "page_parents": [
+                "P01"
+            ],
+            "page_children": {}
+        },
+        "P03": {
+            "page_id": "P03",
+            "page_name": "Page 3",
+            "page_body_text": "This is Page 3.",
+            "page_parents": [
+                "P01"
+            ],
+            "page_children": {}
+        }
+    }
+}
