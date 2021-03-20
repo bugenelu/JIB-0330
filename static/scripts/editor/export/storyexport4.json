@@ -1,0 +1,15 @@
+{
+    "story_id": "1000-1000-6",
+    "story_name": "story1-1000-6",
+    "root_id": "1000-6",
+    "root_name": "1000-WEIRD",
+    "page_nodes": {
+        "1000-6": {
+            "page_id": "1000-6",
+            "page_name": "1000-WEIRD",
+            "page_body_text": "<a href=\"https://en.wikipedia.org/wiki/2016_clown_sightings\" target=\"_blank\">Weird...</a",
+            "page_parents": [],
+            "page_children": {}
+        }
+    }
+}

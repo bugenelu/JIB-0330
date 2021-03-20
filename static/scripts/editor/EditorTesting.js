@@ -1,4 +1,5 @@
-const Editor = require('./modules/Editor');
+const Editor = require('./Editor');
+const fs = require('fs');
 
 const tree1 = require('./dummy_data1.json');
 const tree2 = require('./dummy_data2.json')
@@ -44,6 +45,23 @@ console.log("edit link text succeeded: " + (page_link_test == "0000 1111"));
 
 editor.connectStoryGraphs("story1", "1000-7", "story2", "LINK CREATED");
 
-/**
- * TODO: test deleteNodeFromGraph
- */
+let data = JSON.stringify(editor.getStoryState('story1'), null, 4);
+
+editor.deleteNodeFromGraph('story1', '1000-2');
+editor.deleteNodeFromGraph('story1', '1000-1');
+
+editor.duplicateStory('story1');
+
+let allstories = editor.getState();
+let story_count = 1;
+allstories.forEach(story => {
+    let file_name = 'export/storyexport'.concat(story_count.toString()).concat('.json');
+    story_count++;
+    let data = JSON.stringify(story, null, 4);
+    fs.writeFile(file_name, data, (err) => {
+        if (err) throw err;
+        console.log('Data written to file');
+    });
+})
+
+console.log('finished');

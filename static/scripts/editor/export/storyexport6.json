@@ -1,0 +1,44 @@
+{
+    "story_id": "1000-1-1000-3",
+    "story_name": "story1-1-1000-3",
+    "root_id": "1000-3",
+    "root_name": "1000-RACECAR",
+    "page_nodes": {
+        "1000-3": {
+            "page_id": "1000-3",
+            "page_name": "1000-RACECAR",
+            "page_body_text": "You are telling a story with a racecar.\n",
+            "page_parents": [],
+            "page_children": {
+                "1000-4": {
+                    "child_id": "1000-4",
+                    "child_name": "1000-RED",
+                    "link_text": "It is red."
+                },
+                "1000-5": {
+                    "child_id": "1000-5",
+                    "child_name": "1000-BLUE",
+                    "link_text": "It is blue."
+                }
+            }
+        },
+        "1000-4": {
+            "page_id": "1000-4",
+            "page_name": "1000-RED",
+            "page_body_text": "The racecar is <span style=\"color: red\">red</span>",
+            "page_parents": [
+                "1000-3"
+            ],
+            "page_children": {}
+        },
+        "1000-5": {
+            "page_id": "1000-5",
+            "page_name": "1000-BLUE",
+            "page_body_text": "The racecar is <a style=\"color: blue\" href=\"https://www.step2.com/p/hot-wheels-toddler-to-twin-race-car-bed/\">blue</a>",
+            "page_parents": [
+                "1000-3"
+            ],
+            "page_children": {}
+        }
+    }
+}

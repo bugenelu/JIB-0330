@@ -57,15 +57,6 @@ class Editor {
     }
 
     /**
-     * saves the top of a StoryGraph stack to the database and returns the data for use in the UI.
-     * @param {string} story_name - the story to save.
-     * @returns {Object} of StoryGraph contents.
-     */
-    saveStory(story_name) {
-        return this.openStories[story_name].getCurrent().toJSON();
-    }
-
-    /**
      * 
      * @param {string} story_name - a name to identify the story
      * @param {string} story_id - a unique identifier for the story
@@ -81,6 +72,15 @@ class Editor {
             }
             this.openStories[story_name] = new StoryStack(new StoryGraph(data));
         }
+    }
+
+    duplicateStory(story_name) {
+        let stamp = Date.now().toString();
+        let copy_name = story_name.concat(stamp.substr(stamp.length - 12));
+        let data = this.openStories[story_name].getCurrent().toJSON();
+        data.story_id = data.story_id.concat(stamp);
+        data.story_name = copy_name;
+        this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
 
     /**
@@ -140,7 +140,7 @@ class Editor {
     deleteNodeFromGraph(story_name, node_id) {
         let graph = this.openStories[story_name].getCurrent();
         let updates = graph.deleteNode(node_id);
-        stack.push(updates[0]);
+        this.openStories[story_name].push(updates[0]);
         if (updates.length > 1) {
             updates.shift();
             updates.forEach(update => {
@@ -193,8 +193,7 @@ class Editor {
      * @returns {Object} with the current state of the indicated story
      */
     getStoryState(story_name) {
-        let data = this.openStories[story_name].getCurrent().toJSON();
-        return data;
+        return this.openStories[story_name].getCurrent().toJSON();
     }
 }
 
@@ -209,6 +208,7 @@ class StoryStack {
      * @param {StoryGraph} story_graph - an optional StoryGraph object to add when the stack is constructed.
      */
     constructor(story_graph = null) {
+        this.MAX_SIZE = 99; // Maximum number of StoryGraphs per stack.
         this.size = 0,
         this.versions = []
         if (story_graph != null) {
@@ -216,12 +216,23 @@ class StoryStack {
         }
     }
 
-
+    /**
+     * 
+     * @param {StoryGraph} version - pushes a StoryGraph to this stack.
+     */
     push(version) {
         this.versions.push(version);
-        this.size += 1;
+        if (this.size == this.MAX_SIZE) {
+            this.versions.shift();
+        } else {
+            this.size += 1;
+        }
     }
 
+    /**
+     * 
+     * @returns {StoryGraph} popped from top of this stack.
+     */
     pop() {
         if (this.size > 0) {
             this.size -=1;
@@ -231,6 +242,10 @@ class StoryStack {
         }
     }
 
+    /**
+     * 
+     * @returns {StoryGraph} at the top of this stack without popping.
+     */
     getCurrent() {
         if (this.size == 0) {
             return null;
@@ -246,7 +261,7 @@ class StoryGraph {
      * @param {Object} story_data - Object with { story_id, story_name, root_id, root_name, page_nodes{} }
      */
     constructor(story_data) {
-        this.story_id = story_data.story_id;
+        this.story_id = story_data.story_id.toString();
         this.story_name = story_data.story_name;
         this.root_id = story_data.root_id;
         this.root_name = story_data.root_name;
@@ -254,6 +269,15 @@ class StoryGraph {
         this.page_nodes = {};
         Object.values(pages).forEach(page => {
             this.page_nodes[page.page_id] = new PageNode(page);
+        });
+        Object.values(this.page_nodes).forEach(page => {
+            let children = Object.keys(page.page_children);
+            for (var i = 0; i < children.length; i++) {
+                let child = children[i];
+                if (child in this.page_nodes) {
+                    this.page_nodes[child].page_parents.push(page.page_id);
+                }
+            }
         });
     }
 
@@ -316,6 +340,7 @@ class StoryGraph {
      */
     addNode(node_to_add, parent_id, link_text) {
         const new_node = new PageNode(node_to_add.toJSON());
+        new_node.page_parents.push(parent_id);
         const new_id = new_node.page_id;
         const new_name = new_node.page_name;
         const new_graph = this.getCopy();
@@ -334,6 +359,7 @@ class StoryGraph {
      */
     addSubtree(subtree_to_add, parent_id, link_text) {
         const new_subtree = subtree_to_add.getCopy();
+        new_subtree.page_nodes[new_subtree.root_id].page_parents.push(parent_id);
         const new_root_id = new_subtree.root_id;
         const new_root_name = new_subtree.root_name;
         const new_graph = this.getCopy();
@@ -385,14 +411,22 @@ class StoryGraph {
         if (page_id == data_from_root.root_id) {
             data_from_root.root_id = null;
             data_from_root.root_name = null;
-            data_from_root.page_nodes = null;
+            data_from_root.page_nodes = {};
             new_graphs.push(new StoryGraph(data_from_root));
         } else {
             let page_nodes = this.reachableNodes(this.root_id, [page_id]);
             data_from_root.page_nodes = page_nodes;
+            let parents = this.page_nodes[page_id].page_parents;
+            for (var i = 0; i < parents.length; i++) {
+                let parent = parents[i];
+                delete data_from_root.page_nodes[parent].page_children[page_id];
+            }
             new_graphs.push(new StoryGraph(data_from_root));
         }
-        Object.keys(this.page_nodes[page_id].page_children).forEach(child_id => {
+
+        let page_children = Object.keys(this.page_nodes[page_id].page_children);
+        for (var i = 0; i < page_children.length; i++) {
+            let child_id = page_children[i];
             let reachable = this.reachableNodes(child_id, [page_id]);
             let data = {
                 "story_id": this.story_id.concat("-".concat(child_id)),
@@ -402,7 +436,8 @@ class StoryGraph {
             };
             data.page_nodes = reachable;
             new_graphs.push(new StoryGraph(data));
-        })
+        }
+
         return new_graphs
     }
 
@@ -414,8 +449,8 @@ class StoryGraph {
      * @returns an array of Objects representing PageNodes reached via BFS from the root PageNode.
      */
     reachableNodes(root_id, exclusion_ids = null, return_nodes = false) {
-        let visited_list = []
-        let open_list = []
+        var visited_list = []
+        var open_list = []
         if (exclusion_ids == null || (exclusion_ids != null && !exclusion_ids.includes(root_id))) {
             open_list.push(this.page_nodes[root_id]);
         }
@@ -424,22 +459,24 @@ class StoryGraph {
             if (!visited_list.includes(this_node)) {
                 visited_list.push(this_node);
             }
-            Object.keys(this_node.page_children).forEach(child_id => {
-                if (!open_list.includes(this.page_nodes[child_id]) 
-                    && !visited_list.includes(this.page_nodes[child_id])) {
-                    if (exclusion_ids != null && (exclusion_ids.includes[child_id])) {
-                        return;
+            let children = Object.keys(this_node.page_children);
+            for (var i = 0; i < children.length; i++) {
+                if (!open_list.includes(this.page_nodes[children[i]]) 
+                    && !visited_list.includes(this.page_nodes[children[i]])) {
+                    if (exclusion_ids != null && (exclusion_ids.includes(children[i]))) {
+                        continue;
                     } else {
-                        open_list.push(this.page_nodes[child_id]);
+                        open_list.push(this.page_nodes[children[i]]);
                     }
                 }
-            });
+            }
             open_list.shift();
         }
-        data_for_visited_list = {}
-        visited_list.forEach(page => {
+        let data_for_visited_list = {};
+        for (var i = 0; i < visited_list.length; i++) {
+            let page = visited_list[i];
             data_for_visited_list[page.page_id] = page.toJSON();
-        })
+        }
         return data_for_visited_list;
     }
 }
