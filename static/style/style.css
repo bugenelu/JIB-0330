@@ -269,7 +269,9 @@ input[type=submit]:hover, input[type=button]:hover {
 .div7 { 
   color: var(--offwhite);
   border: 1px solid var(--palegreen);
-	grid-area: 3 / 1 / 9 / 2; 
+	grid-area: 3 / 1 / 9 / 2;
+  overflow: scroll;
+  overflow-x: hidden;
 }
 
 .div7 h1 {

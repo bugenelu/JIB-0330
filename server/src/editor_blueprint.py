@@ -39,15 +39,27 @@ def dice(a=1, b=6):
 def init_editor():
     return f'initialized editor with {db}'
 
+@editor_blueprint.route('/editor/get_all_stories', methods=['GET'])
+def get_all_stories():
+    if current_user is not None and current_user.admin == True:
+        stories = db.collection('stories')
+        # all_stories = [story for story in stories]
+        child_doc = list(stories.list_documents())
+        child_doc = [child.id for child in child_doc]
+        
+        return {'list': child_doc}, 200
+    
+    return None, 500
 
 @editor_blueprint.route('/editor/open_story/<story_id>', methods=['GET'])
 def open_story(story_id):
     if current_user is not None and current_user.admin == True:
         story_data = db.collection('stories').document(story_id)
         if story_data.get().exists:
-            return story_data # should return some success code
-
-    return None # should be an error code of some sort
+            # return story_data # should return some success code
+            # return json.dumps({'success': True}), 200, story_data.get().to_dict()
+            return story_data.get().to_dict(), 200
+    return None, 500 # should be an error code of some sort
 
 @editor_blueprint.route('/editor/save_story/<story_id>', methods=['POST'])
 def save_story(story_id):    
