@@ -1,39 +1,59 @@
 <!DOCTYPE html>
 <head>
+<!-- 	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}"> -->
 	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
 	<script>
 		function calledOnClick(id) {
-			var int1 = document.getElementById('int1').value;
-			var int2 = document.getElementById('int2').value;
-			var placeToPutIt = document.getElementById('storage');
-			placeToPutIt.innerHTML = int1 + int2;
-
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-				  document.getElementById("other-storage").innerHTML =
-				  this.responseText;
-				}
-		    }
-    		xhttp.open("GET", "/editor/dice", true);
-    		xhttp.send(int1 + int2);
+			var rand = Math.floor((Math.random() * 12) + 1);
+			//Set metadata
+		 	var button = document.getElementById(id)
+		 	var text = button.innerHTML + " Metadata: ";
+		 	text = text + "id=" + button.id + ", root=&ltroot&gt, name=&ltname&gt, #pages=" + rand.toString();
+		 	document.getElementById("metadata").innerHTML = text;
+		 	//Set page list
+		 	var pagelist = document.getElementById("page-list");
+		 	while (pagelist.firstChild) {
+		 		pagelist.removeChild(pagelist.firstChild);
+		 	}
+		 	var header = document.createElement("h1");
+		 	header.innerHTML = "Page List";
+		 	pagelist.appendChild(header);
+		 	for (var i=1; i<=rand; i++) {
+		 		var b = document.createElement("button");
+		 		b.innerHTML = "Page " + i.toString();
+		 		pagelist.appendChild(b);
+		 	}
 		}
 	</script>
 </head>
 
 <body>
 	<div class="parent2">
-		<div class="div5" id="storage"> </div>
-		<div class="div6" id="other-storage"> </div>
-		<div class="div7"> </div>
+		<div class="div5" id="storage">
+			<button id="s01" class="storybox" onclick="calledOnClick(this.id)">Story 1</button>
+			<button id="s02" class="storybox" onclick="calledOnClick(this.id)">Story 2</button>
+			<button id="s03" class="storybox" onclick="calledOnClick(this.id)">Story 3</button>
+			<button id="s04" class="storybox" onclick="calledOnClick(this.id)">Story 4</button>
+			<button id="s+" class="storybox" onclick="calledOnClick(this.id)">+</button>
+		</div>
+		<div class="div6" id="other-storage"> 
+			<p id="metadata">*THIS IS METADATA*</p>
+		</div>
+		<div class="div7" id="page-list">
+			<h1>Page List</h1>
+			<button>TEST</button>
+			<button>TEST</button>
+			<button>TEST</button>
+			<button>TEST</button>
+			<button>TEST</button>
+		</div>
 		<div class="div8"> 
-			<form action="/action_page.php">
-			  	<label for="int1">Integer 1:</label>
-			  	<input type="text" id="int1" name="int1"><br>
-			  	<label for="int2">Integer 2:</label>
-			  	<input type="text" id="int2" name="int2"><br>
-			</form>
-			<button id=1 onclick="calledOnClick(this.id)">CLICK ME</button>
+			<button>edit</button> <br>
+			<button>add subtree</button> <br>
+			<button>add new child</button> <br>
+			<button>add link</button> <br>
+			<button style="background: #838DD8; border-color: #838DD8;">save</button> <br>	
+			<button style="background: #D88D83; border-color: #D88D83;">discard</button> <br>	
 		</div>
 	</div>
 </body>
