@@ -17,11 +17,11 @@ def delete_end_returns(s):
 def make_page_node(passage, import_id, id_dict):
     page_id = prepend_id(import_id, passage.attrs['pid'])
     page_name = prepend_id(import_id, passage.attrs['name'])
-    page_node = {'page-ID': page_id, 'page-name': page_name}
+    page_node = {'page_id': page_id, 'page_name': page_name}
     body = passage.get_text()
-    page_node['page-body-text'] = delete_end_returns(body[0:body.find("[[")])
+    page_node['page_body_text'] = delete_end_returns(body[0:body.find("[[")])
     children = re.findall('\[\[(.*?)\]\]', body)
-    page_node['page-children'] = make_child_dict(children, import_id, id_dict)
+    page_node['page_children'] = make_child_dict(children, import_id, id_dict)
     return page_node
 
 
@@ -32,7 +32,7 @@ def make_child_dict(children, import_id, id_dict):
         page_name = prepend_id(import_id, child[child.find("->") + 2:])
         link_text = child[0: child.find("->")]
         page_id = id_dict[child[child.find("->") + 2:]]
-        child_dict[page_id] = {"child-name": page_name, "link-text": delete_end_returns(link_text), "child-ID": page_id}
+        child_dict[page_id] = {"child_name": page_name, "link_text": delete_end_returns(link_text), "child_id": page_id}
     return child_dict
 
 
