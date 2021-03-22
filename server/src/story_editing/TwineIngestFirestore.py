@@ -9,5 +9,5 @@ def firestoreTwineConvert(db, input_file_name, import_id):
 
     data = Parsing.twine_parse(html_content, import_id)
     collection_name = u'stories'
-    db.collection(collection_name).document(str(import_id)).set(data)
+    db.collection(collection_name).document(import_id).set(data)
 
