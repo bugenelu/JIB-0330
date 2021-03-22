@@ -2,7 +2,7 @@
 
 
 from bs4 import BeautifulSoup
-import story_editing.ParsingUtils as Util
+import ParsingUtils as Util
 
 
 def twine_parse(twine_data, import_id):
@@ -29,11 +29,11 @@ def twine_parse(twine_data, import_id):
         - root-ID is import_id + '-' + pid of start page for this Twine story
         - root-name is import_id + '-' + name of start page for this Twine story
     """
-    data = {'import-ID': import_id, 'story-name': storyName, 'root-ID': rootID, 'root-name': rootName, 'page-nodes': {}}
+    data = {'story_id': import_id, 'story_name': storyName, 'root_id': rootID, 'root_name': rootName, 'page_nodes': {}}
     id_dict = Util.make_id_dict(passages, import_id)
     for passage in passages:
         # create a pageNode
         newNode = Util.make_page_node(passage, import_id, id_dict)
-        data['page-nodes'][newNode['page-ID']] = newNode
+        data['page_nodes'][newNode['page_id']] = newNode
 
     return data

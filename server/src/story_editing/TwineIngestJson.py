@@ -4,15 +4,14 @@
 import json
 from pprint import pprint
 import Parsing
+import sys
 
 
-# INPUT_FILE_NAME = "demo-story.html"
-# OUTPUT_FILE_NAME = "data.json"
-# IMPORT_ID = 0
+print(f'{sys.argv[1]}')
 
-input_file_name = input("Enter input file:")
-output_file_name = input("Enter output file:")
-import_id = input("Enter input id:")
+input_file_name = sys.argv[1]
+output_file_name = sys.argv[2]
+import_id = sys.argv[3]
 
 with open(input_file_name, 'r') as file:
     html_content = file.read()
