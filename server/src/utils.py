@@ -1,5 +1,6 @@
 # Flask imports
 from flask import make_response
+from flask_mail import Mail
 
 # Firebase imports
 import firebase_admin
@@ -44,3 +45,10 @@ def render_response(content, allow_cache=False, cookies=None, delete_cookies=Non
         for cookie in delete_cookies:
             response.set_cookie(cookie, '', expires=0)
     return response
+
+
+
+mail = Mail()
+
+def init_mail(app):
+    mail.init_app(app)
