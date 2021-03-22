@@ -318,3 +318,18 @@ input[type=submit]:hover, input[type=button]:hover {
 .content a {
   text-decoration: none;
 }
+
+.popup {
+  z-index: 1;
+  display: block;
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 50%;
+  height: 50%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: var(--offwhite);
+  text-align: center;
+  border-radius: 20px;
+}

@@ -29,12 +29,6 @@ editor_blueprint = Blueprint('editor_blueprint', __name__)
 editor = Editor(db)
 
 
-@editor_blueprint.route('/editor/dice', methods=['GET', 'POST'])
-def dice(a=1, b=6):
-    num = random.randint(min(a, b), max(a, b))
-    return f'You rolled {num} between {min(a, b)} and {max(a, b)}.'
-
-
 @editor_blueprint.route('/editor/init_editor', methods=['GET', 'POST'])
 def init_editor():
     return f'initialized editor with {db}'
@@ -77,10 +71,3 @@ def save_story(story_id):
             pass
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
-
-@editor_blueprint.route('/editor/edit_story', methods=['POST'])
-def edit_story(story_id, params):
-    return f'edited {story_id} with {params}'
-
-

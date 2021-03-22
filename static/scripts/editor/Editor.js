@@ -34,13 +34,16 @@ class Editor {
     /**
      * 
      * @param {Object} story_data - Object with data of story to add to openStories as a new stack
+     * @return {boolean} - True is new stack is created and False otherwise
      */
     openStory(story_data) {
         const new_graph = new StoryGraph(story_data);
         if (new_graph.story_name in this.openStories) {
             this.openStories[new_graph.story_name].push(new_graph);
+            return false;
         } else {
             this.openStories[new_graph.story_name] = new StoryStack(new_graph);
+            return true;
         }
     }
 
