@@ -232,11 +232,32 @@ def upload():
 
 @app.route('/admin/editor')
 def editor():
-    input_file_name = 'file_uploads/GA_draft.html'
-    import_id = 2000
+    input_file_name = 'story_editing/demo_html/GA_draft.html'
+    import_id = '2000'
     firestoreTwineConvert(db, input_file_name, import_id)
     return 'Success!'
 
+@app.route('/admin/twine')
+def twine():
+    twine_files = [
+        {
+            'path': 'story_editing/demo_html/demo-story.html',
+            'id': 'demo.01'
+        },
+        {
+            'path': 'story_editing/demo_html/GA_draft.html',
+            'id': 'GA_draft.01'
+        },
+        {
+            'path': 'story_editing/demo_html/subtree.html',
+            'id': 'demo.02'
+        }
+    ]
+    file_index = 0
+    for file in twine_files:
+        file_index += 1
+        firestoreTwineConvert(db, file['path'], file['id'])
+    return f'imported {file_index} stories'
 
 
 if __name__ == '__main__':

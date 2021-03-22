@@ -2,7 +2,7 @@
 
 
 from bs4 import BeautifulSoup
-import ParsingUtils as Util
+import story_editing.ParsingUtils as Util
 
 
 def twine_parse(twine_data, import_id):
