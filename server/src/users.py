@@ -241,8 +241,8 @@ def reset_password():
             user.save()
             return render_response(render_template('reset_password_2.html', email=user.email))
         if user.password is None:
-        	salt = str(uuid.uuid4())
-        	hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+            salt = str(uuid.uuid4())
+            hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
             user.password = hashed_password
             user.salt = salt
             user.save()
