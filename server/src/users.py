@@ -7,7 +7,7 @@ from werkzeug.local import LocalProxy
 from functools import wraps
 
 # Built-in modules imports
-import os, json, sys, requests, uuid, string, random
+import os, json, sys, requests, uuid, hashlib, string, random
 from datetime import datetime, timedelta
 
 # Local imports
@@ -54,9 +54,10 @@ def login_required(f):
 
 
 class User():
-    def __init__(self, email, password, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[], temp_password=None, temp_password_expire=None):
+    def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[], temp_password=None, temp_password_expire=None):
         self.email = email
         self.password = password
+        self.salt = salt
         self.first_name = first_name
         self.last_name = last_name
         self.authenticated = authenticated
@@ -75,6 +76,7 @@ class User():
             user_ref.update({
                 'email': self.email,
                 'password': self.password,
+                'salt': self.salt,
                 'first_name': self.first_name,
                 'last_name': self.last_name,
                 'authenticated': self.authenticated,
@@ -88,6 +90,7 @@ class User():
             db.collection('user').add({
                 'email': self.email,
                 'password': self.password,
+                'salt': self.salt,
                 'first_name': self.first_name,
                 'last_name': self.last_name,
                 'authenticated': self.authenticated,
@@ -108,6 +111,7 @@ class User():
             return None
         return User(email=query[0].get('email'),
             password=query[0].get('password'),
+            salt=query[0].get('salt'),
             first_name=query[0].get('first_name'),
             last_name=query[0].get('last_name'),
             authenticated=query[0].get('authenticated'),
@@ -167,8 +171,8 @@ def login():
     if request.method == 'POST':
         user = User.get_user(email=request.form['email'])
         if user:
-            # TODO: Add password hashing
-            if user.password is not None and request.form['password'] == user.password:
+            hashed_password = hashlib.sha512((request.form['password'] + str(user.salt)).encode('utf-8')).hexdigest()
+            if user.password is not None and hashed_password == user.password:
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
@@ -187,8 +191,9 @@ def signup():
         if User.get_user(email=request.form['email']):
             # TODO: Include message in login.html for user already exists
             return render_response(render_template('login.html', user_exists=True))
-        # TODO: Add password hashing
-        user = User(email=request.form['email'], password=request.form['password'], first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
+        salt = str(uuid.uuid4())
+        hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+        user = User(email=request.form['email'], password=hashed_password, salt=salt, first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
         session = login_user(user)
         return render_response(redirect(url_for('index')), cookies={'__session': session.session_key})
@@ -236,7 +241,10 @@ def reset_password():
             user.save()
             return render_response(render_template('reset_password_2.html', email=user.email))
         if user.password is None:
-            user.password = request.form['password']
+        	salt = str(uuid.uuid4())
+        	hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+            user.password = hashed_password
+            user.salt = salt
             user.save()
             return render_response(redirect(url_for('user_blueprint.login')))
     return render_response(redirect(url_for('user_blueprint.login')))

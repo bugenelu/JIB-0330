@@ -1,7 +1,7 @@
 ### Install following to run properly
 
 
-import Parsing as Parsing
+import story_editing.Parsing as Parsing
 
 def firestoreTwineConvert(db, input_file_name, import_id):
     with open(input_file_name, 'r') as file:
