@@ -173,6 +173,10 @@ class Editor {
         }
     }
 
+    /**
+     * Creates a duplicate of the indicated story with a new StoryStack.
+     * @param {string} story_name - the story to duplicate.
+     */
     duplicateStory(story_name) {
         let stamp = Date.now().toString();
         let copy_name = story_name.concat(stamp.substr(stamp.length - 12));
@@ -182,6 +186,11 @@ class Editor {
         this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
 
+    /**
+     * Creates a duplicate of the indicated story beginning at the indicated page with a new StoryStack
+     * @param {string} story_name 
+     * @param {string} page_id 
+     */
     duplicateFromPage(story_name, page_id) {
         let data = this.openStories[story_name].getCurrent().reachable(page_id);
         data.story_id = data.story_id.concat("." + page_id);
@@ -267,6 +276,13 @@ class Editor {
         this.openStories[story_name].push(update);
     }
 
+    /**
+     * Adds a link between two existing pages in the indicated story graph. Link points from page_id to child_id pages.
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @param {string} child_id 
+     * @param {string} link_text 
+     */
     addLinkInGraph(story_name, page_id, child_id, link_text) {
         let data = this.openStories[story_name].getCurrent().toJSON;
         let child_name = data.page_nodes[child_id].page_name;
