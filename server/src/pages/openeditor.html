@@ -44,6 +44,14 @@
 		</div>
 		<div class="div6" id="other-storage"> 
 			<p id="metadata">*THIS IS METADATA*</p>
+			<div style="display: flex">
+				<p>New Story Name</p>
+				
+				<input type="text" style="width:50%;">
+				<button>Create New Story</button>
+			</div>
+			<p> Story names can only contain letters, numbers, underscores, and hyphens</p>
+
 		</div>
 		<div class="div7" id="page-list">
 			<h1>Page List</h1>
@@ -58,13 +66,14 @@
 			<button>add subtree</button> <br>
 			<button>add new child</button> <br>
 			<button>add link</button> <br>
-			<button style="background: #838DD8; border-color: #838DD8;">save</button> <br>	
+			<button id="save_story" style="background: #838DD8; border-color: #838DD8;">save</button> <br>	
 			<button style="background: #D88D83; border-color: #D88D83;">discard</button> <br>	
 		</div>
 	</div>
 
 
 	<div class="popup" id="popup-box">
+		<span class="close">&times;</span>
 		<h1> Select a Story to Open</h1> 
 	</div>
 </body>

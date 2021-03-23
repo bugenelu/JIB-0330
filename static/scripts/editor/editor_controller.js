@@ -16,6 +16,7 @@
 editor = new Editor();
 current_story = null;
 all_story_ids = []
+open_story_list = [] // names of the open stories
 
 open_story_btn = null;
 
@@ -56,8 +57,8 @@ function get_story_data(e) {
         // Update Page <-- Work with Joseph
         var button = e.target;
         var text = button.innerHTML + " Metadata: ";
-        var num_pages = Object.keys(current_story['page-nodes']).length
-        text = text + "id=" + button.id + ", \nroot=" + current_story['root-name'] + ",\nname=" + current_story["story-name"] + ", \n#pages=" + num_pages;
+        var num_pages = Object.keys(current_story['page_nodes']).length
+        text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
         document.getElementById("metadata").innerHTML = text;
         
         // Use page-ids for now, change to page-names later
@@ -70,7 +71,7 @@ function get_story_data(e) {
         header.innerHTML = "Page List";
         pagelist.appendChild(header);
 
-        var all_page_ids = Object.keys(current_story['page-nodes'])
+        var all_page_ids = Object.keys(current_story['page_nodes'])
         for (let i = 0; i < num_pages; i++) {
             var b = document.createElement("button");
             b.innerHTML = all_page_ids[i];
@@ -96,6 +97,10 @@ $(".popup").on("click", ".open_story", function(e) {
     new_btn.setAttribute('id', e.target.id);
     new_btn.click();
 
+    // all_story_ids.removeChild(e.target.id)
+    all_story_ids = all_story_ids.filter(function(e2) { return e2 != e.target.id })
+    open_story_list.push(e.target.id)
+
     var story_list = document.getElementById("storage");
     var add_btn = document.getElementById("+");
     story_list.removeChild(add_btn);
@@ -104,17 +109,24 @@ $(".popup").on("click", ".open_story", function(e) {
     document.getElementById("storage").appendChild(add_btn);
     // e.target.style.display = "none";
     document.getElementById('popup-box').style.display = "none";
+    document.getElementById('popup-box').removeChild(e.target);
 });
 
 
 // Saving a Story
-$("replace-me-with-save-button").click(function(e) {
-    $.post("/editor/save_story/" + e.target.story_id, 
+$("#save_story").click(function(e) {
+    if (current_story == null) {
+        alert("Story ID was not provided")
+        return;
+    }
+
+    $.post("/editor/save_story/" + current_story['story_id'], 
     {
         story_data: null, // replace this later with function to get the current story edits
     },
     function(data, status) {
-        if (status == 200) {
+        alert(status);
+        if (status == "success") {
             alert("Story successfully saved");
         } else {
             alert("Story did not save successfully");
@@ -123,6 +135,17 @@ $("replace-me-with-save-button").click(function(e) {
 });
 
 $(".add_storybox").click(function(e) {
+    var popup = document.getElementById("popup-box");
+    var hidden = popup.style.display == 'none';
+
+    if (hidden) {
+        popup.style.display = 'block';
+    } else {
+        popup.style.display = 'none';
+    }
+});
+
+$(".close").click(function(e) {
     var popup = document.getElementById("popup-box");
     var hidden = popup.style.display == 'none';
 
