@@ -32,6 +32,102 @@ class Editor {
     }
 
     /**
+     * NOTE: With the exception of openStory() and addNodeInGraph(), all Editor operations expect strings for all parameters.
+     * Use "name" fields for button labels
+     * Use "parameter" lists iterively to collect parameters from the UI. Parameter names have been standardized where possible.
+     * Use "function" fields to add function calls to UI elements
+     * 
+     * @returns {Object} that has name, parameters, and function calls for edit operations that will need representations in the UI.
+     */
+    getOperations() {
+        return [
+            {
+                "name": "Undo Last",
+                "params": ["story_name"],
+                "function": "undoLast(story_name)"
+            },
+            {
+                "name": "Open Story",
+                "params": ["story_data"],
+                "function": "openStory(story_data)" // openStory requires an Object which is received from the database
+            },
+            {
+                "name": "Close Story",
+                "params": ["story_name"],
+                "function": "closeStory(story_name)"
+            },
+            {
+                "name": "New Story",
+                "params": ["story_name", "story_id"],
+                "function": "newStory(story_name, story_id)"
+            },
+            {
+                "name": "Duplicate Story",
+                "params": ["story_name"],
+                "function": "duplicateStory(story_name)"
+            },
+            {
+                "name": "Duplicate Story From Page",
+                "params": ["story_name", "page_id"],
+                "function": "duplicateFromPage(story_name, page_id)"
+            },
+            {
+                "name": "Conect Stories",
+                "params": ["story_name", "page_id", "substory_name", "link_text"],
+                "function": "connectStoryGraphs(story_name, page_id, substory_name, link_text)"
+            },
+            {
+                "name": "Add Page to Story",
+                // new_node_data requires on Object representing a PageNode's constructor data
+                "params": ["story_name", "parent_id", "new_node_data", "link_text"], 
+                "function": "addNodeInGraph(story_name, parent_id, new_node_data, link_text)"
+            },
+            {
+                "name": "Delete Page in Story",
+                "params": ["story_name", "page_id"],
+                "function": "deleteNodeFromGraph(story_name, page_id)"
+            },
+            {
+                "name": "Edit Page Contents",
+                "params": ["story_name", "page_id", "page_text"],
+                "function": "editPageText(story_name, page_id, page_text)" 
+            },
+            {
+                "name": "Add Link",
+                "params": ["story_name", "page_id", "child_id", "link_text"],
+                "function": "addLinkInGraph(story_name, page_id, child_id, link_text)"
+            },
+            {
+                "name": "Edit Link Text",
+                "params": ["story_name", "page_id", "child_id", "link_text"],
+                "function": "editLinkText(story_name, page_id, child_id, link_text)"
+            }
+        ]
+    }
+    
+    /**
+     * 
+     * @returns {Object} with the current state of each StoryGraph in this.openStories
+     */
+    getState() {
+        let state = []
+        Object.keys(this.openStories).forEach(story => {
+            let data = this.openStories[story].getCurrent().toJSON();
+            state.push(data);
+        });
+        return state;
+    }
+
+    /**
+     * 
+     * @param {string} story_name - the story to retreive current state for
+     * @returns {Object} with the current state of the indicated story
+     */
+    getStoryState(story_name) {
+        return this.openStories[story_name].getCurrent().toJSON();
+    }
+
+    /**
      * 
      * @param {Object} story_data - Object with data of story to add to openStories as a new stack
      * @return {boolean} - True is new stack is created and False otherwise
@@ -86,6 +182,13 @@ class Editor {
         this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
 
+    duplicateFromPage(story_name, page_id) {
+        let data = this.openStories[story_name].getCurrent().reachable(page_id);
+        data.story_id = data.story_id.concat("." + page_id);
+        data.story_name = data.story_name.concat("." + page_id);
+        this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
+    }
+
     /**
      * Undoes the last edit to a StoryGraph
      * @param {string} story_name - identifes the story to step backwards 
@@ -97,16 +200,16 @@ class Editor {
 
     /**
      * Connects two open StoryGraphs and adds the result to the parent's stack.
-     * @param {string} parent_graph_name - name of the parent graph
-     * @param {string} parent_node_id - page_id of the page to receive the subtree as descendants
-     * @param {string} child_graph_name - name of the new subtree
+     * @param {string} story_name - name of the parent graph
+     * @param {string} page_id - page_id of the page to receive the subtree as descendants
+     * @param {string} substory_name - name of the new subtree
      * @param {string} link_text - text for the new link from parent node to subtree
      */
-    connectStoryGraphs(parent_graph_name, parent_node_id, child_graph_name, link_text) {
-        let parent_graph = this.openStories[parent_graph_name].getCurrent();
-        let child_graph = this.openStories[child_graph_name].getCurrent(); 
-        let update = parent_graph.addSubtree(child_graph, parent_node_id, link_text);
-        this.openStories[parent_graph_name].push(update);
+    connectStoryGraphs(story_name, page_id, substory_name, link_text) {
+        let parent_graph = this.openStories[story_name].getCurrent();
+        let child_graph = this.openStories[substory_name].getCurrent(); 
+        let update = parent_graph.addSubtree(child_graph, page_id, link_text);
+        this.openStories[story_name].push(update);
     }
 
     /**
@@ -140,9 +243,9 @@ class Editor {
      * @param {string} story_name 
      * @param {string} node_id 
      */
-    deleteNodeFromGraph(story_name, node_id) {
+    deleteNodeFromGraph(story_name, page_id) {
         let graph = this.openStories[story_name].getCurrent();
-        let updates = graph.deleteNode(node_id);
+        let updates = graph.deleteNode(page_id);
         this.openStories[story_name].push(updates[0]);
         if (updates.length > 1) {
             updates.shift();
@@ -156,12 +259,23 @@ class Editor {
      * Update the text of a page in a graph and add the updated version to that graph's stack
      * @param {string} story_name 
      * @param {string} page_id 
-     * @param {string} new_text 
+     * @param {string} page_text 
      */
-    editPageText(story_name, page_id, new_text) {
+    editPageText(story_name, page_id, page_text) {
         let current = this.openStories[story_name].getCurrent();
-        let update = current.updatePageText(page_id, new_text);
+        let update = current.updatePageText(page_id, page_text);
         this.openStories[story_name].push(update);
+    }
+
+    addLinkInGraph(story_name, page_id, child_id, link_text) {
+        let data = this.openStories[story_name].getCurrent().toJSON;
+        let child_name = data.page_nodes[child_id].page_name;
+        data.page_nodes[page_id].page_children[child_id] = {
+            "child_id": child_id,
+            "child_name": child_name,
+            "link_text": link_text
+        }
+        this.openStories[story_name].push(new StoryGraph(data));
     }
 
     /**
@@ -169,34 +283,12 @@ class Editor {
      * @param {string} story_name 
      * @param {string} page_id 
      * @param {string} child_id 
-     * @param {string} new_text 
+     * @param {string} link_text 
      */
-    editLinkText(story_name, page_id, child_id, new_text) {
+    editLinkText(story_name, page_id, child_id, link_text) {
         let current = this.openStories[story_name].getCurrent();
-        let update = current.updatePageLink(page_id, child_id, new_text);
+        let update = current.updatePageLink(page_id, child_id, link_text);
         this.openStories[story_name].push(update);
-    }
-
-    /**
-     * 
-     * @returns {Object} with the current state of each StoryGraph in this.openStories
-     */
-    getState() {
-        let state = []
-        Object.keys(this.openStories).forEach(story => {
-            let data = this.openStories[story].getCurrent().toJSON();
-            state.push(data);
-        });
-        return state;
-    }
-
-    /**
-     * 
-     * @param {string} story_name - the story to retreive current state for
-     * @returns {Object} with the current state of the indicated story
-     */
-    getStoryState(story_name) {
-        return this.openStories[story_name].getCurrent().toJSON();
     }
 }
 
@@ -486,6 +578,9 @@ class StoryGraph {
 
 class PageNode {
     /**
+     * Constructor parameter object fields: page_id, page_name, page_body_text, page_parents, page_children
+     * 
+     * Note: page_chilrden is an object with data to create ChildLink objects
      * 
      * @param {Object} page_data - an object representing the contents of this PageNode.
      */
@@ -567,8 +662,3 @@ class ChildLink {
         }
     }
 }
-
-// module.exports.Editor = Editor;
-// module.exports.StoryGraph = StoryGraph;
-// module.exports.PageNode = PageNode;
-// module.exports.ChildLink = ChildLink;
