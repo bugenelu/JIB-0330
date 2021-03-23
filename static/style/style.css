@@ -333,3 +333,17 @@ input[type=submit]:hover, input[type=button]:hover {
   text-align: center;
   border-radius: 20px;
 }
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}

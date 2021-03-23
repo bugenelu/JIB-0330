@@ -60,14 +60,16 @@ def save_story(story_id):
     if current_user is not None and current_user.admin == True:
         stories = db.collection('stories')
         story_data = stories.document(story_id)
-        if story_data is None:
+        print(request.json)
+        print('-----------------------')
+
+        if request.json is None:
+            print("It is none so work")
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
 
         if story_data.get().exists:
-            # Replace existing story
-            pass
+            story_data.update(request.json)
         else:
-            # Create a new entry
-            pass
+            stories.add(request.json)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
