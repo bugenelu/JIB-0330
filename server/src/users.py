@@ -310,7 +310,7 @@ def history():
     # Sort the history
     for i in range(len(history)):
         for j in range(i + 1, len(history)):
-            if history[i]['last_updated'] < history[j]['last_updated']:
+            if history[i]['last_updated'].replace(tzinfo=None) < history[j]['last_updated'].replace(tzinfo=None):
                 history[i], history[j] = history[j], history[i]
 
     for hist in history:
@@ -318,8 +318,8 @@ def history():
         story_ref = db.collection('stories').document(hist['story'])
         story_doc = story_ref.get()
         for page_id in hist['pages']:
-            page = story_doc.get('`page-nodes`.`' + page_id + '`')
-            new_arr.insert(0, (page['page-name'], hist['story'] + "/" + page_id))
+            page = story_doc.get('page_nodes.`' + page_id + '`')
+            new_arr.insert(0, (page['page_name'], hist['story'] + "/" + page_id))
         history_arr.append(new_arr)
 
     # Returns the history.html template with the given values
