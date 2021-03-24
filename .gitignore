@@ -20,13 +20,5 @@ database-debug.log
 *.pyc
 *.pyc
 *.pyc
-server/src/story_editing/__pycache__/Parsing.cpython-38.pyc
-server/src/story_editing/__pycache__/ParsingUtils.cpython-38.pyc
-.vscode/settings.json
-server/src/story_editing/__pycache__/__init__.cpython-38.pyc
-server/src/story_editing/__pycache__/ChildLink.cpython-38.pyc
-server/src/story_editing/__pycache__/PageNode.cpython-38.pyc
-server/src/story_editing/__pycache__/Parsing.cpython-38.pyc
-server/src/story_editing/__pycache__/ParsingUtils.cpython-38.pyc
-server/src/story_editing/__pycache__/StoryGraph.cpython-38.pyc
-server/src/__pycache__/editor_blueprint.cpython-38.pyc
+
+**/__pycache__/**
