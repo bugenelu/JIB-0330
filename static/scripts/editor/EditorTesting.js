@@ -191,17 +191,17 @@ const editor = new Editor();
 
 editor.openStory(tree1);
 editor.openStory(tree2);
-editor.newStory("test3", "3000");
-editor.addNodeInGraph("test3", null, p1_data, null);
-editor.addNodeInGraph("test3", "P01", p2_data, "linked p1 to p2");
-editor.addNodeInGraph("test3", "P01", p3_data, "linked p1 to p3");
+editor.newStory("A New And Empty Story", "test3");
+editor.addNodeInGraph("A New And Empty Story", null, "Mr. Root Node", null);
+editor.addNodeInGraph("A New And Empty Story", "A New And Empty Story-1", "i yr child", "linked p1 to p2");
+editor.addNodeInGraph("A New And Empty Story", "A New And Empty Story-1", "i yr other child", "linked p1 to p3");
 
-editor.editPageText("test3", "P01", "0000 1111");
-let page_edit_test = editor.getStoryState("test3").page_nodes["P01"].page_body_text;
+editor.editPageText("A New And Empty Story", "A New And Empty Story-1", "0000 1111");
+let page_edit_test = editor.getStoryState("A New And Empty Story").page_nodes["A New And Empty Story-1"].page_body_text;
 console.log("edit page text succeeded: " + (page_edit_test == "0000 1111"));
 
-editor.editLinkText("test3", "P01", "P02", "0000 1111");
-let page_link_test = editor.getStoryState("test3").page_nodes["P01"].page_children["P02"].link_text;
+editor.editLinkText("A New And Empty Story", "A New And Empty Story-1", "A New And Empty Story-2", "0000 1111");
+let page_link_test = editor.getStoryState("A New And Empty Story").page_nodes["A New And Empty Story-1"].page_children["A New And Empty Story-2"].link_text;
 console.log("edit link text succeeded: " + (page_link_test == "0000 1111"));
 
 editor.connectStoryGraphs("story1", "1000-7", "story2", "LINK CREATED");
