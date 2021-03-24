@@ -78,9 +78,8 @@ class Editor {
             },
             {
                 "name": "Add Page to Story",
-                // new_node_data requires on Object representing a PageNode's constructor data
-                "params": ["story_name", "parent_id", "new_node_data", "link_text"], 
-                "function": "addNodeInGraph(story_name, parent_id, new_node_data, link_text)"
+                "params": ["story_name", "parent_id", "page_body_text", "page_name", "link_text"], 
+                "function": "addNodeInGraph(story_name, parent_id, new_node_data, link_text)" // TODO: update Editor's addNodeInGraph with new string inputs
             },
             {
                 "name": "Delete Page in Story",
@@ -102,6 +101,7 @@ class Editor {
                 "params": ["story_name", "page_id", "child_id", "link_text"],
                 "function": "editLinkText(story_name, page_id, child_id, link_text)"
             }
+            // TODO: add editStoryName(), editStoryID(), editRootID(), editPageName(), deleteLink()
         ]
     }
     
@@ -128,16 +128,15 @@ class Editor {
     }
 
     /**
-     * 
+     * TODO: consider edge case where different story in database has same name, and user wants to open both
      * @param {Object} story_data - Object with data of story to add to openStories as a new stack
-     * @return {boolean} - True is new stack is created and False otherwise
+     * @return {boolean} - True if new stack is created and False otherwise
      */
     openStory(story_data) {
-        const new_graph = new StoryGraph(story_data);
         if (new_graph.story_name in this.openStories) {
-            this.openStories[new_graph.story_name].push(new_graph);
             return false;
         } else {
+            const new_graph = new StoryGraph(story_data);
             this.openStories[new_graph.story_name] = new StoryStack(new_graph);
             return true;
         }
