@@ -266,8 +266,8 @@ def favorites():
     for favorite in current_user.favorites:
         story_ref = db.collection('stories').document(favorite['story'])
         story_doc = story_ref.get()
-        page = story_doc.get('`page-nodes`.`' + favorite['page_id'] + '`')
-        favorites.insert(0, (page['page-name'], favorite['story'] + "/" + favorite['page_id']))
+        page = story_doc.get('page_nodes.`' + favorite['page_id'] + '`')
+        favorites.insert(0, (page['page_name'], favorite['story'] + "/" + favorite['page_id']))
 
     # Returns the favorites.html template with the given values
     return render_response(render_template('favorites.html', first_name=current_user.first_name, favorites=favorites))

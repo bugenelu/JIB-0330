@@ -17,7 +17,10 @@
 		    <h1>Welcome, {{ first_name }}</h1>
 		    <p> Click "Begin Story" to start on your journey <br>
 		        toward sustainable practices</p>
-		    <button onclick="window.location.href='/story/{{ sample_story }}';">Begin Story</button>
+		    {% if continue_story %}
+		    	<button onclick="window.location.href='/story/{{ continue_story }}';">Continue Story</button>
+		    {% endif %}
+		    <button onclick="window.location.href='/story/{{ begin_story }}';">Begin Story</button>
 		</section>
 	</header>
 </body>

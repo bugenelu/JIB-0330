@@ -79,7 +79,16 @@ def index():
             # Returns the admin homepage
             return render_response(render_template('admin_homepage.html', first_name=current_user.first_name))
         # Returns the user homepage
-        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, sample_story='GA_draft.01'))
+        most_recent_history = None
+        continue_story = None
+        for history in current_user.history:
+            if most_recent_history is None:
+                most_recent_history = history
+                continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
+            elif history['last_updated'].replace(tzinfo=None) < most_recent_history['last_updated'].replace(tzinfo=None):
+                most_recent_history = history
+                continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
+        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story='GA_draft.01', continue_story=continue_story))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))

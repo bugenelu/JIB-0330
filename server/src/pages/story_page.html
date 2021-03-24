@@ -21,8 +21,8 @@
 		{% endfor %}
 
 		<form style="display: none">
-			<input name="page_id" type="text" value="{{page['page-ID']}}">
-			<input name="story_id" type="text" value={{story}}>
+			<input name="page_id" type="text" value="{{page['page_id']}}">
+			<input name="story" type="text" value={{story}}>
 		</form>
 
 		<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
