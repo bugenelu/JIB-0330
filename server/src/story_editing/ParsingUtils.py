@@ -16,7 +16,7 @@ def delete_end_returns(s):
 # makes a page node from tw-passage tag contents
 def make_page_node(passage, import_id, id_dict):
     page_id = prepend_id(import_id, passage.attrs['pid'])
-    page_name = prepend_id(import_id, passage.attrs['name'])
+    page_name = passage.attrs['name']
     page_node = {'page_id': page_id, 'page_name': page_name}
     body = passage.get_text()
     page_node['page_body_text'] = delete_end_returns(body[0:body.find("[[")])

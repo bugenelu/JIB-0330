@@ -251,15 +251,15 @@ def twine():
     twine_files = [
         {
             'path': 'story_editing/demo_html/demo-story.html',
-            'id': 'demo.01'
+            'id': 'demo_01'
         },
         {
             'path': 'story_editing/demo_html/GA_draft.html',
-            'id': 'GA_draft.01'
+            'id': 'GA_draft_01'
         },
         {
             'path': 'story_editing/demo_html/subtree.html',
-            'id': 'demo.02'
+            'id': 'demo_02'
         }
     ]
     file_index = 0

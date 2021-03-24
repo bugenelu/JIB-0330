@@ -21,9 +21,9 @@ def twine_parse(twine_data, import_id):
             rootName = passage['name']
             break
 
-    storyName = str(import_id) + '-' + storyattr['name']
+    storyName = storyattr['name']
     rootID = str(import_id) + '-' + storyattr['startnode']
-    rootName = str(import_id) + '-' + rootName
+
     """
     init import data with import-ID, root-ID, root-name, dictionary of page-nodes
         - root-ID is import_id + '-' + pid of start page for this Twine story
