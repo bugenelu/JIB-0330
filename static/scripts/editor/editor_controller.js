@@ -120,9 +120,17 @@ $("#save_story").click(function(e) {
         return;
     }
 
-    $.post("/editor/save_story/" + current_story['story_id'], 
+    alert("post request made");
+
+    // $.ajax({
+    //     url: "/editor/save_story",
+    //     data: 
+    // })
+
+    $.post("/editor/save_story", 
     {
-        story_data: null, // replace this later with function to get the current story edits
+        'story_name': current_story['story_name'],
+        'story_data': JSON.stringify(current_story), // replace this later with function to get the current story edits
     },
     function(data, status) {
         alert(status);
@@ -155,3 +163,21 @@ $(".close").click(function(e) {
         popup.style.display = 'none';
     }
 });
+
+
+function checkName (strng) {
+    var error = "";
+    
+        // TODO: Allow hyphens and underscores
+        var illegalChars = /[^\w\s]/g; // allow letters, numbers, and underscores
+        if (strng == "") {
+               error = "Please enter your name.\n";
+        }
+        else if((strng.length < 2)) {
+            error = "The name is the wrong length.\n";
+        }
+        else if (illegalChars.test(strng)) {
+            error = "The name contains illegal characters.\n";
+        }
+    return error;
+}

@@ -55,21 +55,30 @@ def open_story(story_id):
             return story_data.get().to_dict(), 200
     return None, 500 # should be an error code of some sort
 
-@editor_blueprint.route('/editor/save_story/<story_id>', methods=['POST'])
-def save_story(story_id):    
+@editor_blueprint.route('/editor/save_story', methods=['POST'])
+def save_story():    
     if current_user is not None and current_user.admin == True:
+        story_name = request.form['story_name']
+        story_data = json.loads(request.form['story_data'])
+        
         stories = db.collection('stories')
-        story_data = stories.document(story_id)
-        print(request.json)
-        print('-----------------------')
 
-        if request.json is None:
-            print("It is none so work")
-            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
+        # if request.json is None:
+        #     print("It is none so work")
+        #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
 
-        if story_data.get().exists:
-            story_data.update(request.json)
+        if stories.document(story_name).get().exists:
+            stories.document(story_name).update(story_data)
         else:
-            stories.add(request.json)
+            stories.add(story_data)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+@editor_blueprint.route('/rename_story', methods=['POST'])
+def rename_story():
+    if current_user is not None and current_user.admin == True:
+        old_story_name = request.args.get()
+        new_story_name = request.args.get()
+
+        stories = db.collection('stories')
+        
