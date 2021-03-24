@@ -2,7 +2,7 @@
 <html lang="en">
 
 	<head>
-		<title>{{ page['page-name'] }}</title>
+		<title>{{ page['page_name'] }}</title>
 
 		<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}" />
 		<link rel="stylesheet" href="{{url_for('static', filename='vendor/fontawesome/css/all.min.css')}}" />
@@ -14,10 +14,10 @@
 		{% else %}
 			<i class="far fa-heart" id="favorite"></i>
 		{% endif %}
-		<p class="storytext">{{ page['page-body-text'] | safe }}</p>
+		<p class="storytext">{{ page['page_body_text'] | safe }}</p>
 
-		{% for child in page['page-children'] %}
-			<p class="storytext"><a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page-children'][child]['link-text'] }}</a></p>
+		{% for child in page['page_children'] %}
+			<p class="storytext"><a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page_children'][child]['link_text'] }}</a></p>
 		{% endfor %}
 
 		<form style="display: none">

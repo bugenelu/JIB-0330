@@ -79,7 +79,7 @@ def index():
             # Returns the admin homepage
             return render_response(render_template('admin_homepage.html', first_name=current_user.first_name))
         # Returns the user homepage
-        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, sample_story='2000'))
+        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, sample_story='GA_draft.01'))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
@@ -100,7 +100,7 @@ def story_root(story):
         pass
 
     # Gets the root page's page ID
-    page_id = story_doc.get('`root-ID`')
+    page_id = story_doc.get('root_id')
 
     # Adds the root page to a new history
     history_found = False
@@ -117,7 +117,7 @@ def story_root(story):
     current_user.save()
 
     # Gets the page data for the specified page ID
-    page = story_doc.get('`page-nodes`.`' + page_id + '`')
+    page = story_doc.get('page_nodes.`' + page_id + '`')
 
     favorited = False
     for favorite in current_user.favorites:
@@ -125,7 +125,7 @@ def story_root(story):
             favorited = True
 
     # Returns the story_page.html template with the specified page
-    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page))
+    return render_response(render_template('story_page.html', favorited=favorited, story=story, page=page))
 
 
 # Serves the specified page of the specified story
@@ -142,7 +142,7 @@ def story_page(story, page_id):
         # TODO: return an error page
         pass
 
-    if page_id == story_doc.get('`root-ID`'):
+    if page_id == story_doc.get('root_id'):
         history_found = False
         for history in current_user.history:
             if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
@@ -158,7 +158,7 @@ def story_page(story, page_id):
         url = request.referrer
         prev_page_id = url[url.rfind('/') + 1:]
         if prev_page_id == story:
-            prev_page_id = story_doc.get('`root-ID`')
+            prev_page_id = story_doc.get('root_id')
 
         # Adds the page to the history
         for history in current_user.history:
@@ -176,7 +176,7 @@ def story_page(story, page_id):
     current_user.save()
 
     # Gets the page data for the specified page ID
-    page = story_doc.get('`page-nodes`.`' + page_id + '`')
+    page = story_doc.get('page_nodes.`' + page_id + '`')
 
     favorited = False
     for favorite in current_user.favorites:
