@@ -12,6 +12,7 @@
 
 // changing live story
 
+// TODO: Keep dict story_name: last_viewed_page
 
 editor = new Editor();
 current_story = null;
@@ -19,6 +20,7 @@ all_story_ids = []
 open_story_list = [] // names of the open stories
 
 open_story_btn = null;
+all_page_ids = null;
 
 $.get('/editor/get_all_stories', function(event, status) {
     // all_story_ids = event;
@@ -41,7 +43,8 @@ function get_story_data(e) {
     $.get('/editor/open_story/' + e.target.id, function(story_data, status) {
         if (status == 'success') {
             // Success
-            current_story = story_data;
+            current_story = story_data['story_name'];
+            editor.openStory(story_data);
         } else {
             // Failure
             current_story = null;
@@ -57,8 +60,9 @@ function get_story_data(e) {
         // Update Page <-- Work with Joseph
         var button = e.target;
         var text = button.innerHTML + " Metadata: ";
-        var num_pages = Object.keys(current_story['page_nodes']).length
-        text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
+        var num_pages = editor.getStoryPageList(current_story).length
+        // TODO: Fill in metadata stuff later
+        // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
         document.getElementById("metadata").innerHTML = text;
         
         // Use page-ids for now, change to page-names later
@@ -71,10 +75,17 @@ function get_story_data(e) {
         header.innerHTML = "Page List";
         pagelist.appendChild(header);
 
-        var all_page_ids = Object.keys(current_story['page_nodes'])
-        for (let i = 0; i < num_pages; i++) {
+        // var all_page_ids = Object.values(current_story['page_nodes'])
+        // var all_page_ids = editor.getStoryPageList(current_story)
+        var page_name_dic = editor.getStoryPageList(current_story)
+        var all_page_ids = Object.keys(page_name_dic)
+        // TODO: Get the page names instead of ids
+        // All id empty list, objects.values(current_story['page_nodes'])
+        for (let i = 0; i < all_page_ids.length; i++) {
             var b = document.createElement("button");
-            b.innerHTML = all_page_ids[i];
+            b.innerHTML = page_name_dic[all_page_ids[i]];
+            b.setAttribute('class', 'page_button')
+            b.setAttribute('page_id', all_page_ids[i])
             pagelist.appendChild(b);
         }
     })
@@ -120,7 +131,6 @@ $("#save_story").click(function(e) {
         return;
     }
 
-    alert("post request made");
 
     // $.ajax({
     //     url: "/editor/save_story",
@@ -129,11 +139,10 @@ $("#save_story").click(function(e) {
 
     $.post("/editor/save_story", 
     {
-        'story_name': current_story['story_name'],
-        'story_data': JSON.stringify(current_story), // replace this later with function to get the current story edits
+        'story_name': current_story,
+        'story_data': JSON.stringify(editor.getStoryState(current_story)), // replace this later with function to get the current story edits
     },
     function(data, status) {
-        alert(status);
         if (status == "success") {
             alert("Story successfully saved");
         } else {
@@ -181,3 +190,10 @@ function checkName (strng) {
         }
     return error;
 }
+
+$(".div7").on("click", ".page_button", function(e) {
+    var story_state = story_state = editor.getStoryState(current_story);
+    let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
+    document.getElementById("page-pane-child").innerHTML = page.page_body_text;
+
+});

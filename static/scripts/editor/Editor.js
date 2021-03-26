@@ -511,16 +511,14 @@ class StoryGraph {
 
     /**
      * 
-     * @returns {string[]} an array of string names
+     * @returns {Object} a dictionary containing page_name as value and page_id as key
      */
     getPageNameList() {
-        let page_data = [];
+        let page_info = {};
         this.getPageList().forEach(page => {
-            let page_info = {};
             page_info[page.page_id] = page.page_name;
-            page_data.push(page.page_info);
         });
-        return page_data;
+        return page_info;
     }
 
     /**
