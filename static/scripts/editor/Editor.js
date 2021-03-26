@@ -152,6 +152,15 @@ class Editor {
     }
 
     /**
+     * 
+     * @param {string} story_name 
+     * @returns {string[]} a list of nice page names for the indicated story
+     */
+    getStoryPageList(story_name) {
+        return this.openStories[story_name].getCurrent().getPageNameList();
+    }
+
+    /**
      * TODO: consider edge case where different story in database has same name, and user wants to open both
      * @param {Object} story_data - Object with data of story to add to openStories as a new stack
      * @return {boolean} - True if new stack is created and False otherwise
@@ -498,6 +507,18 @@ class StoryGraph {
      */
     getPageList() {
         return Object.values(this.page_nodes);
+    }
+
+    /**
+     * 
+     * @returns {string[]} an array of string names
+     */
+    getPageNameList() {
+        pageNames = [];
+        this.getPageList().forEach(page => {
+            pageNames.push(page.page_name);
+        });
+        return pageNames;
     }
 
     /**
