@@ -32,6 +32,7 @@ class Editor {
     }
 
     /**
+     * TODO: Add nice labels for parameters
      * NOTE: With the exception of openStory() and addNodeInGraph(), all Editor operations expect strings for all parameters.
      * Use "name" fields for button labels
      * Use "parameter" lists iterively to collect parameters from the UI. Parameter names have been standardized where possible.
@@ -43,7 +44,9 @@ class Editor {
         return [
             {
                 "name": "Undo Last",
-                "params": ["story_name"],
+                "params": {
+                    "story_name": "Undo last step for this story?"
+                },
                 "function": "undoLast(story_name)"
             },
             {
@@ -246,6 +249,7 @@ class Editor {
 
     /**
      * Undoes the last edit to a StoryGraph
+     * TODO: do some handling if size of stack is 1
      * @param {string} story_name - identifes the story to step backwards 
      * @returns {StoryGraph} version that was removed from this.openStories. Could be saved in a redo cache.
      */
