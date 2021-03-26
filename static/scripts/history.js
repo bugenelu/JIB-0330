@@ -11,3 +11,18 @@ for (let i = 0; i < coll.length; i++) {
         }
     });
 }
+
+$(function() {
+	$(".preview-button").click(function() {
+		$("#preview-" + $(this).attr("value")).show();
+	});
+	$(".preview-nav").click(function() {
+        if (!($(this).hasClass("disabled"))) {
+    		$("#preview-" + $(this).attr("value")).show();
+    		$(this).parent().hide();
+        }
+	});
+    $(".preview-close").click(function() {
+        $(this).parent().hide();
+    });
+});

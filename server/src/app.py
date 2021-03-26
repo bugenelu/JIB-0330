@@ -85,7 +85,7 @@ def index():
             if most_recent_history is None:
                 most_recent_history = history
                 continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
-            elif history['last_updated'].replace(tzinfo=None) < most_recent_history['last_updated'].replace(tzinfo=None):
+            elif history['last_updated'].replace(tzinfo=None) > most_recent_history['last_updated'].replace(tzinfo=None):
                 most_recent_history = history
                 continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
         return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story='GA_draft_01', continue_story=continue_story))
@@ -111,19 +111,24 @@ def story_root(story):
     # Gets the root page's page ID
     page_id = story_doc.get('root_id')
 
-    # Adds the root page to a new history
-    history_found = False
-    for history in current_user.history:
-        if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
-            history['last_updated'] = datetime.now()
-            history_found = True
-    if not history_found:
-        new_history = {}
-        new_history['last_updated'] = datetime.now()
-        new_history['story'] = story
-        new_history['pages'] = [page_id]
-        current_user.history.append(new_history)
-    current_user.save()
+    preview = request.args.get('preview')
+    if preview == None:
+        preview = False
+
+    if not preview:
+        # Adds the root page to a new history
+        history_found = False
+        for history in current_user.history:
+            if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                history['last_updated'] = datetime.now()
+                history_found = True
+        if not history_found:
+            new_history = {}
+            new_history['last_updated'] = datetime.now()
+            new_history['story'] = story
+            new_history['pages'] = [page_id]
+            current_user.history.append(new_history)
+        current_user.save()
 
     # Gets the page data for the specified page ID
     page = story_doc.get('page_nodes.`' + page_id + '`')
@@ -134,7 +139,7 @@ def story_root(story):
             favorited = True
 
     # Returns the story_page.html template with the specified page
-    return render_response(render_template('story_page.html', favorited=favorited, story=story, page=page))
+    return render_response(render_template('story_page.html', favorited=favorited, story=story, page=page, preview=preview))
 
 
 # Serves the specified page of the specified story
@@ -151,38 +156,44 @@ def story_page(story, page_id):
         # TODO: return an error page
         pass
 
-    if page_id == story_doc.get('root_id'):
-        history_found = False
-        for history in current_user.history:
-            if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
-                history['last_updated'] = datetime.now()
-                history_found = True
-        if not history_found:
-            new_history = {}
-            new_history['last_updated'] = datetime.now()
-            new_history['story'] = story
-            new_history['pages'] = [page_id]
-            current_user.history.append(new_history)
-    else:
-        url = request.referrer
-        prev_page_id = url[url.rfind('/') + 1:]
-        if prev_page_id == story:
-            prev_page_id = story_doc.get('root_id')
 
-        # Adds the page to the history
-        for history in current_user.history:
-            if history['story'] == story and history['pages'][-1] == prev_page_id:
-                history['pages'].append(page_id)
-                history['last_updated'] = datetime.now()
-                for h in current_user.history:
-                    history_matches = True
-                    if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
-                        for p in range(len(h['pages'])):
-                            if history['pages'][p] != h['pages'][p]:
-                                history_matches = False
-                        if history_matches:
-                            current_user.history.remove(h)
-    current_user.save()
+    preview = request.args.get('preview')
+    if preview == None:
+        preview = False
+
+    if not preview:
+        if page_id == story_doc.get('root_id'):
+            history_found = False
+            for history in current_user.history:
+                if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                    history['last_updated'] = datetime.now()
+                    history_found = True
+            if not history_found:
+                new_history = {}
+                new_history['last_updated'] = datetime.now()
+                new_history['story'] = story
+                new_history['pages'] = [page_id]
+                current_user.history.append(new_history)
+        else:
+            url = request.referrer
+            prev_page_id = url[url.rfind('/') + 1:]
+            if prev_page_id == story:
+                prev_page_id = story_doc.get('root_id')
+
+            # Adds the page to the history
+            for history in current_user.history:
+                if history['story'] == story and history['pages'][-1] == prev_page_id:
+                    history['pages'].append(page_id)
+                    history['last_updated'] = datetime.now()
+                    for h in current_user.history:
+                        history_matches = True
+                        if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
+                            for p in range(len(h['pages'])):
+                                if history['pages'][p] != h['pages'][p]:
+                                    history_matches = False
+                            if history_matches:
+                                current_user.history.remove(h)
+        current_user.save()
 
     # Gets the page data for the specified page ID
     page = story_doc.get('page_nodes.`' + page_id + '`')
@@ -193,7 +204,7 @@ def story_page(story, page_id):
             favorited = True
 
     # Returns the story_page.html template with the specified page
-    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page))
+    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page, preview=preview))
 
 
 

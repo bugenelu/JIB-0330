@@ -19,7 +19,8 @@
 
 /*Specify Webpage Height*/
 html {
-  height = 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 /*Style Background of Webpages*/
@@ -27,7 +28,7 @@ body {
   background-image: linear-gradient(145deg, var(--darkgray), #101515);
   padding-bottom: 60px;
   position: relative;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -286,11 +287,12 @@ input[type=submit]:hover, input[type=button]:hover {
 .collapsible {
   cursor: pointer;
   padding: 18px;
-  width: 100%;
+  display: block;
+  width: calc(100% - 20px);
   border: none;
   text-align: left;
   outline: none;
-  font-size: 15px;
+  font-size: 20px;
   background-color: var(--darkgray);
   color: var(--offwhite);
 }
@@ -299,8 +301,10 @@ input[type=submit]:hover, input[type=button]:hover {
   padding: 0 18px;
   overflow: hidden;
   background-color: var(--palegreen);
-  width: 100%;
-  transform: translate(2%, 0);
+  width: 94%;
+  margin-left: 2%;
+  margin-right: 2%;
+  font-size: 20px;
 }
 
 .collapsible-content {
@@ -346,4 +350,86 @@ input[type=submit]:hover, input[type=button]:hover {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+.preview-button {
+  float: right;
+  cursor: pointer;
+  margin-right: 1%;
+  color: white;
+}
+
+.history-preview {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 20px;
+  height: 100vh;
+  /*width: 100%;*/
+}
+
+.background-blur {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  opacity: 0.8;
+  backdrop-filter: blur(5px);
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.history-preview-page {
+  height: 90vh;
+  width: 90vw;
+  position: fixed;
+  top: 5vh;
+  left: 5vw;
+  background-color: red;
+}
+
+.preview-nav {
+  color: var(--palegreen);
+  font-size: 3vw;
+  cursor: pointer;
+}
+
+.preview-nav-left {
+  position: fixed;
+  top: 44.5vh;
+  left: 1vw;
+}
+
+.preview-nav-right {
+  position: fixed;
+  top: 44.5vh;
+  right: 1vw;
+}
+
+.preview-nav.disabled {
+  opacity: 0.6;
+}
+
+.preview-close {
+  position: fixed;
+  top: 1vh;
+  right: 1vw;
+  color: var(--palegreen);
+  font-size: 3vw;
+  cursor: pointer;
+}
+
+.popout {
+  position: fixed;
+  top: calc(1vh + 0.375vw);
+  left: 1.375vw;
+  color: var(--palegreen);
+  font-size: 2.25vw;
+  cursor: pointer;
+}
+
+.mimic-link {
+  color: var(--offwhite);
+  text-decoration: underline;
 }

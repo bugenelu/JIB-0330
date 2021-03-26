@@ -9,15 +9,23 @@
 	</head>
 
 	<body>
-		{% if favorited %}
-			<i class="fas fa-heart" id="favorite"></i>
-		{% else %}
-			<i class="far fa-heart" id="favorite"></i>
+		{% if not preview %}
+			{% if favorited %}
+				<i class="fas fa-heart" id="favorite"></i>
+			{% else %}
+				<i class="far fa-heart" id="favorite"></i>
+			{% endif %}
 		{% endif %}
 		<p class="storytext">{{ page['page_body_text'] | safe }}</p>
 
 		{% for child in page['page_children'] %}
-			<p class="storytext"><a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page_children'][child]['link_text'] }}</a></p>
+			<p class="storytext">
+				{% if preview %}
+					<span class="mimic-link">{{ page['page_children'][child]['link_text'] }}</span>
+				{% else %}
+					<a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page_children'][child]['link_text'] }}</a>
+				{% endif %}
+			</p>
 		{% endfor %}
 
 		<form style="display: none">

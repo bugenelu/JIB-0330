@@ -3,7 +3,7 @@
 <head>
     <title> History Test Page </title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
-	<script type="text/javascript" src="{{ url_for('static', filename='scripts/history.js') }}" defer></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
 </head>
 
 <body>
@@ -25,14 +25,31 @@
 		<div>
 			<!-- Dictionary Variable -->
 			{% for element in history %}
+				{% set history_index = loop.index %}
 				<button class="collapsible">{{ element[0][0] }}</button>
 				<div class="collapsible-content">
 				{% for elem in element %}
-					<a href="/story/{{ elem[1] }}"><p>{{ elem[0] }}</p></a>
+					<p><a href="/story/{{ elem[1] }}">{{ elem[0] }}</a><i class="far fa-eye preview-button" value="{{ history_index }}-{{ loop.index }}"></i></p>
 				{% endfor %}
 				</div>
 			{% endfor %}
 		</div>
+		{% for element in history %}
+			{% set history_index = loop.index %}
+			{% for elem in element %}
+				<div id="preview-{{ history_index }}-{{ loop.index }}" class="history-preview">
+					<div class="background-blur"></div>
+					<i class="fas fa-chevron-circle-left preview-nav preview-nav-left {% if loop.index == element|length %}disabled{% endif %}" value="{{ history_index }}-{{ loop.index + 1}}"></i>
+					<iframe class="history-preview-page" src="/story/{{ elem[1] }}?preview=True"></iframe>
+					<i class="fas fa-chevron-circle-right preview-nav preview-nav-right {% if loop.index == 1 %}disabled{% endif %}" value="{{ history_index }}-{{ loop.index - 1}}"></i>
+					<i class="fas fa-times preview-close"></i>
+					<a href="/story/{{ elem[1] }}" target="_blank"><i class="fas fa-external-link-alt popout"></i></a>
+				</div>
+			{% endfor %}
+		{% endfor %}
 	</header>
+
+	<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
+	<script src="{{url_for('static', filename='scripts/history.js')}}"></script>
 </body>
 </html>

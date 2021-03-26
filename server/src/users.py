@@ -303,7 +303,7 @@ def remove_favorite():
 def history():
     history = current_user.history
     history_arr = []
-    # [[(page_id, history)], []]
+    # [[(page_id, history)]]
 
     # Tracking which story a page belongs to
 
