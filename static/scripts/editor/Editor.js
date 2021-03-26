@@ -514,11 +514,13 @@ class StoryGraph {
      * @returns {string[]} an array of string names
      */
     getPageNameList() {
-        pageNames = [];
+        let page_data = [];
         this.getPageList().forEach(page => {
-            pageNames.push(page.page_name);
+            let page_info = {};
+            page_info[page.page_id] = page.page_name;
+            page_data.push(page.page_info);
         });
-        return pageNames;
+        return page_data;
     }
 
     /**
