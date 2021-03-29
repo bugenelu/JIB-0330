@@ -10,7 +10,7 @@ app.register_blueprint(example_blueprint)
 """
 
 # Flask imports
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response, abort
 
 # Firebase imports
 import firebase_admin
@@ -30,6 +30,7 @@ from datetime import datetime
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 from utils import url, db, render_response
 from users import User, FirebaseSession, current_user, login_user, login_required, user_blueprint
+from errors import errors_blueprint
 from editor_blueprint import editor_blueprint
 
 
@@ -48,8 +49,9 @@ if platform == 'local':
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
 
 # blueprints
-app.register_blueprint(editor_blueprint)
 app.register_blueprint(user_blueprint)
+app.register_blueprint(errors_blueprint)
+app.register_blueprint(editor_blueprint)
 
 
 # Maps url extension '/' to this function
@@ -71,7 +73,8 @@ def index():
                 most_recent_history = history
                 continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
         return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story))
-
+    # abort(500)
+    # print(current_user.email)
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
 
@@ -267,4 +270,4 @@ if __name__ == '__main__':
     if platform == 'local':
         app.run(host='localhost', port=8080, debug=True)
     else:
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=False)
