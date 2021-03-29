@@ -273,6 +273,7 @@ input[type=submit]:hover, input[type=button]:hover {
 	grid-area: 3 / 1 / 9 / 2;
   overflow: scroll;
   overflow-x: hidden;
+  width: 25%;
 }
 
 .div7 h1 {
@@ -432,4 +433,41 @@ input[type=submit]:hover, input[type=button]:hover {
 .mimic-link {
   color: var(--offwhite);
   text-decoration: underline;
+}
+
+#new-story-pane {
+  display: flex;
+}
+
+#page-pane { 
+  width: 1000px;
+}
+
+#story-name {
+  width:50%;
+}
+
+#page-list-parent {
+  max-height: 650px;
+  display: flex; 
+  width: 100%;"
+}
+
+#save_story {
+  background: #838DD8; 
+  border-color: #838DD8;
+}
+
+#discard_story {
+  background: #D88D83; 
+  border-color: #D88D83;
+}
+
+.fa-heart {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  color: var(--palegreen);
+  height: 50px;
+  width:50px;
 }

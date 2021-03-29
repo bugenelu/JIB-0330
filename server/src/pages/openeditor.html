@@ -6,7 +6,7 @@
 	<script src="{{url_for('static', filename='scripts/editor/Editor.js')}}" defer></script>
 	<script src="{{url_for('static', filename='scripts/editor/editor_controller.js')}}" defer></script>
 
-	<script>
+<!-- 	<script>
 		function calledOnClick(id) {
 			var rand = Math.floor((Math.random() * 12) + 1);
 			//Set metadata
@@ -28,7 +28,7 @@
 		 		pagelist.appendChild(b);
 		 	}
 		}
-	</script>
+	</script> -->
 </head>
 
 <body>
@@ -44,22 +44,22 @@
 		</div>
 		<div class="div6" id="other-storage"> 
 			<p id="metadata">*THIS IS METADATA*</p>
-			<div style="display: flex">
+			<div id="new-story-pane">
 				<p>New Story Name</p>
 				
-				<input type="text" style="width:50%;">
+				<input id="story-name" type="text">
 				<button>Create New Story</button>
 			</div>
 			<p> Story names can only contain letters, numbers, underscores, and hyphens</p>
 
 		</div>
 
-		<div style="display: flex; width=100%;">
-			<div class="div7" id="page-list" style="width: 25%">
+		<div id="page-list-parent">
+			<div class="div7" id="page-list">
 				<h1>Page List</h1>
 			</div>
 			
-			<div id="page-pane" style="width: 1000px">
+			<div id="page-pane">
 				<p id="page-pane-child">This is text</p>
 			</div>
 
@@ -68,8 +68,8 @@
 				<button>add subtree</button> <br>
 				<button>add new child</button> <br>
 				<button>add link</button> <br>
-				<button id="save_story" style="background: #838DD8; border-color: #838DD8;">save</button> <br>	
-				<button style="background: #D88D83; border-color: #D88D83;">discard</button> <br>	
+				<button id="save_story">save</button> <br>	
+				<button id="discard_story">discard</button> <br>	
 			</div>
 		</div>
 	</div>
