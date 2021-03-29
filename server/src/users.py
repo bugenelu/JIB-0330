@@ -178,10 +178,10 @@ def login():
                 session = login_user(user)
                 return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
         # TODO: Include message in login.html for failed login
-        return render_response(render_template('login.html', failed_login=True))
+        return render_response(render_template('user_pages/login.html', failed_login=True))
 
     # Returns the login.html template with the given values
-    return render_response(render_template('login.html'))
+    return render_response(render_template('user_pages/login.html'))
 
 
 # Serves the sign up page
@@ -190,7 +190,7 @@ def signup():
     if request.method == 'POST':
         if User.get_user(email=request.form['email']):
             # TODO: Include message in login.html for user already exists
-            return render_response(render_template('login.html', user_exists=True))
+            return render_response(render_template('user_pages/login.html', user_exists=True))
         salt = str(uuid.uuid4())
         hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
         user = User(email=request.form['email'], password=hashed_password, salt=salt, first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
@@ -199,7 +199,7 @@ def signup():
         return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
-    return render_response(render_template('signup.html'))
+    return render_response(render_template('user_pages/signup.html'))
 
 
 @user_blueprint.route('/logout')
@@ -221,11 +221,11 @@ def forgot_password():
             user.temp_password_expire = datetime.now() + timedelta(minutes=15)
             user.save()
             mail = Mail(user.email, 'Temporary Password', '<p>Here is your temporary password:</p><h3>' + user.temp_password + '</h3>')
-            return render_response(render_template('reset_password_1.html', email=user.email))
-        return render_response(render_template('forgot_password.html', no_account=True))
+            return render_response(render_template('user_pages/reset_password_1.html', email=user.email))
+        return render_response(render_template('user_pages/forgot_password.html', no_account=True))
 
     # Returns the forgot_password.html template with the given values
-    return render_response(render_template('forgot_password.html'))
+    return render_response(render_template('user_pages/forgot_password.html'))
 
 
 @user_blueprint.route('/reset_password', methods=['POST'])
@@ -237,7 +237,7 @@ def reset_password():
             user.temp_password = None
             user.temp_password_expire = None
             user.save()
-            return render_response(render_template('reset_password_2.html', email=user.email))
+            return render_response(render_template('user_pages/reset_password_2.html', email=user.email))
         if user.password is None:
             salt = str(uuid.uuid4())
             hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
@@ -253,7 +253,7 @@ def reset_password():
 @login_required
 def profile():
     # Returns the profile.html template with the given values
-    return render_response(render_template('profile.html', first_name=current_user.first_name))
+    return render_response(render_template('user_pages/profile.html', first_name=current_user.first_name))
 
 
 # Serves the favorites page
@@ -268,7 +268,7 @@ def favorites():
         favorites.insert(0, (page['page_name'], favorite['story'] + "/" + favorite['page_id']))
 
     # Returns the favorites.html template with the given values
-    return render_response(render_template('favorites.html', first_name=current_user.first_name, favorites=favorites))
+    return render_response(render_template('user_pages/favorites.html', first_name=current_user.first_name, favorites=favorites))
 
 
 @user_blueprint.route('/add_favorite', methods=['POST'])
@@ -321,4 +321,4 @@ def history():
         history_arr.append(new_arr)
 
     # Returns the history.html template with the given values
-    return render_response(render_template('history.html', history=history_arr))
+    return render_response(render_template('user_pages/history.html', history=history_arr))

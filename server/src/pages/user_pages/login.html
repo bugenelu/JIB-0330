@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+<body>
+	<div class="centerbox">
+		<h1>Login:</h1>
+	<form method="POST" action="/login">
+		<input type="email" name="email" placeholder="Email" autocomplete="email">
+		<br>
+		<input type="password" name="password" placeholder="Password" autocomplete="current-password">
+		<br>
+		<input type="submit" value="Login">
+		<br>
+		<p class="smalltext">Don't have an account?</p>
+		<a class="smalltext" href="/signup">Sign up here.</a>
+		<br>
+		<p class="smalltext">Forgot your password?</p>
+		<a class="smalltext" href="/forgot_password">Reset it here.</a>
+	</form>
+	</div>
+
+
+</body>
+</html>
