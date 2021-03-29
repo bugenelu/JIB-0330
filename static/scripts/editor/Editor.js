@@ -9,7 +9,7 @@ Welcome to the Editor. The Editor is responsible for:
 
 ---
 The Editor keeps an Object representing its open StoryGraphs with 'story_name' keys.
-The values are stacks of StoryGraphs with the top of the stack being the most recent version of
+The values are StoryStacks of StoryGraphs with the top of the stack being the most recent version of
 a particular graph identified by the key.
 
 This is done to preserve undo ability while the Editor is open. Our expectation is that StoryGraphs
@@ -32,10 +32,26 @@ class Editor {
     }
 
     /**
-     * TODO: Add nice labels for operations, nice labels for parameters, classifications for parameters 
      * NOTE: With the exception of openStory() and addNodeInGraph(), all Editor operations expect strings for all parameters.
      * Use "name" fields for button labels
-     * Use "parameter" lists iterively to collect parameters from the UI. Parameter names have been standardized where possible.
+     * Use "parameter" lists iterively to generate wizards that collect parameters from the UI. Parameter names have been standardized where possible.
+     * 
+     * Parameter Types: 
+     * 
+     *     implicit:
+     *     "current_story"
+     *     "current_page"
+     * 
+     *     user input required:
+     *     "database_story" - select a story from the database
+     *     "text" - a short string
+     *     "rich_text"  - long string representing HTML for page contents
+     *     "page_select" - choose a page in the current story
+     *     "story_select" - select a story that is open in the editor
+     *     "link_select" - select a link from the current page
+     * 
+     * 
+     * 
      * Use "function" fields to add function calls to UI elements
      * 
      * @returns {Object} that has name, parameters, and function calls for edit operations that will need representations in the UI.
