@@ -1,6 +1,5 @@
 # Flask imports
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from flask_mail import Mail, Message
 
 # Other installed modules imports
 from werkzeug.local import LocalProxy
@@ -11,7 +10,7 @@ import os, json, sys, requests, uuid, hashlib, string, random
 from datetime import datetime, timedelta
 
 # Local imports
-from utils import db, render_response, mail
+from utils import url, db, render_response, Mail
 
 
 
@@ -48,12 +47,14 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user:
-            return redirect(url_for('login'))
+            return redirect(url + url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
 
 class User():
+    _collection_name = 'user'
+
     def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[], temp_password=None, temp_password_expire=None):
         self.email = email
         self.password = password
@@ -70,9 +71,9 @@ class User():
             self.temp_password_expire = temp_password_expire.replace(tzinfo=None)
 
     def save(self):
-        user_doc = db.collection('user').where('email', '==', self.email).get()
+        user_doc = db.collection(User._collection_name).where('email', '==', self.email).get()
         if user_doc:
-            user_ref = db.collection('user').document(user_doc[0].id)
+            user_ref = db.collection(User._collection_name).document(user_doc[0].id)
             user_ref.update({
                 'email': self.email,
                 'password': self.password,
@@ -87,7 +88,7 @@ class User():
                 'temp_password_expire': self.temp_password_expire
                 })
         else:
-            db.collection('user').add({
+            db.collection(User._collection_name).add({
                 'email': self.email,
                 'password': self.password,
                 'salt': self.salt,
@@ -103,7 +104,7 @@ class User():
 
     @staticmethod
     def get_user(email=None):
-        query = db.collection('user')
+        query = db.collection(User._collection_name)
         if email:
             query = query.where('email', '==', email)
         query = query.get()
@@ -123,8 +124,7 @@ class User():
 
 
 class FirebaseSession():
-    class Meta:
-        collection_name = 'sessions'
+    _collection_name = 'sessions'
 
     def __init__(self, user_id, session_key=None):
         self.user_id = user_id
@@ -132,14 +132,14 @@ class FirebaseSession():
             self.session_key = session_key
         else:
             self.session_key = str(uuid.uuid4())
-            db.collection('sessions').add({
+            db.collection(FirebaseSession._collection_name).add({
                 'session_key': self.session_key,
                 'user_id': self.user_id
                 })
 
     @staticmethod
     def get_session(session_key=None, user_id=None):
-        query = db.collection('sessions')
+        query = db.collection(FirebaseSession._collection_name)
         if session_key:
             query = query.where('session_key', '==', session_key)
         if user_id:
@@ -151,14 +151,14 @@ class FirebaseSession():
 
     @staticmethod
     def delete_session(session_key=None, user_id=None):
-        query = db.collection('sessions')
+        query = db.collection(FirebaseSession._collection_name)
         if session_key:
             query = query.where('session_key', '==', session_key)
         if user_id:
             query = query.where('user_id', '==', user_id)
         query = query.get()
         if (len(query) > 0):
-            db.collection('sessions').document(query[0].id).delete()
+            db.collection(FirebaseSession._collection_name).document(query[0].id).delete()
 
 
 
@@ -176,7 +176,7 @@ def login():
                 user.authenticated = True
                 user.save()
                 session = login_user(user)
-                return render_response(redirect(url_for('index')), cookies={'__session': session.session_key})
+                return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
         # TODO: Include message in login.html for failed login
         return render_response(render_template('login.html', failed_login=True))
 
@@ -196,7 +196,7 @@ def signup():
         user = User(email=request.form['email'], password=hashed_password, salt=salt, first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
         session = login_user(user)
-        return render_response(redirect(url_for('index')), cookies={'__session': session.session_key})
+        return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
 
     # Returns the signup.html template with the given values
     return render_response(render_template('signup.html'))
@@ -208,7 +208,7 @@ def logout():
         current_user.authenticated = False
         current_user.save()
         FirebaseSession.delete_session(user_id=current_user.email)
-    return render_response(redirect(url_for('index')), delete_cookies=['__session'])
+    return render_response(redirect(url + url_for('index')), delete_cookies=['__session'])
 
 
 @user_blueprint.route('/forgot_password', methods=['GET', 'POST'])
@@ -220,9 +220,7 @@ def forgot_password():
             user.temp_password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
             user.temp_password_expire = datetime.now() + timedelta(minutes=15)
             user.save()
-            # msg = Message('Temporary Passoword', recipients=['brocksmith225@gmail.com'])
-            # msg.html = '<p>Here is your temporary password:</p><h3>' + user.temp_password + '</h3>'
-            # mail.send(msg)
+            mail = Mail(user.email, 'Temporary Password', '<p>Here is your temporary password:</p><h3>' + user.temp_password + '</h3>')
             return render_response(render_template('reset_password_1.html', email=user.email))
         return render_response(render_template('forgot_password.html', no_account=True))
 
@@ -246,8 +244,8 @@ def reset_password():
             user.password = hashed_password
             user.salt = salt
             user.save()
-            return render_response(redirect(url_for('user_blueprint.login')))
-    return render_response(redirect(url_for('user_blueprint.login')))
+            return render_response(redirect(url + url_for('user_blueprint.login')))
+    return render_response(redirect(url + url_for('user_blueprint.login')))
 
 
 # Serves the profile page

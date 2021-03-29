@@ -1,6 +1,5 @@
 # Flask imports
 from flask import make_response
-from flask_mail import Mail
 
 # Firebase imports
 import firebase_admin
@@ -13,6 +12,17 @@ import mock
 # Built-in modules imports
 import os
 
+
+
+
+# Checks which platform we are running on
+platform = os.environ.get('PLATFORM', 'local')
+
+if platform == 'prod':
+    url = 'https://gaknowledgehub.web.app'
+
+if platform == 'local':
+    url = 'http://localhost:8080'
 
 
 
@@ -48,7 +58,16 @@ def render_response(content, allow_cache=False, cookies=None, delete_cookies=Non
 
 
 
-mail = Mail()
+class Mail():
+    _collection_name = 'mail'
 
-def init_mail(app):
-    mail.init_app(app)
+    def __init__(self, to, subject, html):
+        self.to = to
+        self.message = {
+            'subject': subject,
+            'html': html
+        }
+        db.collection(Mail._collection_name).add({
+            'to': self.to,
+            'message': self.message
+            })

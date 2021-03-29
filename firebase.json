@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "ga-knowledge-hub",
+    "site": "gaknowledgehub",
     "public": "static",
     "ignore": [
       "firebase.json",

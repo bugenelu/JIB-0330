@@ -28,7 +28,7 @@ from datetime import datetime
 
 # Local imports
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
-from utils import db, render_response, init_mail
+from utils import url, db, render_response
 from users import User, FirebaseSession, current_user, login_user, login_required, user_blueprint
 from editor_blueprint import editor_blueprint
 
@@ -40,31 +40,12 @@ platform = os.environ.get('PLATFORM', 'local')
 
 if platform == 'prod':
     static_folder = ''
-    url = 'https://gaknowledgehub.web.app'
 
 if platform == 'local':
     static_folder = '../../static'
-    url = 'http://localhost:8080'
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
-app.config['SECRET_KEY'] = 'something unique and secret'
-app.config['SESSION_COOKIE_NAME'] = '__session'
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['UPLOAD_FOLDER'] = 'file_uploads'
-app.config.update(dict(
-    DEBUG = True,
-    MAIL_SERVER = 'smtp.gmail.com',
-    MAIL_PORT = 587,
-    MAIL_USE_TLS = True,
-    MAIL_USE_SSL = False,
-    MAIL_USERNAME = 'gaknowledgehubtest@gmail.com',
-    MAIL_PASSWORD = '_8\'D7(}|B&kzB9@T_1p&',
-))
-init_mail(app)
-
-if platform == 'prod':
-    app.config['SERVER_NAME'] = 'https://gaknowledgehub.web.app'
 
 # blueprints
 app.register_blueprint(editor_blueprint)
