@@ -9,7 +9,7 @@ Welcome to the Editor. The Editor is responsible for:
 
 ---
 The Editor keeps an Object representing its open StoryGraphs with 'story_name' keys.
-The values are stacks of StoryGraphs with the top of the stack being the most recent version of
+The values are StoryStacks of StoryGraphs with the top of the stack being the most recent version of
 a particular graph identified by the key.
 
 This is done to preserve undo ability while the Editor is open. Our expectation is that StoryGraphs
@@ -32,10 +32,26 @@ class Editor {
     }
 
     /**
-     * TODO: Add nice labels for parameters
      * NOTE: With the exception of openStory() and addNodeInGraph(), all Editor operations expect strings for all parameters.
      * Use "name" fields for button labels
-     * Use "parameter" lists iterively to collect parameters from the UI. Parameter names have been standardized where possible.
+     * Use "parameter" lists iterively to generate wizards that collect parameters from the UI. Parameter names have been standardized where possible.
+     * 
+     * Parameter Types: 
+     * 
+     *     implicit:
+     *     "current_story"
+     *     "current_page"
+     * 
+     *     user input required:
+     *     "database_story" - select a story from the database
+     *     "text" - a short string
+     *     "rich_text"  - long string representing HTML for page contents
+     *     "page_select" - choose a page in the current story
+     *     "story_select" - select a story that is open in the editor
+     *     "link_select" - select a link from the current page
+     * 
+     * 
+     * 
      * Use "function" fields to add function calls to UI elements
      * 
      * @returns {Object} that has name, parameters, and function calls for edit operations that will need representations in the UI.
@@ -43,90 +59,334 @@ class Editor {
     getOperations() {
         return [
             {
-                "name": "Undo Last",
-                "params": {
-                    "story_name": "Undo last step for this story?"
-                },
+                "name": "Undo Last Edit",
+                "op_label": "Would you like to undo the last edit?",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    }
+                ],
                 "function": "undoLast(story_name)"
             },
             {
                 "name": "Open Story",
-                "params": ["story_data"],
+                "op_label": "Please select a story to open from the story database.",
+                "params": [
+                    {
+                        "param": "story_data",
+                        "param_label": null,
+                        "param_type": "database_story"
+                    }
+                ],
                 "function": "openStory(story_data)" // openStory requires an Object which is received from the database
             },
             {
                 "name": "Close Story",
-                "params": ["story_name"],
+                "op_label": "Would you like to close this story? Unsaved changes are lost.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    }
+                ],
                 "function": "closeStory(story_name)"
             },
             {
                 "name": "New Story",
-                "params": ["story_name", "story_id"],
+                "op_label": "Create a new story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": "New Story Name",
+                        "param_type": "text"
+                    },
+                    {
+                        "param": "story_id",
+                        "param_label": "Unique ID For This Story", // I don't even know anymore (-MF)
+                        "param_type": "text"
+                    },
+                    "story_name",
+                    "story_id"
+                ],
                 "function": "newStory(story_name, story_id)"
             },
             {
                 "name": "Duplicate Story",
-                "params": ["story_name"],
+                "op_label": "Would you like to duplicate this story?",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                ],
                 "function": "duplicateStory(story_name)"
             },
             {
                 "name": "Edit Story Name",
-                "params": ["story_name", "update_name"],
+                "op_label": "Please enter a new name for this story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "update_name",
+                        "param_label": "New Story Name",
+                        "param_type": "text"
+                    }
+                ],
                 "function": "editStoryName(story_name, update_name)"
             },
             {
                 "name": "Duplicate Story From Page",
-                "params": ["story_name", "page_id"],
+                "op_label": "Please select the page from which you would like to duplicate this story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": "Story Pages",
+                        "param_type": "page_select"
+                    }
+                ],
                 "function": "duplicateFromPage(story_name, page_id)"
             },
             {
                 "name": "Edit Story ID",
-                "params": ["story_name", "update_id"],
+                "op_label": "Please input a new ID for this story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "update_id",
+                        "param_label": "New Story ID",
+                        "param_type": "text" // seems like there are going to be restrictions on characters for this parameter ...
+                    }
+                ],
                 "function": "editStoryID(story_name, update_id)"
             },
             {
                 "name": "Change Story Root",
-                "params": ["story_name", "new_root_id"],
+                "op_label": "Select a new root page for this story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "root_id",
+                        "param_label": "Story Pages",
+                        "param_type": "page_select"
+                    }
+                ],
                 "function": "editRootID(story_name, new_root_id)"
             },
             {
                 "name": "Connect Stories",
-                "params": ["story_name", "page_id", "substory_name", "link_text"],
+                "op_label": "Select a page in this story to receive a link to a selected story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": "Parent Story Page",
+                        "param_type": "page_select"
+                    }, 
+                    {
+                        "param": "substory_name",
+                        "param_label": "Substory",
+                        "param_type": "story_select"
+                    },
+                    {
+                        "param": "link_text",
+                        "param_label": "Link Text",
+                        "param_type": "text"
+                    }
+                ],
                 "function": "connectStoryGraphs(story_name, page_id, substory_name, link_text)"
             },
             {
                 "name": "Add Page to Story",
-                "params": ["story_name", "parent_id", "page_body_text", "page_name", "link_text"], 
+                "op_label": "Create a new page to add to this story.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "parent_id",
+                        "param_label": "Parent Page",
+                        "param_type": "page_select"
+                    }, 
+                    {
+                        "param": "page_body_text",
+                        "param_label": "New Page Content",
+                        "param_type": "rich_text"
+                    },
+                    {
+                        "param": "page_name",
+                        "param_label": "New Page Name",
+                        "param_type": "text"
+                    },
+                    {
+                        "param": "link_text",
+                        "param_label": "Link Text",
+                        "param_type": "text"
+                    }
+                ], 
                 "function": "addNodeInGraph(story_name, parent_id, page_body_text, page_name, link_text)"
             },
             {
                 "name": "Delete Page",
-                "params": ["story_name", "page_id"],
+                "op_label": "Deleting a page also removes its descendant trees and opens them as new stories.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": "Page To Delete",
+                        "param_type": "page_select"
+                    }
+                ],
                 "function": "deleteNodeFromGraph(story_name, page_id)"
             },
             {
                 "name": "Edit Page Name",
-                "params": ["story_name", "page_id", "page_name"],
+                "op_label": "Change the name of this page.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": null,
+                        "param_type": "current_page" // implicit
+                    },
+                    {
+                        "param": "page_name",
+                        "param_label": "New Page Name",
+                        "param_type": "text"
+                    }
+                ],
                 "function": "editPageName(story_name, page_id, page_name)"
             },
             {
                 "name": "Edit Page Contents",
-                "params": ["story_name", "page_id", "page_text"],
+                "op_label": "Update the contents of this page.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": null,
+                        "param_type": "current_page" // implicit
+                    },
+                    {
+                        "param": "page_name",
+                        "param_label": "New Page Contents",
+                        "param_type": "rich_text"
+                    }
+                ],
                 "function": "editPageText(story_name, page_id, page_text)" 
             },
             {
                 "name": "Add Link",
-                "params": ["story_name", "page_id", "child_id", "link_text"],
+                "op_label": "Add a link from this page.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": null,
+                        "param_type": "current_page" // implicit
+                    },
+                    {
+                        "param": "child_id",
+                        "param_label": "Page Link Target",
+                        "param_type": "page_select"
+                    }, 
+                    {
+                        "param": "link_text",
+                        "param_label": "Link Text",
+                        "param_type": "text"
+                    }
+                ],
                 "function": "addLinkInGraph(story_name, page_id, child_id, link_text)"
             },
             {
                 "name": "Delete Link",
-                "params": ["story_name", "page_id", "child_id"],
+                "op_label": "Delete a link from this page. The target page is not deleted.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": null,
+                        "param_type": "current_page" // implicit
+                    },
+                    {
+                        "param": "child_id",
+                        "param_label": "Link To Delete",
+                        "param_type": "link_select"
+                    } 
+                ],
                 "function": "deleteLinkInGraph(story_name, page_id, child_id)"
             },
             {
                 "name": "Edit Link Text",
-                "params": ["story_name", "page_id", "child_id", "link_text"],
+                "op_label": "Update link text for a link from this page.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "page_id",
+                        "param_label": null,
+                        "param_type": "current_page" // implicit
+                    },
+                    {
+                        "param": "child_id",
+                        "param_label": "Link To Edit Text",
+                        "param_type": "link_select"
+                    }, 
+                    {
+                        "param": "link_text",
+                        "param_label": "New Link Text",
+                        "param_type": "text"
+                    }
+                ],
                 "function": "editLinkText(story_name, page_id, child_id, link_text)"
             }
         ]
@@ -249,12 +509,16 @@ class Editor {
 
     /**
      * Undoes the last edit to a StoryGraph
-     * TODO: do some handling if size of stack is 1
      * @param {string} story_name - identifes the story to step backwards 
      * @returns {StoryGraph} version that was removed from this.openStories. Could be saved in a redo cache.
      */
     undoLast(story_name) {
-        return this.openStories[story_name].pop();
+        if (this.openStories[story_name].size > 1) {
+            return this.openStories[story_name].pop();
+        } else {
+            console.log('error: attempted to undo initial state');
+            return null;
+        }
     }
 
     /**
