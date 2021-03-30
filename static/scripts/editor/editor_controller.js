@@ -197,3 +197,26 @@ $(".div7").on("click", ".page_button", function(e) {
     document.getElementById("page-pane-child").innerHTML = page.page_body_text;
 
 });
+
+var operations = editor.getOperations();
+var added_params = [];
+for (let i = 0; i < operations.length; i++) {
+    var b = document.createElement("button");
+    b.innerHTML = operations[i]['name'];
+    b.setAttribute('id', operations[i]['name']);
+    // b.setAttribute('class', 'open_story');
+    $(".div8")[0].appendChild(b);
+    for (let j = 0; j < operations[i]['params'].length; j++) {
+        if (operations[i]['params'][j]['param_label'] != null) {
+            if (!added_params.includes(operations[i]['params'][j]['param'])) {
+                added_params.push(operations[i]['params'][j]['param']);
+                if (operations[i]['params'][j]['param_type'] == 'text') {}
+                else if (operations[i]['params'][j]['param_type'] == 'rich_text') {}
+                else if (operations[i]['params'][j]['param_type'] == 'dropdown') {}
+                else {
+                    alert("No type specified");
+                }
+            }
+        }
+    }
+}

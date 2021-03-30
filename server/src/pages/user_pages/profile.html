@@ -6,15 +6,9 @@
 
 <body>
 	<header>
-		<nav>
-		    <ul>
-		    	<li><a href="/logout">Logout</a></li>
-		    	<li><a href="/">Home</a></li>
-		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
-			</ul>
-		</nav>
+		{% include 'templates/navbar_user.html' %}
 		<section class="header-content">
-		    <h1>Hello, {{ first_name }}</h1>
+		    <h1>Profile Page</h1>
 		    <p> View and edit your profile here </p>
 		    <button onclick="window.location.href='/profile/edit';">Edit Profile</button>
 		    <button onclick="window.location.href='/favorites';">Favorites</button>

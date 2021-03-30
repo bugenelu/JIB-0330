@@ -6,17 +6,10 @@
 
 <body>
 	<header>
-		<nav>
-		    <ul>
-		    	<li><a href="/logout">Logout</a></li>
-		    	<li><a href="/">Home</a></li>
-		    	<li><a href="/profile">Profile</a></li>
-		     	<li><a href="https://www.greenhouseatl.org/" title="www.greenhouseatl.org" target="_blank"> Greenhouse Accelerator </a></li>	     	
-			</ul>
-		</nav>
+		{% include 'templates/navbar_user.html' %}
 		<section class="header-content">
-		    <h1>Hello, {{ first_name }}</h1>
-		    <p> View and edit your profile here </p>
+		    <h1>Favorites Page</h1>
+		    <p> View and unsave favorited pages </p>
 		    <button onclick="window.location.href='/profile';">Return to Profile</button>
 		</section>
 

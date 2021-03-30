@@ -10,6 +10,9 @@
 
 	<body>
 		{% if not preview %}
+			<header>
+				{% include 'templates/navbar_user.html' %}
+			</header>
 			{% if favorited %}
 				<i class="fas fa-heart" id="favorite"></i>
 			{% else %}

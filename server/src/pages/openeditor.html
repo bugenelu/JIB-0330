@@ -32,6 +32,9 @@
 </head>
 
 <body>
+	<header>
+		{% include 'templates/navbar_admin.html' %}
+	</header>
 	<div class="parent2">
 		<div class="div5" id="storage">
 			<!-- <button id="2000" class="storybox">Story 1</button> -->
@@ -63,13 +66,7 @@
 				<p id="page-pane-child">This is text</p>
 			</div>
 
-			<div class="div8" style="width: 15%"> 
-				<button>edit</button> <br>
-				<button>add subtree</button> <br>
-				<button>add new child</button> <br>
-				<button>add link</button> <br>
-				<button id="save_story">save</button> <br>	
-				<button id="discard_story">discard</button> <br>	
+			<div class="div8" style="width: 15%">
 			</div>
 		</div>
 	</div>
@@ -78,5 +75,21 @@
 	<div class="popup" id="popup-box">
 		<span class="close">&times;</span>
 		<h1> Select a Story to Open</h1> 
+	</div>
+
+	<div class="popup" id="editor-wizard">
+		<form><label></label><input type="text" name="story_name">
+			  <input type="text" name="story_id">
+			  <input type="text" name="update_name">
+			  <select name="page_id"></select> <!-- Add javascript to populate the choices dynamically -->
+			  <input type="text" name="update_id">
+			  <select name="root_id"></select> <!-- Add javascript to populate the choices dynamically -->
+			  <select name="substory_name"></select> <!-- Add javascript to populate the choices dynamically -->
+			  <input type="text" name="link_text">
+			  <select name="parent_id"></select> <!-- Add javascript to populate the choices dynamically -->
+			  <input type="text" name="page_body_text">
+			  <input type="text" name="page_name">
+			  <select name="child_id"></select> <!-- Add javascript to populate the choices dynamically -->
+		</form>
 	</div>
 </body>

@@ -5,14 +5,7 @@
 
 <body>
 	<header>
-		<nav>
-		    <ul>
-		    	<li><a href="/logout">Logout</a></li>
-		    	<li><a href="/profile">Profile</a></li>
-		    	<li><a href="/upload">File Upload</a></li>
-		    	<li><a href="/editor">Editor</a></li>
-			</ul>
-		</nav>
+		{% include 'templates/navbar_admin.html' %}
 		<section class="header-content">
 		    <h1>Welcome, {{ first_name }}</h1>
 		</section>

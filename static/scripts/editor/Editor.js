@@ -70,18 +70,18 @@ class Editor {
                 ],
                 "function": "undoLast(story_name)"
             },
-            {
-                "name": "Open Story",
-                "op_label": "Please select a story to open from the story database.",
-                "params": [
-                    {
-                        "param": "story_data",
-                        "param_label": null,
-                        "param_type": "database_story"
-                    }
-                ],
-                "function": "openStory(story_data)" // openStory requires an Object which is received from the database
-            },
+            // {
+            //     "name": "Open Story",
+            //     "op_label": "Please select a story to open from the story database.",
+            //     "params": [
+            //         {
+            //             "param": "story_data",
+            //             "param_label": null,
+            //             "param_type": "database_story"
+            //         }
+            //     ],
+            //     "function": "openStory(story_data)" // openStory requires an Object which is received from the database
+            // },
             {
                 "name": "Close Story",
                 "op_label": "Would you like to close this story? Unsaved changes are lost.",
@@ -154,7 +154,7 @@ class Editor {
                     {
                         "param": "page_id",
                         "param_label": "Story Pages",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }
                 ],
                 "function": "duplicateFromPage(story_name, page_id)"
@@ -188,7 +188,7 @@ class Editor {
                     {
                         "param": "root_id",
                         "param_label": "Story Pages",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }
                 ],
                 "function": "editRootID(story_name, new_root_id)"
@@ -205,12 +205,12 @@ class Editor {
                     {
                         "param": "page_id",
                         "param_label": "Parent Story Page",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }, 
                     {
                         "param": "substory_name",
                         "param_label": "Substory",
-                        "param_type": "story_select"
+                        "param_type": "dropdown"
                     },
                     {
                         "param": "link_text",
@@ -232,7 +232,7 @@ class Editor {
                     {
                         "param": "parent_id",
                         "param_label": "Parent Page",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }, 
                     {
                         "param": "page_body_text",
@@ -264,7 +264,7 @@ class Editor {
                     {
                         "param": "page_id",
                         "param_label": "Page To Delete",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }
                 ],
                 "function": "deleteNodeFromGraph(story_name, page_id)"
@@ -306,7 +306,7 @@ class Editor {
                         "param_type": "current_page" // implicit
                     },
                     {
-                        "param": "page_name",
+                        "param": "page_body_text",
                         "param_label": "New Page Contents",
                         "param_type": "rich_text"
                     }
@@ -330,7 +330,7 @@ class Editor {
                     {
                         "param": "child_id",
                         "param_label": "Page Link Target",
-                        "param_type": "page_select"
+                        "param_type": "dropdown"
                     }, 
                     {
                         "param": "link_text",
@@ -357,7 +357,7 @@ class Editor {
                     {
                         "param": "child_id",
                         "param_label": "Link To Delete",
-                        "param_type": "link_select"
+                        "param_type": "dropdown"
                     } 
                 ],
                 "function": "deleteLinkInGraph(story_name, page_id, child_id)"
@@ -379,7 +379,7 @@ class Editor {
                     {
                         "param": "child_id",
                         "param_label": "Link To Edit Text",
-                        "param_type": "link_select"
+                        "param_type": "dropdown"
                     }, 
                     {
                         "param": "link_text",
