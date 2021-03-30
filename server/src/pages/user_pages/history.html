@@ -19,10 +19,10 @@
 			<!-- Dictionary Variable -->
 			{% for element in history %}
 				{% set history_index = loop.index %}
-				<button class="collapsible">{{ element[0][0] }}</button>
+				<button class="collapsible">{{ element[0][0] }}<span class="preview-button" value="{{ history_index }}-{{ element|length }}">Preview History</span></button>
 				<div class="collapsible-content">
 				{% for elem in element %}
-					<p><a href="/story/{{ elem[1] }}">{{ elem[0] }}</a><i class="far fa-eye preview-button" value="{{ history_index }}-{{ loop.index }}"></i></p>
+					<p><a href="/story/{{ elem[1] }}" target="_blank">{{ elem[0] }}</a></p>
 				{% endfor %}
 				</div>
 			{% endfor %}

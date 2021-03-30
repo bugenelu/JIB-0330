@@ -360,6 +360,10 @@ input[type=submit]:hover, input[type=button]:hover {
   color: white;
 }
 
+.preview-button:hover {
+  text-decoration: underline;
+}
+
 .history-preview {
   display: none;
   position: fixed;
@@ -465,9 +469,11 @@ input[type=submit]:hover, input[type=button]:hover {
 
 .fa-heart {
   position: fixed;
-  left: 10px;
-  top: 10px;
+  left: 90px;
+  top: 46px;
   color: var(--palegreen);
   height: 50px;
   width:50px;
+  font-size: 30px;
+  cursor: pointer;
 }
