@@ -22,7 +22,14 @@
 				<button class="collapsible">{{ element[0][0] }}<span class="preview-button" value="{{ history_index }}-{{ element|length }}">Preview History</span></button>
 				<div class="collapsible-content">
 				{% for elem in element %}
-					<p><a href="/story/{{ elem[1] }}" target="_blank">{{ elem[0] }}</a></p>
+					<div>
+						<form method="POST" class="hidden-form" action="/story/{{ elem[1] }}">
+							<input style="display: none" name="prev_page_id" type="text" value="">
+							<input style="display: none" name="history_id" type="number" value="{{ history_index - 1 }}">
+							<input style="display: none" name="forward" type="text" value="True">
+							<input type="submit" value="{{ elem[0] }}">
+						</form>
+					</div>
 				{% endfor %}
 				</div>
 			{% endfor %}

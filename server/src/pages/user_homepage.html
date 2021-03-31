@@ -12,7 +12,12 @@
 		    <p> Click "Begin Story" to start on your journey <br>
 		        toward sustainable practices</p>
 		    {% if continue_story %}
-		    	<button onclick="window.location.href='/story/{{ continue_story }}';">Continue Story</button>
+			    <form method="POST" class="hidden-form" action="/story/{{ continue_story }}">
+					<input style="display: none" name="prev_page_id" type="text" value="">
+					<input style="display: none" name="history_id" type="number" value="{{ history }}">
+					<input style="display: none" name="forward" type="text" value="True">
+					<input type="submit" value="Continue Story">
+				</form>
 		    {% endif %}
 		    <button onclick="window.location.href='/story/{{ begin_story }}';">Begin Story</button>
 		</section>

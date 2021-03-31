@@ -283,7 +283,7 @@ def favorites():
         story_ref = db.collection('stories').document(favorite['story'])
         story_doc = story_ref.get()
         page = story_doc.get('page_nodes.`' + favorite['page_id'] + '`')
-        favorites.insert(0, (page['page_name'], favorite['story'] + "/" + favorite['page_id']))
+        favorites.insert(0, (page['page_name'], favorite['story'] + "/" + favorite['page_id'], favorite['history_id']))
 
     # Returns the favorites.html template with the given values
     return render_response(render_template('user_pages/favorites.html', first_name=current_user.first_name, favorites=favorites))
@@ -293,7 +293,8 @@ def favorites():
 def add_favorites():
     current_user.favorites.append({
         'page_id': request.form['page_id'],
-        'story': request.form['story']
+        'story': request.form['story'],
+        'history_id': request.form['history_id']
     })
     current_user.save()
 
@@ -302,10 +303,10 @@ def add_favorites():
 
 @user_blueprint.route('/remove_favorite', methods=['POST'])
 def remove_favorite():
-    page_id, story = request.form['page_id'], request.form['story']
+    page_id, story, history_id = request.form['page_id'], request.form['story'], request.form['history_id']
 
     for favorite in current_user.favorites:
-        if favorite['page_id'] == page_id and favorite['story'] == story:
+        if favorite['page_id'] == page_id and favorite['story'] == story and favorite['history_id'] == history_id:
             current_user.favorites.remove(favorite)
             break
     current_user.save()

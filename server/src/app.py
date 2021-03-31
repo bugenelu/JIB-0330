@@ -65,14 +65,14 @@ def index():
         begin_story = db.collection('application_states').document('application_state').get().get('active_story_id')
         most_recent_history = None
         continue_story = None
-        for history in current_user.history:
+        for index, history in enumerate(current_user.history):
             if most_recent_history is None:
-                most_recent_history = history
-                continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
-            elif history['last_updated'].replace(tzinfo=None) > most_recent_history['last_updated'].replace(tzinfo=None):
-                most_recent_history = history
-                continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
-        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story))
+                most_recent_history = index
+                continue_story = current_user.history[most_recent_history]['story'] + '/' + current_user.history[most_recent_history]['pages'][-1]
+            elif history['last_updated'].replace(tzinfo=None) > current_user.history[most_recent_history]['last_updated'].replace(tzinfo=None):
+                most_recent_history = index
+                continue_story = current_user.history[most_recent_history]['story'] + '/' + current_user.history[most_recent_history]['pages'][-1]
+        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story, history=most_recent_history))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
@@ -100,8 +100,136 @@ def story_root(story):
         preview = False
     guest = current_user == None
 
+    history_id = None
     if not preview and not guest:
         # Adds the root page to a new history
+        history_found = False
+        for index, history in enumerate(current_user.history):
+            if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                history['last_updated'] = datetime.now()
+                history_found = True
+                history_id = index
+        if not history_found:
+            new_history = {}
+            new_history['last_updated'] = datetime.now()
+            new_history['story'] = story
+            new_history['pages'] = [page_id]
+            current_user.history.append(new_history)
+            history_id = len(current_user.history) - 1
+        current_user.save()
+
+    # Gets the page data for the specified page ID
+    page = story_doc.get('page_nodes.`' + page_id + '`')
+
+    favorited = False
+    if not guest:
+        for favorite in current_user.favorites:
+            if favorite['story'] == story and favorite['page_id'] == page_id:
+                favorited = True
+
+    # Returns the story_page.html template with the specified page
+    return render_response(render_template('story_page.html', guest=guest, favorited=favorited, story=story, page=page, preview=preview, history=history_id))
+
+
+# Serves the specified page of the specified story
+@app.route('/story/<story>/<page_id>', methods=['GET', 'POST'])
+def story_page(story, page_id):
+    # Gets the DocumentReference to the story document in Firestore
+    story_ref = db.collection('stories').document(story)
+
+    # Gets the DocumentSnapshot of the story document in Firestore
+    story_doc = story_ref.get()
+
+    # Checks whether or not the story exists
+    if not story_doc.exists:
+        # TODO: return an error page
+        pass
+
+    # Gets the page data for the specified page ID
+    page = story_doc.get('page_nodes.`' + page_id + '`')
+
+    # Gets whether or not the user is a guest
+    guest = current_user == None
+
+    # Gets whether or not the page is favorited
+    favorited = False
+    if not guest:
+        for favorite in current_user.favorites:
+            if favorite['story'] == story and favorite['page_id'] == page_id:
+                favorited = True
+
+    # Gets whether or not the page should be displayed as a preview
+    preview = request.args.get('preview')
+    if preview == None:
+        preview = False
+
+    if request.method == 'POST':
+        prev_page_id = request.form['prev_page_id']
+        history_id = request.form['history_id']
+        forward = request.form['forward']
+        back = prev_page_id
+        if not guest:
+            if history_id == '':
+                history_found = False
+                for index, history in enumerate(current_user.history):
+                    if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                        history['last_updated'] = datetime.now()
+                        history_found = True
+                        history_id = index
+                if not history_found:
+                    new_history = {}
+                    new_history['last_updated'] = datetime.now()
+                    new_history['story'] = story
+                    new_history['pages'] = [page_id]
+                    current_user.history.append(new_history)
+                    history_id = len(current_user.history) - 1
+                current_user.save()
+            else:
+                history_id = int(history_id)
+                history = current_user.history[history_id]
+                if forward:
+                    if page_id not in current_user.history[history_id]['pages']:
+                        if prev_page_id == current_user.history[history_id]['pages'][-1]:
+                            current_user.history[history_id]['pages'].append(page_id)
+                            current_user.history[history_id]['last_updated'] = datetime.now()
+                        else:
+                            new_history = {}
+                            new_history['pages'] = []
+                            for p in current_user.history[history_id]['pages']:
+                                new_history['pages'].append(p)
+                                if p == prev_page_id:
+                                    break
+                            new_history['pages'].append(page_id)
+                            new_history['story'] = current_user.history[history_id]['story']
+                            new_history['last_updated'] = datetime.now()
+                            current_user.history.append(new_history)
+                            history_id = len(current_user.history) - 1
+                        for index, h1 in enumerate(current_user.history):
+                            for h2 in current_user.history:
+                                if h1 != h2 and len(h1['pages']) == len(h2['pages']):
+                                    history_matches = True
+                                    for p in range(len(h1['pages'])):
+                                        if h1['pages'][p] != h2['pages'][p]:
+                                            history_matches = False
+                                    if history_matches:
+                                        current_user.history.remove(h2)
+                                        h1['last_updated'] = datetime.now()
+                                        history_id = index
+                    else:
+                        current_user.history[history_id]['last_updated'] = datetime.now()
+                    current_user.save()
+                else:
+                    # Added behavior for backwards navigation
+                    pass
+                back = None
+                for p in current_user.history[history_id]['pages']:
+                    if p == page_id:
+                        break
+                    back = p
+        # Returns the story_page.html template with the specified page
+        return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview, back=back, history=history_id))
+
+    if not preview and not guest:
         history_found = False
         for history in current_user.history:
             if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
@@ -115,87 +243,8 @@ def story_root(story):
             current_user.history.append(new_history)
         current_user.save()
 
-    # Gets the page data for the specified page ID
-    page = story_doc.get('page_nodes.`' + page_id + '`')
-
-    favorited = False
-    if not guest:
-        for favorite in current_user.favorites:
-            if favorite['story'] == story and favorite['page_id'] == page_id:
-                favorited = True
-
-    # TODO: Add back button
-
-    # Returns the story_page.html template with the specified page
-    return render_response(render_template('story_page.html', guest=guest, favorited=favorited, story=story, page=page, preview=preview))
-
-
-# Serves the specified page of the specified story
-@app.route('/story/<story>/<page_id>')
-def story_page(story, page_id):
-    # Gets the DocumentReference to the story document in Firestore
-    story_ref = db.collection('stories').document(story)
-
-    # Gets the DocumentSnapshot of the story document in Firestore
-    story_doc = story_ref.get()
-
-    # Checks whether or not the story exists
-    if not story_doc.exists:
-        # TODO: return an error page
-        pass
-
-
-    preview = request.args.get('preview')
-    if preview == None:
-        preview = False
-    guest = current_user == None
-
-    if not preview and not guest:
-        if page_id == story_doc.get('root_id'):
-            history_found = False
-            for history in current_user.history:
-                if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
-                    history['last_updated'] = datetime.now()
-                    history_found = True
-            if not history_found:
-                new_history = {}
-                new_history['last_updated'] = datetime.now()
-                new_history['story'] = story
-                new_history['pages'] = [page_id]
-                current_user.history.append(new_history)
-        else:
-            url = request.referrer
-            prev_page_id = url[url.rfind('/') + 1:]
-            if prev_page_id == story:
-                prev_page_id = story_doc.get('root_id')
-
-            # Adds the page to the history
-            for history in current_user.history:
-                if history['story'] == story and history['pages'][-1] == prev_page_id:
-                    history['pages'].append(page_id)
-                    history['last_updated'] = datetime.now()
-                    for h in current_user.history:
-                        history_matches = True
-                        if history['last_updated'] != h['last_updated'] and len(history['pages']) == len(h['pages']):
-                            for p in range(len(h['pages'])):
-                                if history['pages'][p] != h['pages'][p]:
-                                    history_matches = False
-                            if history_matches:
-                                current_user.history.remove(h)
-        current_user.save()
-
-    # Gets the page data for the specified page ID
-    page = story_doc.get('page_nodes.`' + page_id + '`')
-
-    favorited = False
-    if not guest:
-        for favorite in current_user.favorites:
-            if favorite['story'] == story and favorite['page_id'] == page_id:
-                favorited = True
-
     # Returns the story_page.html template with the specified page
     return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview))
-
 
 
 # Serves the editor page

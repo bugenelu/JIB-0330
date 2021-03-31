@@ -15,14 +15,24 @@
 					{% include 'templates/navbar_guest.html' %}
 				{% else %}
 					{% include 'templates/navbar_user.html' %}
-				{% endif %}}
+				{% endif %}
 			</header>
 			{% if not guest %}
-				{% if favorited %}
-					<i class="fas fa-heart" id="favorite"></i>
-				{% else %}
-					<i class="far fa-heart" id="favorite"></i>
-				{% endif %}
+				<div class="story-nav">
+					{% if back %}
+						<form method="POST" class="hidden-form" action="/story/{{ story }}/{{ back }}">
+							<input style="display: none" name="prev_page_id" type="text" value="{{ page['page_id'] }}">
+							<input style="display: none" name="history_id" type="number" value="{{ history }}">
+							<input style="display: none" name="forward" type="text" value="False">
+							<input type="submit" value="Back">
+						</form>
+					{% endif %}
+					{% if favorited %}
+						<i class="fas fa-heart" id="favorite"></i>
+					{% else %}
+						<i class="far fa-heart" id="favorite"></i>
+					{% endif %}
+				</div>
 			{% endif %}
 		{% endif %}
 
@@ -31,18 +41,25 @@
 		</section>
 
 		{% for child in page['page_children'] %}
-			<p class="storytext">
+			<div class="storytext">
 				{% if preview %}
 					<span class="mimic-link">{{ page['page_children'][child]['link_text'] }}</span>
 				{% else %}
-					<a class="storylink" href="/story/{{ story }}/{{ child }}">{{ page['page_children'][child]['link_text'] }}</a>
+				    <form method="POST" action="/story/{{ story }}/{{ child }}">
+						<input style="display: none" name="prev_page_id" type="text" value="{{ page['page_id'] }}">
+						<input style="display: none" name="history_id" type="number" value="{{ history }}">
+						<input style="display: none" name="forward" type="text" value="True">
+						<input class="storylink" type="submit" value="{{ page['page_children'][child]['link_text'] }}">
+					</form>
+					<!-- <a class="storylink" href="/story/{{ story }}/{{ child }}"></a> -->
 				{% endif %}
-			</p>
+			</div>
 		{% endfor %}
 
 		<form style="display: none">
 			<input name="page_id" type="text" value="{{page['page_id']}}">
 			<input name="story" type="text" value={{story}}>
+			<input name="history_id" type="number" value="{{ history }}">
 		</form>
 
 		<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
