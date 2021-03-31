@@ -478,3 +478,9 @@ input[type=submit]:hover, input[type=button]:hover {
   font-size: 30px;
   cursor: pointer;
 }
+
+.story-content {
+  margin-top: 150px;
+  margin-left: 25px;
+  margin-right: 25px;
+}

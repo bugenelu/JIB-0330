@@ -73,8 +73,7 @@ def index():
                 most_recent_history = history
                 continue_story = most_recent_history['story'] + '/' + most_recent_history['pages'][-1]
         return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story))
-    # abort(500)
-    # print(current_user.email)
+
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))
 
@@ -99,8 +98,9 @@ def story_root(story):
     preview = request.args.get('preview')
     if preview == None:
         preview = False
+    guest = current_user == None
 
-    if not preview:
+    if not preview and not guest:
         # Adds the root page to a new history
         history_found = False
         for history in current_user.history:
@@ -119,12 +119,15 @@ def story_root(story):
     page = story_doc.get('page_nodes.`' + page_id + '`')
 
     favorited = False
-    for favorite in current_user.favorites:
-        if favorite['story'] == story and favorite['page_id'] == page_id:
-            favorited = True
+    if not guest:
+        for favorite in current_user.favorites:
+            if favorite['story'] == story and favorite['page_id'] == page_id:
+                favorited = True
+
+    # TODO: Add back button
 
     # Returns the story_page.html template with the specified page
-    return render_response(render_template('story_page.html', favorited=favorited, story=story, page=page, preview=preview))
+    return render_response(render_template('story_page.html', guest=guest, favorited=favorited, story=story, page=page, preview=preview))
 
 
 # Serves the specified page of the specified story
@@ -145,8 +148,9 @@ def story_page(story, page_id):
     preview = request.args.get('preview')
     if preview == None:
         preview = False
+    guest = current_user == None
 
-    if not preview:
+    if not preview and not guest:
         if page_id == story_doc.get('root_id'):
             history_found = False
             for history in current_user.history:
@@ -184,12 +188,13 @@ def story_page(story, page_id):
     page = story_doc.get('page_nodes.`' + page_id + '`')
 
     favorited = False
-    for favorite in current_user.favorites:
-        if favorite['story'] == story and favorite['page_id'] == page_id:
-            favorited = True
+    if not guest:
+        for favorite in current_user.favorites:
+            if favorite['story'] == story and favorite['page_id'] == page_id:
+                favorited = True
 
     # Returns the story_page.html template with the specified page
-    return render_response(render_template("story_page.html", favorited=favorited, story=story, page=page, preview=preview))
+    return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview))
 
 
 
@@ -241,6 +246,7 @@ def editor():
     import_id = '2000'
     firestoreTwineConvert(db, input_file_name, import_id)
     return 'Success!'
+
 
 @app.route('/admin/twine')
 def twine():

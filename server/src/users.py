@@ -47,7 +47,18 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user:
-            return redirect(url + url_for('login'))
+            return redirect(url + url_for('user_blueprint.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user:
+            return render_response(redirect(url + url_for('login')))
+        if not current_user.admin:
+            return render_response(render_template('admin_access_denied.html'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -189,8 +200,8 @@ def login():
 def signup():
     if request.method == 'POST':
         if User.get_user(email=request.form['email']):
-            # TODO: Include message in login.html for user already exists
-            return render_response(render_template('user_pages/login.html', user_exists=True))
+            # TODO: Include message in signup.html for user already exists
+            return render_response(render_template('user_pages/signup.html', user_exists=True))
         salt = str(uuid.uuid4())
         hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
         user = User(email=request.form['email'], password=hashed_password, salt=salt, first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
@@ -216,7 +227,6 @@ def forgot_password():
     if request.method == 'POST':
         user = User.get_user(email=request.form['email'])
         if user:
-            # TODO: email temporary password to the user
             user.temp_password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
             user.temp_password_expire = datetime.now() + timedelta(minutes=15)
             user.save()
@@ -252,8 +262,16 @@ def reset_password():
 @user_blueprint.route('/profile')
 @login_required
 def profile():
+    # TODO: Add admin profile page
     # Returns the profile.html template with the given values
     return render_response(render_template('user_pages/profile.html', first_name=current_user.first_name))
+
+# Serves the profile edit page
+@user_blueprint.route('/edit_profile')
+@login_required
+def edit_profile():
+    # TODO: Add profile edit page
+    pass
 
 
 # Serves the favorites page
