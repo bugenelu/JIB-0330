@@ -94,25 +94,25 @@ class Editor {
                 ],
                 "function": "closeStory(story_name)"
             },
-            {
-                "name": "New Story",
-                "op_label": "Create a new story.",
-                "params": [
-                    {
-                        "param": "story_name",
-                        "param_label": "New Story Name",
-                        "param_type": "text"
-                    },
-                    {
-                        "param": "story_id",
-                        "param_label": "Unique ID For This Story", // I don't even know anymore (-MF)
-                        "param_type": "text"
-                    },
-                    "story_name",
-                    "story_id"
-                ],
-                "function": "newStory(story_name, story_id)"
-            },
+            // {
+            //     "name": "New Story",
+            //     "op_label": "Create a new story.",
+            //     "params": [
+            //         {
+            //             "param": "story_name",
+            //             "param_label": "New Story Name",
+            //             "param_type": "text"
+            //         },
+            //         {
+            //             "param": "story_id",
+            //             "param_label": "Unique ID For This Story", // I don't even know anymore (-MF)
+            //             "param_type": "text"
+            //         },
+            //         "story_name",
+            //         "story_id"
+            //     ],
+            //     "function": "newStory(story_name, story_id)"
+            // },
             {
                 "name": "Duplicate Story",
                 "op_label": "Would you like to duplicate this story?",
