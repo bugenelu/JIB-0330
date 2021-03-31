@@ -33,7 +33,7 @@
 
 <body>
 	<header>
-		{% include 'templates/navbar_admin.html' %}
+		<!-- {% include 'templates/navbar_admin.html' %} -->
 	</header>
 	<div class="parent2">
 		<div class="div5" id="storage">
@@ -47,14 +47,6 @@
 		</div>
 		<div class="div6" id="other-storage"> 
 			<p id="metadata">*THIS IS METADATA*</p>
-			<div id="new-story-pane">
-				<p>New Story Name</p>
-				
-				<input id="story-name" type="text">
-				<button>Create New Story</button>
-			</div>
-			<p> Story names can only contain letters, numbers, underscores, and hyphens</p>
-
 		</div>
 
 		<div id="page-list-parent">
@@ -77,19 +69,5 @@
 		<h1> Select a Story to Open</h1> 
 	</div>
 
-	<div class="popup" id="editor-wizard">
-		<form><label></label><input type="text" name="story_name">
-			  <input type="text" name="story_id">
-			  <input type="text" name="update_name">
-			  <select name="page_id"></select> <!-- Add javascript to populate the choices dynamically -->
-			  <input type="text" name="update_id">
-			  <select name="root_id"></select> <!-- Add javascript to populate the choices dynamically -->
-			  <select name="substory_name"></select> <!-- Add javascript to populate the choices dynamically -->
-			  <input type="text" name="link_text">
-			  <select name="parent_id"></select> <!-- Add javascript to populate the choices dynamically -->
-			  <input type="text" name="page_body_text">
-			  <input type="text" name="page_name">
-			  <select name="child_id"></select> <!-- Add javascript to populate the choices dynamically -->
-		</form>
-	</div>
+	
 </body>

@@ -247,8 +247,8 @@ input[type=submit]:hover, input[type=button]:hover {
 
 .parent2 {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	grid-template-rows: repeat(5, 1fr);
+	/* grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(5, 1fr); */
 	grid-column-gap: 0px;
 	grid-row-gap: 0px;
 	height: 100%;
@@ -458,9 +458,10 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 #page-list-parent {
-  max-height: 650px;
+  /* max-height: 100%; */
+  height: auto;
   display: flex; 
-  width: 100%;"
+  width: 100%;
 }
 
 #save_story {
