@@ -11,16 +11,22 @@
 	<body>
 		{% if not preview %}
 			<header>
-				{% include 'templates/navbar_user.html' %}
+				{% if guest %}
+					{% include 'templates/navbar_guest.html' %}
+				{% else %}
+					{% include 'templates/navbar_user.html' %}
+				{% endif %}}
 			</header>
-			{% if favorited %}
-				<i class="fas fa-heart" id="favorite"></i>
-			{% else %}
-				<i class="far fa-heart" id="favorite"></i>
+			{% if not guest %}
+				{% if favorited %}
+					<i class="fas fa-heart" id="favorite"></i>
+				{% else %}
+					<i class="far fa-heart" id="favorite"></i>
+				{% endif %}
 			{% endif %}
 		{% endif %}
 
-		<section class="header-content">
+		<section class="story-content">
 			<p class="storytext">{{ page['page_body_text'] | safe }}</p>
 		</section>
 
