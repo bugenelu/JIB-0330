@@ -89,8 +89,7 @@ def story_root(story):
 
     # Checks whether or not the story exists
     if not story_doc.exists:
-        # TODO: return an error page
-        pass
+        abort(404)
 
     # Gets the root page's page ID
     page_id = story_doc.get('root_id')
@@ -142,8 +141,11 @@ def story_page(story, page_id):
 
     # Checks whether or not the story exists
     if not story_doc.exists:
-        # TODO: return an error page
-        pass
+        abort(404)
+
+    # Checks whether or not the page exists in the story
+    if page_id not in story_doc.get('page_nodes'):
+        abort(404)
 
     # Gets the page data for the specified page ID
     page = story_doc.get('page_nodes.`' + page_id + '`')
