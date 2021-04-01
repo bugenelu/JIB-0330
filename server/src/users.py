@@ -188,7 +188,6 @@ def login():
                 user.save()
                 session = login_user(user)
                 return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
-        # TODO: Include message in login.html for failed login
         return render_response(render_template('user_pages/login.html', failed_login=True))
 
     # Returns the login.html template with the given values
@@ -200,7 +199,6 @@ def login():
 def signup():
     if request.method == 'POST':
         if User.get_user(email=request.form['email']):
-            # TODO: Include message in signup.html for user already exists
             return render_response(render_template('user_pages/signup.html', user_exists=True))
         salt = str(uuid.uuid4())
         hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()

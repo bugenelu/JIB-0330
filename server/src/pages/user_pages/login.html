@@ -11,19 +11,22 @@
 	</header>
 	<div class="centerbox">
 		<h1>Login:</h1>
-	<form method="POST" action="/login">
-		<input type="email" name="email" placeholder="Email" autocomplete="email" required>
-		<br>
-		<input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
-		<br>
-		<input type="submit" value="Login">
-		<br>
-		<p class="smalltext">Don't have an account?</p>
-		<a class="smalltext" href="/signup">Sign up here.</a>
-		<br>
-		<p class="smalltext">Forgot your password?</p>
-		<a class="smalltext" href="/forgot_password">Reset it here.</a>
-	</form>
+		{% if failed_login %}
+			<p class="error-message">The email and/or password you provided was incorrect.</p>
+		{% endif %}
+		<form method="POST" action="/login">
+			<input type="email" name="email" placeholder="Email" autocomplete="email" required>
+			<br>
+			<input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+			<br>
+			<input type="submit" value="Login">
+			<br>
+			<p class="smalltext">Don't have an account?</p>
+			<a class="smalltext" href="/signup">Sign up here.</a>
+			<br>
+			<p class="smalltext">Forgot your password?</p>
+			<a class="smalltext" href="/forgot_password">Reset it here.</a>
+		</form>
 	</div>
 
 

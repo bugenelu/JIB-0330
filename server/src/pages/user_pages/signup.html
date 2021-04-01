@@ -10,22 +10,25 @@
 		{% include 'templates/navbar_guest.html' %}
 	</header>
 	<div class="centerbox">
-	<h1>Sign Up:</h1>
-	<form method="POST" action="/signup">
-		<input type="text" id="firstName" name="first-name" placeholder="First Name" autocomplete="given-name" required>
-		<input type="text" id="lastName" name="last-name" placeholder="Last Name" autocomplete="family-name" required>
-		<br>
-		<input type="email" name="email" placeholder="Email" autocomplete="email" autocomplete="email" required>
-		<br>
-		<input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
-		<br>
-		<input type="password" name="confirm-password" placeholder="Confirm Password" autocomplete="new-password" required>
-		<br>
-		<input type="submit" value="Sign Up">
-		<br>
-		<p class="smalltext">Already have an account?</p>
-		<a class="smalltext" href="/login">Login here.</a>
-	</form>
+		<h1>Sign Up:</h1>
+		{% if user_exists %}
+			<p class="error-message">An account already exists with that email.</p>
+		{% endif %}
+		<form method="POST" action="/signup">
+			<input type="text" id="firstName" name="first-name" placeholder="First Name" autocomplete="given-name" required>
+			<input type="text" id="lastName" name="last-name" placeholder="Last Name" autocomplete="family-name" required>
+			<br>
+			<input type="email" name="email" placeholder="Email" autocomplete="email" autocomplete="email" required>
+			<br>
+			<input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
+			<br>
+			<input type="password" name="confirm-password" placeholder="Confirm Password" autocomplete="new-password" required>
+			<br>
+			<input type="submit" value="Sign Up">
+			<br>
+			<p class="smalltext">Already have an account?</p>
+			<a class="smalltext" href="/login">Login here.</a>
+		</form>
 	</div>
 
 	<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
