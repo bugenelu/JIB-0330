@@ -60,7 +60,7 @@ def index():
     if current_user:
         if current_user.admin:
             # Returns the admin homepage
-            return render_response(render_template('admin_homepage.html', first_name=current_user.first_name))
+            return render_response(render_template('admin_pages/homepage.html', first_name=current_user.first_name))
         # Returns the user homepage
         begin_story = db.collection('application_states').document('application_state').get().get('active_story_id')
         most_recent_history = None
@@ -72,7 +72,7 @@ def index():
             elif history['last_updated'].replace(tzinfo=None) > current_user.history[most_recent_history]['last_updated'].replace(tzinfo=None):
                 most_recent_history = index
                 continue_story = current_user.history[most_recent_history]['story'] + '/' + current_user.history[most_recent_history]['pages'][-1]
-        return render_response(render_template('user_homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story, history=most_recent_history))
+        return render_response(render_template('user_pages/homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story, history=most_recent_history))
 
     # Returns the index.html template with the given values
     return render_response(render_template('home.html'))

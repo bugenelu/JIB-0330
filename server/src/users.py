@@ -262,9 +262,13 @@ def reset_password():
 @user_blueprint.route('/profile')
 @login_required
 def profile():
-    # TODO: Add admin profile page
-    # Returns the profile.html template with the given values
+    # Returns the profile page for admins
+    if current_user.admin:
+        return render_response(render_template('admin_pages/profile.html', first_name=current_user.first_name))
+
+    # Returns the profile page for users
     return render_response(render_template('user_pages/profile.html', first_name=current_user.first_name))
+
 
 # Serves the profile edit page
 @user_blueprint.route('/edit_profile')

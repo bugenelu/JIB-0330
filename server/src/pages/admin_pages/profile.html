@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+	<title>Profile | GA Knowledge Hub</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+
+<body>
+	<header>
+		{% include 'templates/navbar_admin.html' %}
+		<section class="header-content">
+		    <h1>Profile Page</h1>
+		    <p> View and edit your profile here </p>
+		    <button onclick="window.location.href='/profile/edit';">Edit Profile</button>
+		</section>
+	</header>
+</body>
