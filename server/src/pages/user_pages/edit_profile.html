@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+	<title>Profile | GA Knowledge Hub</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+
+<body>
+	<header>
+		{% include 'templates/navbar_user.html' %}
+		<section class="header-content">
+		    <h1>Edit Profile</h1>
+		    <p> Edit your profile here </p>
+		    <form method='POST' action='/profile/edit' class="centerbox">
+		    	<input type="text" id="firstName" name="first-name" placeholder="First Name" autocomplete="given-name" value="{{ first_name }}">
+				<input type="text" id="lastName" name="last-name" placeholder="Last Name" autocomplete="family-name" value="{{ last_name }}">
+				<br>
+				<input type="text" name="email" placeholder="Email" autocomplete="email" autocomplete="email" value="{{ email }}">
+				<br>
+				<input type="password" name="password" placeholder="Reset Password" autocomplete="new-password">
+				<br>
+				<input type="password" name="confirm-password" placeholder="Confirm Password" autocomplete="new-password">
+				<br>
+				<input type="submit" value="Update">
+		    </form>
+		</section>
+	</header>
+</body>

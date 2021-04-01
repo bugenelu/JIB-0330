@@ -264,18 +264,34 @@ def reset_password():
 def profile():
     # Returns the profile page for admins
     if current_user.admin:
-        return render_response(render_template('admin_pages/profile.html', first_name=current_user.first_name))
+        return render_response(render_template('admin_pages/profile.html'))
 
     # Returns the profile page for users
-    return render_response(render_template('user_pages/profile.html', first_name=current_user.first_name))
+    return render_response(render_template('user_pages/profile.html'))
 
 
 # Serves the profile edit page
-@user_blueprint.route('/edit_profile')
+@user_blueprint.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    # TODO: Add profile edit page
-    pass
+    if request.method == 'POST':
+        # Updates values of the current user's profile from the form
+        current_user.email = request.form['email']
+        current_user.first_name = request.form['first-name']
+        current_user.last_name = request.form['last-name']
+
+        # Updates the password only if a new one is provided
+        if request.form['password'] != '':
+            salt = str(uuid.uuid4())
+            current_user.password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+            current_user.salt = salt
+        return render_response(redirect(url + url_for('user_blueprint.profile')))
+
+    # Returns the edit profile page for admins
+    if current_user.admin:
+        return render_response(render_template('admin_pages/edit_profile.html', email=current_user.email, first_name=current_user.first_name, last_name=current_user.last_name))
+    # Returns the edit profile page for users
+    return render_response(render_template('user_pages/edit_profile.html', email=current_user.email, first_name=current_user.first_name, last_name=current_user.last_name))
 
 
 # Serves the favorites page
