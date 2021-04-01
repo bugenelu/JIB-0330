@@ -19,14 +19,14 @@ import random
 import json
 
 # Local imports
-from story_editing.Editor import Editor
+# from story_editing.Editor import Editor
 from utils import db
 from users import current_user
 
 
 
 editor_blueprint = Blueprint('editor_blueprint', __name__)
-editor = Editor(db)
+# editor = Editor(db)
 
 
 @editor_blueprint.route('/editor/init_editor', methods=['GET', 'POST'])

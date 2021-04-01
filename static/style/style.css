@@ -325,7 +325,7 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 .popup {
-  z-index: 1;
+  z-index: 2;
   display: block;
   position: absolute;
   left: 25%;
@@ -518,4 +518,20 @@ input[type="submit"].storylink {
   color: white;
   text-decoration: underline;
   text-align: left;
+}
+
+#parent-nodes, #child-nodes {
+  display: flex;
+  width: 100%;
+  overflow: auto;
+  text-align: center;
+  justify-content: center;
+}
+
+#editor_wizard > input, #editor_wizard > label {
+  width: 100%;
+}
+
+#editor_wizard {
+  z-index: 1;
 }
