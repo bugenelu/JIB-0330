@@ -11,10 +11,10 @@
 		    <h1>Edit Profile</h1>
 		    <p> Edit your profile here </p>
 		    <form method='POST' action='/profile/edit' class="centerbox">
-		    	<input type="text" id="firstName" name="first-name" placeholder="First Name" autocomplete="given-name" value="{{ first_name }}">
-				<input type="text" id="lastName" name="last-name" placeholder="Last Name" autocomplete="family-name" value="{{ last_name }}">
+		    	<input type="text" id="firstName" name="first-name" placeholder="First Name" autocomplete="given-name" value="{{ first_name }}" required>
+				<input type="text" id="lastName" name="last-name" placeholder="Last Name" autocomplete="family-name" value="{{ last_name }}" required>
 				<br>
-				<input type="text" name="email" placeholder="Email" autocomplete="email" autocomplete="email" value="{{ email }}">
+				<input type="text" name="email" placeholder="Email" autocomplete="email" autocomplete="email" value="{{ email }}" required>
 				<br>
 				<input type="password" name="password" placeholder="Reset Password" autocomplete="new-password">
 				<br>
@@ -24,4 +24,7 @@
 		    </form>
 		</section>
 	</header>
+
+	<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
+	<script src="{{url_for('static', filename='scripts/confirm_password.js')}}"></script>
 </body>
