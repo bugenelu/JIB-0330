@@ -97,7 +97,7 @@ def save_story():
         if stories.document(story_name).get().exists:
             stories.document(story_name).update(story_data)
         else:
-            stories.add(story_data)
+            stories.document(story_name).set(story_data)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 

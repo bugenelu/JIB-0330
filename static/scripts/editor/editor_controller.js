@@ -133,16 +133,12 @@ $("#save_story").click(function(e) {
         return;
     }
 
-
-    // $.ajax({
-    //     url: "/editor/save_story",
-    //     data: 
-    // })
+    current_story_id = editor.getStoryState(current_story)['story_id'];
 
     $.post("/editor/save_story", 
     {
-        'story_name': current_story,
-        'story_data': JSON.stringify(editor.getStoryState(current_story)), // replace this later with function to get the current story edits
+        'story_name': current_story_id,    // Replace with story_id
+        'story_data': JSON.stringify(editor.getStoryState(current_story)),
     },
     function(data, status) {
         if (status == "success") {
@@ -178,6 +174,10 @@ $(".close").click(function(e) {
 $('.popup').on('click', '.close', function(e) {
     var popup = e.target.parentElement;
     var hidden = popup.style.display == 'none';
+    console.log(popup);
+    console.log(hidden);
+
+    console.log(popup.display.style.display)
 
     if (hidden) {
         popup.style.display = 'block';
@@ -476,8 +476,6 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             }
         }
 
-        console.log(params);
-
         let fake_btn = document.createElement('button');
         let handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
         for (let i = 0; i < params.length; i++) {
@@ -487,16 +485,18 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             }
         }
         handlerFunction += ')';
-        console.log(handlerFunction);
         fake_btn.setAttribute('onclick', handlerFunction);
 
         fake_btn.click();
 
         $('#editor_wizard')[0].style.display = 'none';
+        console.log("Before Call");
         refreshPageList();
         refreshOpenPage();
         refreshAllStoryPage();
         refreshOpenStory();
+
+        console.log("Complete Call");
     }
 });
 
@@ -525,18 +525,20 @@ function refreshPageList() {
 }
 
 function refreshOpenPage() {
-    if (!(current_story in Object.keys(editor.openStories))) {
+    console.log("Refresh Page Called");
+    // TODO: CHANGE THIS / FIX IT
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
         return;
     }
     updateChildNodes(current_page);
     updateParentNodes(current_page);
     body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
+    
     $('#page-pane-child')[0].innerHTML = body_text;
 }
 
 function refreshOpenStory() {
     openStoryIDs = editor.getOpenStoryIDs();
-    console.log(openStoryIDs)
 
     story_list = $('#storage')[0].children;
     for (let i = 0; i < story_list.length - 1; i++) {

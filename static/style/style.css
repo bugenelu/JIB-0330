@@ -543,6 +543,7 @@ input[type="submit"].storylink {
   z-index: 1;
   width: 60%;
   height: 70%;
+  opacity: 1;
 }
 
 .error-message {
