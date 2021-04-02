@@ -551,3 +551,11 @@ input[type="submit"].storylink {
   padding: 10px;
   border-radius: 10px;
 }
+
+p.page-pane-child {
+  text-align: center;
+  font-family: Muli, Helvetica, sans-serif;
+  font-size: 1em;
+  color: var(--palegreen);
+/*  text-shadow: 2px 2px 5px black;*/
+}
