@@ -45,6 +45,33 @@ def get_all_stories():
     
     return None, 500
 
+@editor_blueprint.route('/editor/load_all_stories', methods=['GET'])
+def load_all_stories():
+    if current_user is not None and current_user.admin == True:
+        stories = db.collection('stories')
+        # all_stories = [story for story in stories]
+        child_doc = list(stories.list_documents())
+        child_doc = [child.id for child in child_doc]
+        return {'list': child_doc}, 200
+    
+    return None, 500
+
+@editor_blueprint.route('/editor/view_live_story', methods=['GET'])
+def view_live_story():
+    if current_user is not None and current_user.admin == True:
+        stories = db.collection('stories')
+        # all_stories = [story for story in stories]
+        stories = list(stories.list_documents())
+        live_story = 'NONE'
+        try:
+            for story in stories:
+                if story.get().get('is_live') == True:
+                    live_story = story.id 
+        except KeyError:
+            print('No Live Story Field')
+        return {'list': live_story}, 200
+    return None, 200
+
 @editor_blueprint.route('/editor/open_story/<story_id>', methods=['GET'])
 def open_story(story_id):
     if current_user is not None and current_user.admin == True:

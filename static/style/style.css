@@ -130,6 +130,12 @@ button:hover {
   font-weight: bold;
 }
 
+button:hover.unclickable {
+  font-style: normal;
+  font-weight: normal;
+  cursor: auto;
+}
+
 /*Style Story Text */
 p.storytext {
 	text-align: center;
