@@ -22,3 +22,5 @@ database-debug.log
 *.pyc
 
 **/__pycache__/**
+
+.firebase/*
