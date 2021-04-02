@@ -186,12 +186,12 @@ class Editor {
                         "param_type": "current_story" // implicit
                     },
                     {
-                        "param": "root_id",
+                        "param": "page_id",
                         "param_label": "Story Pages",
                         "param_type": "dropdown"
                     }
                 ],
-                "function": "editRootID(story_name, new_root_id)"
+                "function": "editRootID(story_name, page_id)"
             },
             {
                 "name": "Connect Stories",
@@ -423,6 +423,14 @@ class Editor {
         return this.openStories[story_name].getCurrent().getPageNameList();
     }
 
+    getOpenStoryIDs() {
+        let all_story_names = Object.keys(this.openStories);
+        let open_story_ids = []
+        for (let i = 0; i < all_story_names.length; i++)
+            open_story_ids.push(this.openStories[all_story_names[i]].getCurrent().toJSON()['story_id']);
+        return open_story_ids;
+    }
+
     /**
      * TODO: consider edge case where different story in database has same name, and user wants to open both
      * @param {Object} story_data - Object with data of story to add to openStories as a new stack
@@ -636,6 +644,7 @@ class Editor {
      * @param {string} page_text 
      */
     editPageText(story_name, page_id, page_text) {
+        console.log("editing page text");
         let current = this.openStories[story_name].getCurrent();
         let update = current.updatePageText(page_id, page_text);
         this.openStories[story_name].push(update);

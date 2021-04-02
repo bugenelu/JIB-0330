@@ -541,6 +541,8 @@ input[type="submit"].storylink {
 
 #editor_wizard {
   z-index: 1;
+  width: 60%;
+  height: 70%;
 }
 
 .error-message {
