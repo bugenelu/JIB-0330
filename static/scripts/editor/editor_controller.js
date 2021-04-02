@@ -22,6 +22,7 @@ all_story_ids = []
 
 open_story_btn = null;
 all_page_ids = null;
+clicked_page_btn = null;
 
 
 // Initializes Quill Editor
@@ -160,24 +161,10 @@ $(".add_storybox").click(function(e) {
     }
 });
 
-$(".close").click(function(e) {
-    var popup = e.target.parentElement;
-    var hidden = popup.style.display == 'none';
-
-    if (hidden) {
-        popup.style.display = 'block';
-    } else {
-        popup.style.display = 'none';
-    }
-});
-
 $('.popup').on('click', '.close', function(e) {
     var popup = e.target.parentElement;
+    temp = popup;
     var hidden = popup.style.display == 'none';
-    console.log(popup);
-    console.log(hidden);
-
-    console.log(popup.display.style.display)
 
     if (hidden) {
         popup.style.display = 'block';
@@ -209,8 +196,17 @@ $(".div7").on("click", ".page_button", function(e) {
     let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
     document.getElementById("page-pane-child").innerHTML = page.page_body_text;
     current_page = e.target.getAttribute('page_id');
+
+    if (clicked_page_btn != null) {
+        clicked_page_btn.style.background='#8DD883';
+    }
+    
+    clicked_page_btn = e.target;
+    clicked_page_btn.style.background = 'rgba(255, 255, 255, 0.90)';
+
     updateParentNodes(current_page);
     updateChildNodes(current_page);
+    
 });
 
 $("#child-nodes").on("click", ".page_button", function(e) {
@@ -418,7 +414,7 @@ function updateParentNodes(page_id) {
 
     page_ids = Object.keys(all_nodes)
     for (let i = 0; i < page_ids.length; i++) {
-        if (page_id in all_nodes[page_ids[i]]['page_children']) {
+        if (Object.keys(all_nodes[page_ids[i]]['page_children']).includes(page_id)) {
             parent_names.push(all_nodes[page_ids[i]]['page_name']);
             fields.push(['page_button', page_ids[i]]);
         }
@@ -502,7 +498,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
 
 
 function refreshPageList() {
-    if (!(current_story in Object.keys(editor.openStories))) {
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
         return;
     }
     removeAllChildren('page-list')

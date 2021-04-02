@@ -553,7 +553,7 @@ input[type="submit"].storylink {
   border-radius: 10px;
 }
 
-p.page-pane-child {
+p#page-pane-child {
   text-align: center;
   font-family: Muli, Helvetica, sans-serif;
   font-size: 1em;
