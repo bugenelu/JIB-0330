@@ -59,14 +59,12 @@ def load_all_stories():
 @editor_blueprint.route('/editor/view_live_story', methods=['GET'])
 def view_live_story():
     if current_user is not None and current_user.admin == True:
-        stories = db.collection('stories')
+        app_states = db.collection('application_states')
         # all_stories = [story for story in stories]
-        stories = list(stories.list_documents())
+        app_state = list(app_states.list_documents())[0]
         live_story = 'NONE'
         try:
-            for story in stories:
-                if story.get().get('is_live') == True:
-                    live_story = story.id 
+            live_story = app_state.get().get('active_story_id')
         except KeyError:
             print('No Live Story Field')
         return {'list': live_story}, 200
@@ -97,7 +95,7 @@ def save_story():
         if stories.document(story_name).get().exists:
             stories.document(story_name).update(story_data)
         else:
-            stories.add(story_data)
+            stories.document(story_name).set(story_data)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 

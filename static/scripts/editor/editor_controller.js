@@ -22,6 +22,7 @@ all_story_ids = []
 
 open_story_btn = null;
 all_page_ids = null;
+clicked_page_btn = null;
 
 
 // Initializes Quill Editor
@@ -64,10 +65,11 @@ function get_story_data(e) {
 
         // Update Page <-- Work with Joseph
         var button = e.target;
-        var text = button.innerHTML + " Metadata: ";
-        var num_pages = editor.getStoryPageList(current_story).length
+        var text = "Metadata: ";
+        var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
         // TODO: Fill in metadata stuff later
         // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
+        text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
         document.getElementById("metadata").innerHTML = text;
 
         removeAllChildren('page-list')
@@ -133,16 +135,12 @@ $("#save_story").click(function(e) {
         return;
     }
 
-
-    // $.ajax({
-    //     url: "/editor/save_story",
-    //     data: 
-    // })
+    current_story_id = editor.getStoryState(current_story)['story_id'];
 
     $.post("/editor/save_story", 
     {
-        'story_name': current_story,
-        'story_data': JSON.stringify(editor.getStoryState(current_story)), // replace this later with function to get the current story edits
+        'story_name': current_story_id,    // Replace with story_id
+        'story_data': JSON.stringify(editor.getStoryState(current_story)),
     },
     function(data, status) {
         if (status == "success") {
@@ -164,19 +162,9 @@ $(".add_storybox").click(function(e) {
     }
 });
 
-$(".close").click(function(e) {
-    var popup = e.target.parentElement;
-    var hidden = popup.style.display == 'none';
-
-    if (hidden) {
-        popup.style.display = 'block';
-    } else {
-        popup.style.display = 'none';
-    }
-});
-
 $('.popup').on('click', '.close', function(e) {
     var popup = e.target.parentElement;
+    temp = popup;
     var hidden = popup.style.display == 'none';
 
     if (hidden) {
@@ -209,8 +197,17 @@ $(".div7").on("click", ".page_button", function(e) {
     let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
     document.getElementById("page-pane-child").innerHTML = page.page_body_text;
     current_page = e.target.getAttribute('page_id');
+
+    if (clicked_page_btn != null) {
+        clicked_page_btn.style.background='#8DD883';
+    }
+    
+    clicked_page_btn = e.target;
+    clicked_page_btn.style.background = 'rgba(255, 255, 255, 0.90)';
+
     updateParentNodes(current_page);
     updateChildNodes(current_page);
+    
 });
 
 $("#child-nodes").on("click", ".page_button", function(e) {
@@ -410,6 +407,15 @@ $('.div8').on('click', '.wizard_btns', function(e) {
 
 
 function updateParentNodes(page_id) {
+    $('#parent-nodes').empty()
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_story = null;
+        current_page = null;
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        return;
+    }
+
     story = editor.getStoryState(current_story);
     all_nodes = story['page_nodes'];
     parent_names = []
@@ -418,17 +424,29 @@ function updateParentNodes(page_id) {
 
     page_ids = Object.keys(all_nodes)
     for (let i = 0; i < page_ids.length; i++) {
-        if (page_id in all_nodes[page_ids[i]]['page_children']) {
+        if (Object.keys(all_nodes[page_ids[i]]['page_children']).includes(page_id)) {
             parent_names.push(all_nodes[page_ids[i]]['page_name']);
             fields.push(['page_button', page_ids[i]]);
         }
     }
 
-    $('#parent-nodes').empty()
     populateButton('parent-nodes', parent_names, ['class', 'page_id'], fields);
 }
 
 function updateChildNodes(page_id) {
+    console.log("Start");
+    $('#child-nodes').empty()
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_story = null;
+        current_page = null;
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        return;
+    }
+
+    console.log("Reach");
+    console.log(page_id);
+
     story = editor.getStoryState(current_story);
     children = story['page_nodes'][page_id]['page_children']
 
@@ -441,7 +459,6 @@ function updateChildNodes(page_id) {
         fields.push(['page_button', child_ids[i]]);
     }
 
-    $('#child-nodes').empty()
     populateButton('child-nodes', child_names, ['class', 'page_id'], fields)
 }
 
@@ -476,8 +493,6 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             }
         }
 
-        console.log(params);
-
         let fake_btn = document.createElement('button');
         let handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
         for (let i = 0; i < params.length; i++) {
@@ -487,28 +502,34 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             }
         }
         handlerFunction += ')';
-        console.log(handlerFunction);
         fake_btn.setAttribute('onclick', handlerFunction);
 
         fake_btn.click();
 
         $('#editor_wizard')[0].style.display = 'none';
+        console.log("Before Call");
         refreshPageList();
         refreshOpenPage();
         refreshAllStoryPage();
         refreshOpenStory();
+        refreshMetaData();
+
+        console.log("Complete Call");
     }
 });
 
 
 function refreshPageList() {
-    if (!(current_story in Object.keys(editor.openStories))) {
-        return;
-    }
     removeAllChildren('page-list')
     var header = document.createElement("h1");
     header.innerHTML = "Page List";
     document.getElementById('page-list').appendChild(header);
+
+    // Checks if current_story is no longer valid
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        return;
+    }
 
     var page_name_dic = editor.getStoryPageList(current_story)
     all_page_ids = Object.keys(page_name_dic)
@@ -525,18 +546,26 @@ function refreshPageList() {
 }
 
 function refreshOpenPage() {
-    if (!(current_story in Object.keys(editor.openStories))) {
-        return;
-    }
+    console.log("Refresh Page Called");
+    // TODO: CHANGE THIS / FIX IT
     updateChildNodes(current_page);
     updateParentNodes(current_page);
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    }
+
     body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
+    
     $('#page-pane-child')[0].innerHTML = body_text;
 }
 
 function refreshOpenStory() {
     openStoryIDs = editor.getOpenStoryIDs();
-    console.log(openStoryIDs)
 
     story_list = $('#storage')[0].children;
     for (let i = 0; i < story_list.length - 1; i++) {
@@ -587,6 +616,27 @@ function refreshAllStoryPage() {
             pagelist.appendChild(b);
         }
     }
+}
+
+function refreshMetaData() {
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        $('#metadata')[0].innerHTML = '';
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        $('#metadata')[0].innerHTML = '';
+        return;
+    }
+
+    $('#metadata')[0].innerHTML = '';
+
+    var button = $('#metadata')[0];
+    var text = "Metadata: ";
+    var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
+    // TODO: Fill in metadata stuff later
+    // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
+    text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
+    button.innerHTML = text;
 }
 
 

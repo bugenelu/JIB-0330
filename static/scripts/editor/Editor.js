@@ -644,7 +644,6 @@ class Editor {
      * @param {string} page_text 
      */
     editPageText(story_name, page_id, page_text) {
-        console.log("editing page text");
         let current = this.openStories[story_name].getCurrent();
         let update = current.updatePageText(page_id, page_text);
         this.openStories[story_name].push(update);
