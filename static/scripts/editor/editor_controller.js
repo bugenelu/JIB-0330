@@ -65,10 +65,11 @@ function get_story_data(e) {
 
         // Update Page <-- Work with Joseph
         var button = e.target;
-        var text = button.innerHTML + " Metadata: ";
-        var num_pages = editor.getStoryPageList(current_story).length
+        var text = "Metadata: ";
+        var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
         // TODO: Fill in metadata stuff later
         // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
+        text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
         document.getElementById("metadata").innerHTML = text;
 
         removeAllChildren('page-list')
@@ -406,6 +407,15 @@ $('.div8').on('click', '.wizard_btns', function(e) {
 
 
 function updateParentNodes(page_id) {
+    $('#parent-nodes').empty()
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_story = null;
+        current_page = null;
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        return;
+    }
+
     story = editor.getStoryState(current_story);
     all_nodes = story['page_nodes'];
     parent_names = []
@@ -420,11 +430,23 @@ function updateParentNodes(page_id) {
         }
     }
 
-    $('#parent-nodes').empty()
     populateButton('parent-nodes', parent_names, ['class', 'page_id'], fields);
 }
 
 function updateChildNodes(page_id) {
+    console.log("Start");
+    $('#child-nodes').empty()
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_story = null;
+        current_page = null;
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        return;
+    }
+
+    console.log("Reach");
+    console.log(page_id);
+
     story = editor.getStoryState(current_story);
     children = story['page_nodes'][page_id]['page_children']
 
@@ -437,7 +459,6 @@ function updateChildNodes(page_id) {
         fields.push(['page_button', child_ids[i]]);
     }
 
-    $('#child-nodes').empty()
     populateButton('child-nodes', child_names, ['class', 'page_id'], fields)
 }
 
@@ -491,6 +512,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
         refreshOpenPage();
         refreshAllStoryPage();
         refreshOpenStory();
+        refreshMetaData();
 
         console.log("Complete Call");
     }
@@ -498,13 +520,16 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
 
 
 function refreshPageList() {
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        return;
-    }
     removeAllChildren('page-list')
     var header = document.createElement("h1");
     header.innerHTML = "Page List";
     document.getElementById('page-list').appendChild(header);
+
+    // Checks if current_story is no longer valid
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        return;
+    }
 
     var page_name_dic = editor.getStoryPageList(current_story)
     all_page_ids = Object.keys(page_name_dic)
@@ -523,11 +548,17 @@ function refreshPageList() {
 function refreshOpenPage() {
     console.log("Refresh Page Called");
     // TODO: CHANGE THIS / FIX IT
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        return;
-    }
     updateChildNodes(current_page);
     updateParentNodes(current_page);
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    }
+
     body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
     
     $('#page-pane-child')[0].innerHTML = body_text;
@@ -585,6 +616,27 @@ function refreshAllStoryPage() {
             pagelist.appendChild(b);
         }
     }
+}
+
+function refreshMetaData() {
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        $('#metadata')[0].innerHTML = '';
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        $('#metadata')[0].innerHTML = '';
+        return;
+    }
+
+    $('#metadata')[0].innerHTML = '';
+
+    var button = $('#metadata')[0];
+    var text = "Metadata: ";
+    var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
+    // TODO: Fill in metadata stuff later
+    // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
+    text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
+    button.innerHTML = text;
 }
 
 
