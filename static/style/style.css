@@ -3,6 +3,8 @@
 	--offwhite: rgba(255, 255, 255, 0.90);
 	--darkgray: #2D3030;
 	--palegreen: #8DD883;
+  --paleyellow: #D8D883;
+  --palepurple: #D083D8;
 }
 
 /*Add Custom Font Family*/
@@ -277,19 +279,24 @@ input[type=submit]:hover, input[type=button]:hover {
 .div7 { 
   color: var(--offwhite);
   border: 1px solid var(--palegreen);
-	grid-area: 3 / 1 / 9 / 2;
+/*	grid-area: 3 / 1 / 9 / 1;*/
   overflow: scroll;
   overflow-x: hidden;
-  width: 25%;
+  width: 15%;
+  height: 100%;
 }
 
 .div7 h1 {
   margin: 15px;
+  font-size: 30px;
   color: var(--offwhite);
 }
 
 .div8 { 
-	grid-area: 3 / 2 / 9 / 4; 
+	/*grid-area: 3 / 2 / 9 / 4;*/ 
+  width: 20%;
+  position: absolute;
+  right: 30px;
 }
 
 .collapsible {
@@ -457,16 +464,18 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 #page-pane { 
-  width: 1000px;
+  /*width: 1000px;*/
+  min-width: 60%;
+  max-width: 67%;
 }
 
 #story-name {
-  width:50%;
+  width: 50%;
 }
 
 #page-list-parent {
   /* max-height: 100%; */
-  height: auto;
+  max-height: 850px;
   display: flex; 
   width: 100%;
 }
@@ -559,4 +568,30 @@ p#page-pane-child {
   font-size: 1em;
   color: var(--palegreen);
 /*  text-shadow: 2px 2px 5px black;*/
+}
+
+button.page_button {
+  font-size: 15px;
+  margin: 0px;
+  margin-left: 4px;
+  margin-top: 4px;
+}
+
+button.wizard_btns {
+  background: var(--paleyellow);
+  border: solid 1px var(--paleyellow);
+  margin: 0px;
+  margin-top: 4px;
+}
+
+.div7 button {
+  width: 90%;
+  white-space: nowrap;
+  overflow: hidden; 
+}
+
+.div8 button {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden; 
 }
