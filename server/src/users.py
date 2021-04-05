@@ -173,6 +173,40 @@ class FirebaseSession():
 
 
 
+class UserActivity():
+    _collection_name = 'activity'
+
+    def __init__(self, user_id, activity=[]):
+        self.user_id = user_id
+        self.activity = activity
+
+    def save(self):
+        activity_doc = db.collection(UserActivity._collection_name).where('user_id', '==', self.user_id).get()
+        if activity_doc:
+            activity_ref = db.collection(UserActivity._collection_name).document(activity_doc[0].id)
+            activity_ref.update({
+                'user_id': self.user_id,
+                'activity': self.activity
+                })
+        else:
+            db.collection(UserActivity._collection_name).add({
+                'user_id': self.user_id,
+                'activity': self.activity
+                })
+
+    @staticmethod
+    def get_user_activity(user_id):
+        query = db.collection(UserActivity._collection_name)
+        if user_id:
+            query = query.where('user_id', '==', user_id)
+        query = query.get()
+        if (len(query) == 0):
+            return UserActivity(user_id=user_id)
+        return UserActivity(user_id=query[0].get('user_id'), activity=query[0].get('activity'))
+
+
+
+
 user_blueprint = Blueprint('user_blueprint', __name__)
 
 

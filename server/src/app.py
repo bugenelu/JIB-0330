@@ -29,7 +29,7 @@ from datetime import datetime
 # Local imports
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 from utils import url, db, render_response
-from users import User, FirebaseSession, current_user, login_user, login_required, user_blueprint
+from users import User, FirebaseSession, UserActivity, current_user, login_user, login_required, user_blueprint
 from errors import errors_blueprint
 from editor_blueprint import editor_blueprint
 
@@ -101,6 +101,15 @@ def story_root(story):
 
     history_id = None
     if not preview and not guest:
+        # Records the page visit to activity
+        user_activity = UserActivity.get_user_activity(current_user.email)
+        user_activity.activity.append({
+            'timestamp': datetime.now(),
+            'story': story,
+            'page_id': page_id
+            })
+        user_activity.save()
+
         # Adds the root page to a new history
         history_found = False
         for index, history in enumerate(current_user.history):
@@ -171,6 +180,15 @@ def story_page(story, page_id):
         forward = request.form['forward']
         back = prev_page_id
         if not guest:
+            # Records the page visit to activity
+            user_activity = UserActivity.get_user_activity(current_user.email)
+            user_activity.activity.append({
+                'timestamp': datetime.now(),
+                'story': story,
+                'page_id': page_id
+                })
+            user_activity.save()
+
             if history_id == '':
                 history_found = False
                 for index, history in enumerate(current_user.history):
