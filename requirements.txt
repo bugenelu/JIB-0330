@@ -1,7 +1,6 @@
 beautifulsoup4==4.9.3
 flask==1.1.2
 flask_login
-flask_mail
 firebase_admin
 fireo
 datetime
