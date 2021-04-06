@@ -439,13 +439,32 @@ input[type=submit]:hover, input[type=button]:hover {
   cursor: pointer;
 }
 
-.popout {
+input[type="submit"].popout {
   position: fixed;
   top: calc(1vh + 0.375vw);
   left: 1.375vw;
   color: var(--palegreen);
   font-size: 2.25vw;
   cursor: pointer;
+  background-color: transparent;
+  min-width: 0;
+  width: 2.25vw;
+  height: 2.25vw;
+  padding: 0;
+  outline: none;
+}
+
+.popout {
+  position: fixed;
+  top: calc(1vh + 0.375vw);
+  left: 1.375vw;
+  color: var(--palegreen);
+  font-size: 2.25vw;
+  background-color: transparent;
+  min-width: 0;
+  width: 2.25vw;
+  height: 2.25vw;
+  padding: 0;
 }
 
 .mimic-link {
