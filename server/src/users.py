@@ -33,6 +33,8 @@ def _get_current_user():
             if not current_user.authenticated:
                 return None
             _users[session.user_id] = current_user
+            current_user.last_activity = datetime.now()
+            current_user.save()
     return current_user
 
 
@@ -58,6 +60,7 @@ def admin_login_required(f):
         if not current_user:
             return render_response(redirect(url + url_for('login')))
         if not current_user.admin:
+            # TODO: Add error page
             return render_response(render_template('admin_access_denied.html'))
         return f(*args, **kwargs)
     return decorated_function
@@ -66,7 +69,7 @@ def admin_login_required(f):
 class User():
     _collection_name = 'user'
 
-    def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, favorites=[], history=[], temp_password=None, temp_password_expire=None):
+    def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None):
         self.email = email
         self.password = password
         self.salt = salt
@@ -74,6 +77,10 @@ class User():
         self.last_name = last_name
         self.authenticated = authenticated
         self.admin = admin
+        if last_activity:
+            self.last_activity = last_activity
+        else:
+            self.last_activity = datetime.now()
         self.favorites = favorites
         self.history = history
         self.temp_password = temp_password
@@ -93,6 +100,7 @@ class User():
                 'last_name': self.last_name,
                 'authenticated': self.authenticated,
                 'admin': self.admin,
+                'last_activity': self.last_activity,
                 'favorites': self.favorites,
                 'history': self.history,
                 'temp_password': self.temp_password,
@@ -107,6 +115,7 @@ class User():
                 'last_name': self.last_name,
                 'authenticated': self.authenticated,
                 'admin': self.admin,
+                'last_activity': self.last_activity,
                 'favorites': self.favorites,
                 'history': self.history,
                 'temp_password': self.temp_password,
@@ -128,10 +137,25 @@ class User():
             last_name=query[0].get('last_name'),
             authenticated=query[0].get('authenticated'),
             admin=query[0].get('admin'),
+            last_activity=query[0].get('last_activity'),
             favorites=query[0].get('favorites'),
             history=query[0].get('history'),
             temp_password=query[0].get('temp_password'),
             temp_password_expire=query[0].get('temp_password_expire'))
+
+    @staticmethod
+    def get_all_users():
+        users = []
+        query = db.collection(User._collection_name).stream()
+        for user in query:
+            users.append({
+                'email': user.get('email'),
+                'first_name': user.get('first_name'),
+                'last_name': user.get('last_name'),
+                'admin': user.get('admin'),
+                'last_activity': user.get('last_activity')  
+                })
+        return users
 
 
 class FirebaseSession():
@@ -342,6 +366,7 @@ def favorites():
 
 
 @user_blueprint.route('/add_favorite', methods=['POST'])
+@login_required
 def add_favorites():
     current_user.favorites.append({
         'page_id': request.form['page_id'],
@@ -354,6 +379,7 @@ def add_favorites():
 
 
 @user_blueprint.route('/remove_favorite', methods=['POST'])
+@login_required
 def remove_favorite():
     page_id, story, history_id = request.form['page_id'], request.form['story'], request.form['history_id']
 
@@ -393,3 +419,30 @@ def history():
 
     # Returns the history.html template with the given values
     return render_response(render_template('user_pages/history.html', history=history_arr))
+
+
+@user_blueprint.route('/users')
+@admin_login_required
+def users():
+    users = User.get_all_users()
+    return render_response(render_template('admin_pages/edit_users.html', users=users))
+
+
+@user_blueprint.route('/add_admin', methods=['POST'])
+@admin_login_required
+def add_admin():
+    user = User.get_user(request.form['user_id'])
+    user.admin = True
+    user.save()
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@user_blueprint.route('/remove_admin', methods=['POST'])
+@admin_login_required
+def remove_admin():
+    user = User.get_user(request.form['user_id'])
+    user.admin = False
+    user.save()
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}

@@ -614,3 +614,42 @@ button.wizard_btns {
   white-space: nowrap;
   overflow: hidden; 
 }
+
+.table-container {
+  padding: 25px 50px;
+  margin-left: 10vw;
+  width: calc(80vw - 100px);
+  background-color: var(--offwhite);
+  border-radius: 10px;
+}
+
+table {
+  color: black;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th:first-child, td:first-child {
+  width: 50px;
+}
+
+th {
+  padding: 15px;
+  margin-top: 25px;
+  border-bottom: 2px solid #777;
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid #777;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-toggle {
+  cursor: pointer;
+  font-size: 25px;
+}

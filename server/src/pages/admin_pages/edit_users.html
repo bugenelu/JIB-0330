@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+	<title>Users | GA Knowledge Hub</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+
+<body>
+	<header>
+		{% include 'templates/navbar_admin.html' %}
+		<section class="header-content">
+		    <h1>Users</h1>
+		    <p> View and edit users here </p>
+		    <div class="table-container">
+			    <table>
+			    	<thead>
+			    		<tr>
+				    		<th scope="col"></th>
+				    		<th scope="col">Email</th>
+				    		<th scope="col">First Name</th>
+				    		<th scope="col">Last Name</th>
+				    		<th scope="col">Last Activity</th>
+				    		<th scope="col">Admin</th>
+				    	</tr>
+			    	</thead>
+			    	<tbody>
+			    		{% for user in users %}
+				    		<tr>
+				    			<td>{{ loop.index }}</td>
+				    			<td>{{ user.email }}</td>
+				    			<td>{{ user.first_name }}</td>
+				    			<td>{{ user.last_name }}</td>
+				    			<td>{{ user.last_activity.strftime('%b %d, %Y %H:%M:%S') }}</td>
+				    			{% if user.admin %}
+				    				<td><i class="far fa-check-square admin-toggle" value="{{ loop.index }}"></i></td>
+				    			{% else %}
+				    				<td><i class="far fa-square admin-toggle" value="{{ loop.index }}"></i></td>
+				    			{% endif %}
+				    			<form id="admin-toggle-form-{{ loop.index }}" style="display: none">
+									<input style="display: none" name="user_id" type="text" value="{{ user.email }}">
+								</form>
+				    		</tr>
+			    		{% endfor %}
+			    	</tbody>
+			    </table>
+			</div>
+		</section>
+	</header>
+
+	<script src="{{url_for('static', filename='vendor/jquery/jquery-3.6.0.min.js')}}"></script>
+	<script src="{{url_for('static', filename='scripts/users.js')}}"></script>
+</body>
