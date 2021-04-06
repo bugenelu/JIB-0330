@@ -370,8 +370,6 @@ def remove_favorite():
 @user_blueprint.route('/history')
 @login_required
 def history():
-    # TODO: Preview links need to be POST requests
-
     history = current_user.history
     history_arr = []
     # [[(page_id, history)]]
