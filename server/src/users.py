@@ -176,9 +176,9 @@ class FirebaseSession():
 class UserActivity():
     _collection_name = 'activity'
 
-    def __init__(self, user_id, activity=[]):
+    def __init__(self, user_id, story_activity=[]):
         self.user_id = user_id
-        self.activity = activity
+        self.story_activity = story_activity
 
     def save(self):
         activity_doc = db.collection(UserActivity._collection_name).where('user_id', '==', self.user_id).get()
@@ -186,12 +186,12 @@ class UserActivity():
             activity_ref = db.collection(UserActivity._collection_name).document(activity_doc[0].id)
             activity_ref.update({
                 'user_id': self.user_id,
-                'activity': self.activity
+                'story_activity': self.story_activity
                 })
         else:
             db.collection(UserActivity._collection_name).add({
                 'user_id': self.user_id,
-                'activity': self.activity
+                'story_activity': self.story_activity
                 })
 
     @staticmethod
@@ -202,7 +202,7 @@ class UserActivity():
         query = query.get()
         if (len(query) == 0):
             return UserActivity(user_id=user_id)
-        return UserActivity(user_id=query[0].get('user_id'), activity=query[0].get('activity'))
+        return UserActivity(user_id=query[0].get('user_id'), story_activity=query[0].get('story_activity'))
 
 
 
