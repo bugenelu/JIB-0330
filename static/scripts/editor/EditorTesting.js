@@ -211,19 +211,22 @@ editor.deleteNodeFromGraph('story1', '1000-1');
 
 editor.duplicateStory('story1');
 
-let allstories = editor.getState();
+let page_tree = editor.getStoryPageTree('story2');
+console.log(page_tree);
 
-console.log("\n****final editor state: ");
-allstories.forEach(story => {
-    let data = JSON.stringify(story, null, 4);
-    console.log(data);
-});
+// let allstories = editor.getState();
 
-allstories.forEach( (story, div_results) => {
-    let el = document.getElementById("results");
-    let content = el.innerHTML;
-    content = content + "<div>" + JSON.stringify(story, null, 4) + "<\div>";
-    el.innerHTML = content;
-});
+// console.log("\n****final editor state: ");
+// allstories.forEach(story => {
+//     let data = JSON.stringify(story, null, 4);
+//     console.log(data);
+// });
+
+// allstories.forEach( (story, div_results) => {
+//     let el = document.getElementById("results");
+//     let content = el.innerHTML;
+//     content = content + "<div>" + JSON.stringify(story, null, 4) + "<\div>";
+//     el.innerHTML = content;
+// });
 
 console.log('finished');
