@@ -813,7 +813,10 @@ class StoryGraph {
             let current = open_list.shift();
             if (!visited_set.has(current)) {
                 visited_set.add(current);
-                page_info.push([current.page_id, current.page_name]);
+                let page_elem = {}
+                page_elem["page_id"] = current.page_id;
+                page_elem["page_name"] = current,page_name;
+                page_info.push(page_elem);
                 Object.keys(current.page_children).forEach(child => {
                     open_list.push(this.page_nodes[child]);
                 });
@@ -840,7 +843,10 @@ class StoryGraph {
                 if (layers.length <= current[1]) {
                   layers.push([]);
                 }
-                layers[current[1]].push([current[0].page_id, current[0].page_name]);
+                let page_elem = {};
+                page_elem["page_id"] = current[0].page_id;
+                page_elem["page_name"] = current[0].page_name;
+                layers[current[1]].push(page_elem);
                 Object.keys(current[0].page_children).forEach(child => {
                     edge_set.add([current[0].page_id, child]);
                     open_list.push([this.page_nodes[child], current[1] + 1]);
