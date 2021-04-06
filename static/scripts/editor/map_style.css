@@ -1,0 +1,16 @@
+div {
+    position: relative;
+}
+
+line {
+    stroke: rgb(71, 170, 216);
+    stroke-width: .3em;
+}
+
+.page_button {
+    color: red;
+    /* width: 12em;
+    height: 2em; */
+    overflow: hidden;
+    padding: 0;
+}
