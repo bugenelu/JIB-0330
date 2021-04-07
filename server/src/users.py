@@ -15,60 +15,129 @@ from utils import url, db, render_response, Mail
 
 
 
+# Used to access the current user
 current_user = LocalProxy(lambda: _get_current_user())
 
+# Stores User objects so that they can persist each time current_user is accessed.
+# Otherwise, current_user would be immutable
 _users = {}
 
 def _get_current_user():
+    """_get_current_user()
+    Retrieves the current user as a User object based on the session cookie
+    Returns None if the current user is anonymous
+    """
+
     global _users
 
     current_user = None
+
+    # Gets the session cookie
     session_key = request.cookies.get('__session')
     if session_key is not None:
+        # Finds the session based on the session cookie
         session = FirebaseSession.get_session(session_key=session_key)
         if session:
+            # Returns the existing User object if the current user has already been
+            # loaded from the database
             if session.user_id in _users:
                 return _users[session.user_id]
+
+            # Loads the current user from the database
             current_user = User.get_user(email=session.user_id)
+
+            # Verifies that the current user is authenticated
             if not current_user.authenticated:
                 return None
+
+            # Stores the current user so it can be re-referenced
             _users[session.user_id] = current_user
+
+            # Updates the current user's last activity timestamp
             current_user.last_activity = datetime.now()
             current_user.save()
+
     return current_user
 
 
 def login_user(user):
+    """login_user(user)
+    Used to log a user in
+    Requires a valid User object
+    """
+
+    # Looks for an existing session key in the database
     session = FirebaseSession.get_session(user_id=user.email)
+
+    # If a session does not already exists, makes a new session
     if not session:
         session = FirebaseSession(user.email)
+
     return session
 
-
+ 
 def login_required(f):
+    """@login_required
+    Wrapper used to require that a user is logged in to access a page
+    """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Checks if the user is anonymous
         if not current_user:
             return redirect(url + url_for('user_blueprint.login'))
+
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 def admin_login_required(f):
+    """@admin_login_required
+    Wrapper used to require that a user is logged as an admin in to access a page
+    """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Checks if the user is anonymous
         if not current_user:
             return render_response(redirect(url + url_for('user_blueprint.login')))
+
+        # Checks if the user is an admin
         if not current_user.admin:
             return render_response(render_template('error_pages/admin_access_denied.html'))
+
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 class User():
+    """User
+    Object used to represent users
+    Contains the following fields:
+        email
+        password
+        salt
+        first_name
+        last_name
+        authenticated
+        admin
+        last_activity
+        favorites
+        history
+        temp_password
+        temp_password_expire
+    """
+
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'user'
 
     def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None):
+        """User(email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None)
+        Creates a new User object
+        """
+
         self.email = email
         self.password = password
         self.salt = salt
@@ -88,7 +157,14 @@ class User():
             self.temp_password_expire = temp_password_expire.replace(tzinfo=None)
 
     def save(self):
+        """save()
+        Saves the User object to the Firestore database
+        """
+
+        # Gets the document containing the User
         user_doc = db.collection(User._collection_name).where('email', '==', self.email).get()
+
+        # If the user already has a document, updates the values
         if user_doc:
             user_ref = db.collection(User._collection_name).document(user_doc[0].id)
             user_ref.update({
@@ -105,6 +181,8 @@ class User():
                 'temp_password': self.temp_password,
                 'temp_password_expire': self.temp_password_expire
                 })
+
+        # If the user does not already have a document, creates a new document
         else:
             db.collection(User._collection_name).add({
                 'email': self.email,
@@ -123,12 +201,24 @@ class User():
 
     @staticmethod
     def get_user(email=None):
+        """get_user(email=None)
+        Retrieves a user based on the query parameters and returns a User object with the values populated from Firestore
+        """
+
+        # Creates a query on the user collection
         query = db.collection(User._collection_name)
+
+        # Filters the query by email, if one is provided
         if email:
             query = query.where('email', '==', email)
+
+        # Checks that exactly one user is found. If no users are found, we want to return None. If multiple users are found,
+        # we want to return None to ensure that no one can access a user account they are not meant to.
         query = query.get()
-        if (len(query) == 0):
+        if (len(query) != 1):
             return None
+
+        # Creates and returns a User object with the values from Firestore
         return User(email=query[0].get('email'),
             password=query[0].get('password'),
             salt=query[0].get('salt'),
@@ -144,9 +234,18 @@ class User():
 
     @staticmethod
     def get_all_users():
+        """get_all_users()
+        Retrieves basic information for all users in Firestore
+        Only returns their email, first name, last name, last activity, and admin status
+        Does not return sensitive data like password and salt
+        """
+
         users = []
+
+        # Gets an iterator over all users in the user collection in Firestore
         query = db.collection(User._collection_name).stream()
         for user in query:
+            # Adds just the email, first name, last name, last activity, and admin status to the output
             users.append({
                 'email': user.get('email'),
                 'first_name': user.get('first_name'),
@@ -154,10 +253,12 @@ class User():
                 'admin': user.get('admin'),
                 'last_activity': user.get('last_activity')  
                 })
+            
         return users
 
 
 class FirebaseSession():
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'sessions'
 
     def __init__(self, user_id, session_key=None):
@@ -197,6 +298,7 @@ class FirebaseSession():
 
 
 class UserActivity():
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'activity'
 
     def __init__(self, user_id, story_activity=[]):
