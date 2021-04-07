@@ -58,10 +58,9 @@ def admin_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user:
-            return render_response(redirect(url + url_for('login')))
+            return render_response(redirect(url + url_for('user_blueprint.login')))
         if not current_user.admin:
-            # TODO: Add error page
-            return render_response(render_template('admin_access_denied.html'))
+            return render_response(render_template('error_pages/admin_access_denied.html'))
         return f(*args, **kwargs)
     return decorated_function
 
