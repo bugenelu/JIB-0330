@@ -80,16 +80,19 @@ function get_story_data(e) {
 
         // var all_page_ids = Object.values(current_story['page_nodes'])
         // var all_page_ids = editor.getStoryPageList(current_story)
-        var page_name_dic = editor.getStoryPageList(current_story)
-        all_page_ids = Object.keys(page_name_dic)
-        
+        // var page_name_dic = editor.getStoryPageList(current_story)
+        // var page_name_dic = getStoryPageData()['page_name'];
+        // all_page_ids = Object.keys(page_name_dic)
+        // all_page_ids = getStoryPageData()['page_id']
+        page_data = getStoryPageData();
+
         // TODO: Get the page names instead of ids
         // All id empty list, objects.values(current_story['page_nodes'])
-        for (let i = 0; i < all_page_ids.length; i++) {
+        for (let i = 0; i < page_data['page_id'].length; i++) {
             var b = document.createElement("button");
-            b.innerHTML = page_name_dic[all_page_ids[i]];
+            b.innerHTML = page_data['page_name'][i];
             b.setAttribute('class', 'page_button')
-            b.setAttribute('page_id', all_page_ids[i])
+            b.setAttribute('page_id', page_data['page_id'][i]);
             document.getElementById('page-list').appendChild(b);
         }
     })
@@ -284,9 +287,6 @@ for (let i = 0; i < operations.length; i++) {
 }
 
 function populateOptions(parent_select, param_name) {
-    console.log(parent_select);
-    console.log(param_name);
-
     all_nodes = editor.getStoryState(current_story)['page_nodes']
 
     if (param_name == 'substory_name') {
@@ -434,7 +434,6 @@ function updateParentNodes(page_id) {
 }
 
 function updateChildNodes(page_id) {
-    console.log("Start");
     $('#child-nodes').empty()
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_story = null;
@@ -443,9 +442,6 @@ function updateChildNodes(page_id) {
     } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
         return;
     }
-
-    console.log("Reach");
-    console.log(page_id);
 
     story = editor.getStoryState(current_story);
     children = story['page_nodes'][page_id]['page_children']
@@ -530,8 +526,9 @@ function refreshPageList() {
         current_page = null;
         return;
     }
-
-    var page_name_dic = editor.getStoryPageList(current_story)
+s
+    // var page_name_dic = editor.getStoryPageList(current_story)
+    var page_name_dic = getStoryPageData()['page_name'];
     all_page_ids = Object.keys(page_name_dic)
     
     // TODO: Get the page names instead of ids
@@ -686,8 +683,20 @@ function populateButton(parent_id, button_names, button_field_names, button_fiel
     }
 }
 
+// Parses the output fromt editor
+function getStoryPageData() {
+    let page_data = editor.getStoryPageList(current_story);
+    let parsed_dic = {};
+    parsed_dic['page_id'] = [];
+    parsed_dic['page_name'] = [];
 
+    for (let i = 0; i < page_data.length; i++) {
+        parsed_dic['page_id'].push(page_data[i]['page_id']);
+        parsed_dic['page_name'].push(page_data[i]['page_name']);
+    }
 
+    return parsed_dic;
+}
 
 
 // Duplicate Story pages field shows up twice

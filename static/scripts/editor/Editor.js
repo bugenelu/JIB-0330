@@ -815,7 +815,7 @@ class StoryGraph {
                 visited_set.add(current);
                 let page_elem = {}
                 page_elem["page_id"] = current.page_id;
-                page_elem["page_name"] = current,page_name;
+                page_elem["page_name"] = current.page_name;
                 page_info.push(page_elem);
                 Object.keys(current.page_children).forEach(child => {
                     open_list.push(this.page_nodes[child]);
