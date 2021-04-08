@@ -29,7 +29,7 @@ from datetime import datetime
 # Local imports
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 from utils import url, db, render_response
-from users import User, FirebaseSession, UserActivity, current_user, login_user, login_required, user_blueprint
+from users import User, UserActivity, current_user, login_user, login_required, user_blueprint
 from errors import errors_blueprint
 from editor_blueprint import editor_blueprint
 
