@@ -3,7 +3,6 @@ editor = new Editor();  // The local editor
 current_story = null;   // The current story being displayed by the UI
 current_page = null;    // The current page being displayed by the UI
 quill = null;           // Quill Editor Element
-wait_fetch_story_id = false;
 story_data = {'story_id': [], 'story_name': []};
 
 refreshStoryPopup();
@@ -27,8 +26,10 @@ function getStoryPageData() {
     return page_data;
 }
 
-// Functiont that updates the list of story_data['story_id'] by calling a fetch
-// Careful, ajax is async and can cause an issue
+/*
+* Updates the story_data variable to match the database
+* Note that the GET request is synchronous and intentionally so
+*/
 function updateAllStoryIDs() {
     response =  $.ajax({
         type: 'GET',
@@ -42,6 +43,10 @@ function updateAllStoryIDs() {
         story_data = {'story_id': [], 'story_name': []};
 }
 
+/*
+* Pulls story json from database and properly sets the current_story field
+* Note that the GET request is synchronous and intentionally so
+*/
 function get_story_data(e) {
     response = $.ajax({
         type: 'GET',
@@ -73,7 +78,10 @@ function get_story_data(e) {
     }
 }
 
-
+/*
+* Dynamically populates the wizard form with the proper fields.
+* @param e: Event trigger attached to button that launches wizard
+*/
 function generateWizard(e) {
     operations = editor.getOperations();
     index = parseInt(e.target.getAttribute('index'));
@@ -138,6 +146,10 @@ function generateWizard(e) {
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// Refresh Function //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+/*
+* Refreshes all elements visible of page
+* Note this does not include the open story popup or the wizard
+*/
 function refreshAllPage() {
     refreshOpenStoryOptions();
     refreshPageList();
@@ -145,10 +157,17 @@ function refreshAllPage() {
     refreshOpenPage();
 }
 
+/*
+* Refreshes all popup elements on the page
+* Note that there is no refresh for the wizard
+*/
 function refreshPopups() {
     refreshStoryPopup();
 }
 
+/*
+* Refreshes the open story options provided as a popup window
+*/
 function refreshStoryPopup() {
     updateAllStoryIDs();
     removeAllChildren('popup-box');
@@ -175,6 +194,9 @@ function refreshStoryPopup() {
     populateButton('popup-box', btn_names, ['id', 'class'], fields);
 }
 
+/*
+* Refreshes the menu bar that contains the list of open stories
+*/
 function refreshOpenStoryOptions() {
     story_data = editor.getOpenStoryData();
     openStories = story_data['story_name'];
@@ -213,6 +235,9 @@ function refreshOpenStoryOptions() {
     $('#storage')[0].appendChild(add_btn);
 }
 
+/*
+* Refreshes the Page List menu
+*/
 function refreshPageList() {
     removeAllChildren('page-list');
     header = document.createElement('h1');
@@ -238,6 +263,9 @@ function refreshPageList() {
     }
 }
 
+/*
+* Refreshes the metadata shown on the page
+*/
 function refreshMetaData() {
     $('#metadata')[0].innerHTML = '';
     if (!(Object.keys(editor.openStories).includes(current_story))) {
@@ -252,6 +280,9 @@ function refreshMetaData() {
     $('#metadata')[0].innerHTML = meta;
 }
 
+/*
+* Refreshes the Page Node data shown on the page
+*/
 function refreshOpenPage() {
     updatePageChildNodes(current_page);
     updatePageParentNodes(current_page);
@@ -269,6 +300,9 @@ function refreshOpenPage() {
     $('#page-pane-child')[0].innerHTML = body_text;
 }
 
+/*
+* Helper that updates the Child Nodes for the Page Node currently shown on the page
+*/
 function updatePageChildNodes(page_id) {
     $('#child-nodes').empty()
     if (!(Object.keys(editor.openStories).includes(current_story))) {
@@ -294,6 +328,9 @@ function updatePageChildNodes(page_id) {
     populateButton('child-nodes', child_names, ['class', 'page_id'], fields);
 }
 
+/*
+* Helper that updates the Parent Nodes for the Page Node currently shown on the page
+*/
 function updatePageParentNodes(page_id) {
     $('#parent-nodes').empty();
     if (!(Object.keys(editor.openStories).includes(current_story))) {
@@ -353,7 +390,7 @@ $('.popup').on('click', '.open_story', function(e) {
 });
 
 /*
-* Event listener for when a page list is chosen to be loaded in the UI
+* Event listener for when a Page Node is selected to be viewed from the page list
 */
 $('.div7').on('click', '.page_button', function(e) {
     current_page = e.target.getAttribute('page_id');
@@ -361,18 +398,27 @@ $('.div7').on('click', '.page_button', function(e) {
     refreshAllPage();
 });
 
+/*
+* Event listener for when a Page Node is selected to be viewed from a child node
+*/
 $('#child-nodes').on('click', '.page_button', function(e) {
     current_page = e.target.getAttribute('page_id');
     // refreshOpenPage();
     refreshAllPage();
 });
 
+/*
+* Event listener for when a Page Node is selected to be viewed from a parent node
+*/
 $('#parent-nodes').on('click', '.page_button', function(e) {
     current_page = e.target.getAttribute('page_id');
     // refreshOpenPage();
     refreshAllPage();
 });
 
+/*
+* Event listener for when selecting the option to open more stories
+*/
 $('.div5').on('click', '.add_storybox', function(e) {
     hidden = $('#popup-box')[0].style.display == 'none';
     if (hidden){
@@ -383,6 +429,9 @@ $('.div5').on('click', '.add_storybox', function(e) {
     }
 });
 
+/*
+* Event listener for closing a popup window
+*/
 $('.popup').on('click', '.close', function(e) {
     popup = e.target.parentElement;
     hidden = popup.style.display == 'none';
@@ -394,12 +443,17 @@ $('.popup').on('click', '.close', function(e) {
     }
 });
 
+/*
+* Event listener for opening a wizard for editing
+*/
 $('.div8').on('click', '.wizard_btns', function(e) {
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
 
-
+/*
+* Event listener for submitting edits from wizard
+*/
 $('#editor_wizard').on('click', '.submit_wizard', function(e) {
     submit = confirm('Confirm Submission?');
 
@@ -446,6 +500,9 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
     }
 });
 
+/*
+* Event listener for saving changes to the databasea
+*/
 $('#save_story').click(function(e) {
     if (current_story == null) {
         alert('Select a story to save');
@@ -485,6 +542,13 @@ function removeAllChildren(parent_id) {
     return removed_elements;
 }
 
+/*
+* Creates and appends a series of buttons to some element with a HTML ID
+* @param {string} parent_id: ID of html element to add buttons to
+* @param {list} button_names: List of names to create buttons for
+* @param {list} button_field_names: List of name of additional attributes to add to button
+* @parm {list[list]} button_fields: List of a list containing values of fields specified in previous argument
+*/
 function populateButton(parent_id, button_names, button_field_names, button_fields) {
     parent_element = document.getElementById(parent_id);
     for (let i = 0; i < button_names.length; i++) {
@@ -497,6 +561,12 @@ function populateButton(parent_id, button_names, button_field_names, button_fiel
     }
 }
 
+/*
+* Adds a parameter to the wizard based on the param specification from editor.getOperations()
+* Note this function is specifically for parameters of type dropdown
+* @param parent_select: The parent element from which to add elements to
+* @param param_name: Name of the parameter to assign
+*/
 function populateOptions(parent_select, param_name) {
     all_nodes = editor.getStoryState(current_story)['page_nodes']
 
@@ -530,7 +600,9 @@ function populateOptions(parent_select, param_name) {
     }
 }
 
-
+/*
+* Creates all necessary buttons for different wizard settings
+*/
 function initializeWizard() {
     operations = editor.getOperations();
     for (let i = 0; i < operations.length; i++) {
