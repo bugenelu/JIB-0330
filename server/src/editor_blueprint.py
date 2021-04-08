@@ -40,8 +40,11 @@ def get_all_stories():
         # all_stories = [story for story in stories]
         child_doc = list(stories.list_documents())
         child_doc = [child.id for child in child_doc]
+        story_names = []
+        for doc in child_doc:
+            story_names.append(db.collection('stories').document(doc).get().get('story_name'))
         
-        return {'list': child_doc}, 200
+        return {'story_id': child_doc, 'story_name': story_names}, 200
     
     return None, 500
 

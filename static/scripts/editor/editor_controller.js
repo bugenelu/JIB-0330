@@ -1,358 +1,91 @@
-// Ajax script for editor stuff
+// Create Global Variables
+editor = new Editor();  // The local editor
+current_story = null;   // The current story being displayed by the UI
+current_page = null;    // The current page being displayed by the UI
+quill = null;           // Quill Editor Element
+wait_fetch_story_id = false;
+story_data = {'story_id': [], 'story_name': []};
 
-// TODO: List of things to do
-// - Keep track of page on for story
-// - List of functions 
+refreshStoryPopup();
+initializeWizard();
 
-// - List of editor class
-
-// [[string, function], ...]
-// - popup
-//     - z-index for "Open" new story
-
-// changing live story
-
-// TODO: Keep dict story_name: last_viewed_page
-
-editor = new Editor();
-current_story = null;
-current_page = null;
-all_story_ids = []
-// open_story_list = [] // names of the open stories
-
-open_story_btn = null;
-all_page_ids = null;
-clicked_page_btn = null;
-
-
-// Initializes Quill Editor
-quill = null;
-
-$.get('/editor/get_all_stories', function(event, status) {
-    // all_story_ids = event;
-    if (status == 'success') {
-        // Success
-        all_story_ids = event['list']
-        var pagelist = document.getElementsByClassName('popup')[0];
-        for (let i = 0; i < event['list'].length; i++) {
-            var b = document.createElement("button");
-            b.innerHTML = event['list'][i];
-            b.setAttribute('id', event['list'][i]);
-            b.setAttribute('class', 'open_story');
-
-            pagelist.appendChild(b);
-        }
+/**
+ * Gets a dictionay containing the list of Page IDs and Page Names
+ * @returns {'page_id': [], 'page_name': []} 
+ */
+function getStoryPageData() {
+    page_data = {'page_id': [], 'page_name': []};
+    if (current_story == null) {
+        return page_data;
     }
-});
+    editor_data = editor.getStoryPageList(current_story);
+    for (let i = 0; i < editor_data.length; i++) {
+        page_data['page_id'].push(editor_data[i]['page_id']);
+        page_data['page_name'].push(editor_data[i]['page_name']);
+    }
+
+    return page_data;
+}
+
+// Functiont that updates the list of story_data['story_id'] by calling a fetch
+// Careful, ajax is async and can cause an issue
+function updateAllStoryIDs() {
+    response =  $.ajax({
+        type: 'GET',
+        url: '/editor/get_all_stories',
+        async: false,
+    });
+
+    if (response['status'] == 200)
+        story_data = response['responseJSON'];
+    else
+        story_data = {'story_id': [], 'story_name': []};
+}
 
 function get_story_data(e) {
-    $.get('/editor/open_story/' + e.target.id, function(story_data, status) {
-        if (status == 'success') {
-            // Success
-            current_story = story_data['story_name'];
-            editor.openStory(story_data);
-        } else {
-            // Failure
+    response = $.ajax({
+        type: 'GET',
+        url: '/editor/open_story/' + e.target.id,
+        async: false
+    })
+
+    if (response['status'] != 200) {
+        story_data = editor.getOpenStoryData();
+        if (!(story_data['story_name'].includes(e.target.innerHTML))) {
             current_story = null;
+            return;    
         }
 
-        if (open_story_btn != null) {
-            open_story_btn.style.background='#8DD883';
-        }
-
-        open_story_btn = e.target;
-        open_story_btn.style.background = 'rgba(255, 255, 255, 0.90)';
-
-        // Update Page <-- Work with Joseph
-        var button = e.target;
-        var text = "Metadata: ";
-        var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
-        // TODO: Fill in metadata stuff later
-        // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
-        text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
-        document.getElementById("metadata").innerHTML = text;
-
-        removeAllChildren('page-list')
-        var header = document.createElement("h1");
-        header.innerHTML = "Page List";
-        document.getElementById('page-list').appendChild(header);
-        // pagelist.appendChild(header);
-
-        // var all_page_ids = Object.values(current_story['page_nodes'])
-        // var all_page_ids = editor.getStoryPageList(current_story)
-        // var page_name_dic = editor.getStoryPageList(current_story)
-        // var page_name_dic = getStoryPageData()['page_name'];
-        // all_page_ids = Object.keys(page_name_dic)
-        // all_page_ids = getStoryPageData()['page_id']
-        page_data = getStoryPageData();
-
-        // TODO: Get the page names instead of ids
-        // All id empty list, objects.values(current_story['page_nodes'])
-        for (let i = 0; i < page_data['page_id'].length; i++) {
-            var b = document.createElement("button");
-            b.innerHTML = page_data['page_name'][i];
-            b.setAttribute('class', 'page_button')
-            b.setAttribute('page_id', page_data['page_id'][i]);
-            document.getElementById('page-list').appendChild(b);
-        }
-    })
-}
-
-// Opening a Story
-// expecting <button id='replace-me-with-open-button' story_id='story_id'></button>
-// $(".storybox").click(function(e)  {
-//     get_story_data(e);
-// });
-
-$(".div5").on("click", ".storybox", function(e) {
-    get_story_data(e);
-});
-
-$(".popup").on("click", ".open_story", function(e) {
-    var new_btn = document.createElement("button");
-    new_btn.innerHTML = e.target.innerHTML;
-    new_btn.setAttribute('class', 'storybox');
-    new_btn.setAttribute('id', e.target.id);
-
-    // all_story_ids.removeChild(e.target.id)
-    // all_story_ids = all_story_ids.filter(function(e2) { return e2 != e.target.id })
-    // open_story_list.push(e.target.id)
-
-    var story_list = document.getElementById("storage");
-    var add_btn = document.getElementById("+");
-    story_list.removeChild(add_btn);
-
-    document.getElementById("storage").appendChild(new_btn);
-    document.getElementById("storage").appendChild(add_btn);
-    // e.target.style.display = "none";
-    document.getElementById('popup-box').style.display = "none";
-    document.getElementById('popup-box').removeChild(e.target);
-    new_btn.click();
-});
-
-
-// Saving a Story
-$("#save_story").click(function(e) {
-    if (current_story == null) {
-        alert("Story ID was not provided")
-        return;
-    }
-
-    current_story_id = editor.getStoryState(current_story)['story_id'];
-
-    $.post("/editor/save_story", 
-    {
-        'story_name': current_story_id,    // Replace with story_id
-        'story_data': JSON.stringify(editor.getStoryState(current_story)),
-    },
-    function(data, status) {
-        if (status == "success") {
-            alert("Story successfully saved");
-        } else {
-            alert("Story did not save successfully");
-        }
-    })
-});
-
-$(".add_storybox").click(function(e) {
-    var popup = document.getElementById("popup-box");
-    var hidden = popup.style.display == 'none';
-
-    if (hidden) {
-        popup.style.display = 'block';
-    } else {
-        popup.style.display = 'none';
-    }
-});
-
-$('.popup').on('click', '.close', function(e) {
-    var popup = e.target.parentElement;
-    temp = popup;
-    var hidden = popup.style.display == 'none';
-
-    if (hidden) {
-        popup.style.display = 'block';
-    } else {
-        popup.style.display = 'none';
-    }
-})
-
-
-function checkName (strng) {
-    var error = "";
-    
-        // TODO: Allow hyphens and underscores
-        var illegalChars = /[^\w\s]/g; // allow letters, numbers, and underscores
-        if (strng == "") {
-               error = "Please enter your name.\n";
-        }
-        else if((strng.length < 2)) {
-            error = "The name is the wrong length.\n";
-        }
-        else if (illegalChars.test(strng)) {
-            error = "The name contains illegal characters.\n";
-        }
-    return error;
-}
-
-$(".div7").on("click", ".page_button", function(e) {
-    var story_state = story_state = editor.getStoryState(current_story);
-    let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
-    document.getElementById("page-pane-child").innerHTML = page.page_body_text;
-    current_page = e.target.getAttribute('page_id');
-
-    if (clicked_page_btn != null) {
-        clicked_page_btn.style.background='#8DD883';
-    }
-    
-    clicked_page_btn = e.target;
-    clicked_page_btn.style.background = 'rgba(255, 255, 255, 0.90)';
-
-    updateParentNodes(current_page);
-    updateChildNodes(current_page);
-    
-});
-
-$("#child-nodes").on("click", ".page_button", function(e) {
-    var story_state = story_state = editor.getStoryState(current_story);
-    let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
-    document.getElementById("page-pane-child").innerHTML = page.page_body_text;
-    current_page = e.target.getAttribute('page_id');
-    updateParentNodes(current_page);
-    updateChildNodes(current_page);
-});
-
-$("#parent-nodes").on("click", ".page_button", function(e) {
-    var story_state = story_state = editor.getStoryState(current_story);
-    let page = story_state['page_nodes'][e.target.getAttribute('page_id')];
-    document.getElementById("page-pane-child").innerHTML = page.page_body_text;
-    current_page = e.target.getAttribute('page_id');
-    updateParentNodes(current_page);
-    updateChildNodes(current_page);
-});
-
-
-
-// Refactored to remove wizard population
-var operations = editor.getOperations();
-var added_params = [];
-var editor_form = $('#editor_wizard > div > form')[0]
-
-$('#editor_wizard > div > form').empty()
-for (let i = 0; i < operations.length; i++) {
-    var b = document.createElement("button");
-    b.innerHTML = operations[i]['name'];
-    b.setAttribute('id', operations[i]['name']);
-    b.setAttribute('index', i);
-    b.setAttribute('class', 'wizard_btns');
-    // b.setAttribute('class', 'open_story');
-    $(".div8")[0].appendChild(b);
-    // for (let j = 0; j < operations[i]['params'].length; j++) {
-    //     if (operations[i]['params'][j]['param_label'] != null) {
-            
-
-    //         if (!added_params.includes(operations[i]['params'][j]['param'])) {
-    //             console.log(operations[i]['params'][j]);
-
-    //             added_params.push(operations[i]['params'][j]['param']);
-    //             let new_element_label = document.createElement('label');
-    //             new_element_label.innerHTML = operations[i]['params'][j]['param_label'];
-    //             new_element_label.setAttribute('id', operations[i]['params'][j]['param_label']);
-
-    //             editor_form.appendChild(new_element_label);
-
-    //             if (operations[i]['params'][j]['param_type'] == 'text') {
-    //                 let new_element = document.createElement('input');
-    //                 new_element.setAttribute('id', operations[i]['params'][j]['param_label'])
-    //                 editor_form.appendChild(new_element);
-    //             }
-    //             else if (operations[i]['params'][j]['param_type'] == 'rich_text') {
-    //                 let new_element = document.createElement('input');
-    //                 new_element.setAttribute('id', operations[i]['params'][j]['param_label'])
-    //                 editor_form.appendChild(new_element);
-    //             }
-    //             else if (operations[i]['params'][j]['param_type'] == 'dropdown') {
-    //                 let new_element = document.createElement('select');
-                    
-    //                 new_element.setAttribute('id', operations[i]['params'][j]['param_label'])
-    //                 populateOptions(new_element, operations[i]['params'][j]['param']);
-    //                 editor_form.appendChild(new_element);
-    //             }
-    //             else {
-    //                 alert("No type specified " + operations[i]['params'][j]['param_type'] == 'dropdown');
-    //             }
-    //         }
-    //     }
-    // }
-}
-
-function populateOptions(parent_select, param_name) {
-    all_nodes = editor.getStoryState(current_story)['page_nodes']
-
-    if (param_name == 'substory_name') {
-        // Get All the different stories
-        for (let i = 0; i < all_story_ids.length; i++) {
-            let option = document.createElement('option');
-            option.innerHTML = all_story_ids[i];
-            option.setAttribute('name', all_story_ids[i]);
-
-            parent_select.appendChild(option);
-        }
-
-        for (let i = 0; i < Object.keys(editor.openStories).length; i++) {
-            let option = document.createElement('option');
-            option.innerHTML = Object.keys(editor.openStories)[i];
-            option.setAttribute('name', Object.keys(editor.openStories)[i]);
-            
-            parent_select.appendChild(option);
-        }
-
-    } else {
-        for (let i = 0; i < all_page_ids.length; i++) {
-            let option = document.createElement('option');
-            option.innerHTML = all_nodes[all_page_ids[i]]['page_name'];
-            option.setAttribute('name', all_page_ids[i]);
-
-            parent_select.appendChild(option);
-        }
-    }
-}
-
-
-$('.div8').on("click", ".wizard_btns", function(e) {
-    index = parseInt(e.target.getAttribute('index'))
-    story_params = editor.getOperations()[index];
-
-    form_elements = $('#editor_wizard > div > form')[0].childNodes
-
-    for (let i = 0; i < form_elements.length; i++) {
-        form_elements[i].style.display = 'none';
-        for (let j = 0; j < story_params['params'].length; j++) {
-            if (story_params['params'][j]['param_label'] == form_elements[i].getAttribute('id')) {
-                form_elements[i].style.display = '';
+        for (let i = 0; i < story_data['story_id'].length; i++) {
+            if (story_data['story_id'][i] == e.target.id) {
+                current_story = story_data['story_name'][i];
+                break;
             }
         }
+    } else {
+        if (response['responseJSON']['story_name'] != e.target.innerHTML) {
+            // Check Local Version of Story
+            current_story = e.target.innerHTML;
+        } else {
+            editor.openStory(response['responseJSON']);
+            current_story = response['responseJSON']['story_name'];
+        }
     }
-
-    $('#editor_wizard')[0].style.display = 'block';
-});
+}
 
 
 function generateWizard(e) {
-    // header = $('#wizard_header')[0];
-    operations = editor.getOperations()
-    index = parseInt(e.target.getAttribute('index'))
+    operations = editor.getOperations();
+    index = parseInt(e.target.getAttribute('index'));
+;
+    $('#wizard_title')[0].innerHTML = operations[index]['name'];
+    $('#wizard_instruction')[0].innerHTML = operations[index]['op_label'];
 
-    // Update Header
-    $('#wizard_title')[0].innerHTML = operations[index]['name']
-    $('#wizard_instruction')[0].innerHTML = operations[index]['op_label']
-
-
-    // Update Form
-    form = $('#wizard_form')[0]
-    $('#wizard_form').empty()
+    form = $('#wizard_form')[0];
+    $('#wizard_form').empty();
 
     for (let i = 0; i < operations[index]['params'].length; i++) {
+        console.log("Running");
         let element_label = document.createElement('label');
         element_label.innerHTML = operations[index]['params'][i]['param_label'];
         form.appendChild(element_label);
@@ -401,13 +134,168 @@ function generateWizard(e) {
     $('.submit_wizard')[0].setAttribute('index', index);
 }
 
-$('.div8').on('click', '.wizard_btns', function(e) {
-    generateWizard(e);
-})
 
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Refresh Function //////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+function refreshAllPage() {
+    refreshOpenStoryOptions();
+    refreshPageList();
+    refreshMetaData();
+    refreshOpenPage();
+}
 
-function updateParentNodes(page_id) {
-    $('#parent-nodes').empty()
+function refreshPopups() {
+    refreshStoryPopup();
+}
+
+function refreshStoryPopup() {
+    updateAllStoryIDs();
+    removeAllChildren('popup-box');
+    open_ids = editor.getOpenStoryIDs();
+    
+    header = document.createElement('h1');
+    header.innerHTML = 'Select a Story to Open';
+    close_btn = document.createElement('span');
+    close_btn.innerHTML = '&times;';
+    close_btn.setAttribute('class', 'close');
+    $('#popup-box')[0].appendChild(close_btn);
+    $('#popup-box')[0].appendChild(header);
+    open_stories = Object.keys(editor.openStories);
+
+    btn_names = []
+    fields = []
+    for (let i = 0; i < story_data['story_id'].length; i++) {
+        if (!(open_ids.includes(story_data['story_id'][i]))) {
+            btn_names.push(story_data['story_name'][i]);
+            fields.push([story_data['story_id'][i], 'open_story']);
+        }
+    }
+
+    populateButton('popup-box', btn_names, ['id', 'class'], fields);
+}
+
+function refreshOpenStoryOptions() {
+    story_data = editor.getOpenStoryData();
+    openStories = story_data['story_name'];
+    shown_story = [];
+
+    story_list = $('#storage')[0].children;
+    for (let i = 0; i < story_list.length - 1; i++) {
+        shown_story.push(story_list[i].innerHTML);
+        if (!(openStories.includes(story_list[i].innerHTML))) {
+            $('#storage')[0].removeChild(story_list[i]);
+        } else {
+            if (story_list[i].innerHTML == current_story) {
+                story_list[i].style.background = 'rgba(255, 255, 255, 0.90)';
+            } else {
+                story_list[i].style.background = '#8DD883';
+            }
+        }
+    }
+
+    add_btn = $('.add_storybox')[0];
+    $('#storage')[0].removeChild(add_btn);
+    for (let i = 0; i < openStories.length; i++) {
+        if (!(shown_story.includes(openStories[i]))) {
+            new_btn = document.createElement('button');
+            new_btn.innerHTML = story_data['story_name'][i];
+            new_btn.setAttribute('class', 'storybox');
+            new_btn.setAttribute('id', editor.getStoryState(story_data['story_name'][i])['story_id']);
+            $('#storage')[0].appendChild(new_btn);
+
+            if (story_data['story_name'][i] == current_story) {
+                new_btn.style.background = 'rgba(255, 255, 255, 0.90)';
+            }
+        }
+    }
+
+    $('#storage')[0].appendChild(add_btn);
+}
+
+function refreshPageList() {
+    removeAllChildren('page-list');
+    header = document.createElement('h1');
+    header.innerHTML = 'Page List';
+    $('#page-list')[0].appendChild(header);
+
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        return;
+    }
+
+    page_data = getStoryPageData();
+    for (let i = 0; i < page_data['page_name'].length; i++) {
+        new_btn = document.createElement('button');
+        new_btn.innerHTML = page_data['page_name'][i];
+        new_btn.setAttribute('class', 'page_button');
+        new_btn.setAttribute('page_id', page_data['page_id'][i]);
+        $('#page-list')[0].appendChild(new_btn);
+
+        if (page_data['page_id'][i] == current_page) {
+            new_btn.style.background = 'rgba(255, 255, 255, 0.90)';
+        }
+    }
+}
+
+function refreshMetaData() {
+    $('#metadata')[0].innerHTML = '';
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        return;
+    }
+
+    meta = 'Metadata: ';
+    num_pages = Object.keys(editor.getStoryPageList(current_story)).length;
+    meta += 'id=' + $('#metadata')[0].id + ', name=' + current_story + ', root=' + 
+        editor.getStoryState(current_story)['root_name'] + ', #pages=' + num_pages;
+    $('#metadata')[0].innerHTML = meta;
+}
+
+function refreshOpenPage() {
+    updatePageChildNodes(current_page);
+    updatePageParentNodes(current_page);
+
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_page = null;
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        $('#page-pane-child')[0].innerHTML = '';
+        return;
+    }
+
+    body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
+    $('#page-pane-child')[0].innerHTML = body_text;
+}
+
+function updatePageChildNodes(page_id) {
+    $('#child-nodes').empty()
+    if (!(Object.keys(editor.openStories).includes(current_story))) {
+        current_story = null;
+        current_page = null;
+        return;
+    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
+        return;
+    }
+
+    story = editor.getStoryState(current_story);
+    children = story['page_nodes'][page_id]['page_children']
+
+    child_names = []
+    child_ids = Object.keys(children)
+    fields = []
+
+    for (let i = 0; i < child_ids.length; i++) {
+        child_names.push(children[child_ids[i]]['child_name']);
+        fields.push(['page_button', child_ids[i]]);
+    }
+
+    populateButton('child-nodes', child_names, ['class', 'page_id'], fields);
+}
+
+function updatePageParentNodes(page_id) {
+    $('#parent-nodes').empty();
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_story = null;
         current_page = null;
@@ -433,38 +321,90 @@ function updateParentNodes(page_id) {
     populateButton('parent-nodes', parent_names, ['class', 'page_id'], fields);
 }
 
-function updateChildNodes(page_id) {
-    $('#child-nodes').empty()
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        current_story = null;
-        current_page = null;
-        return;
-    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
-        return;
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Event Listeners ///////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+/*
+* Event listener for when a story is to be loaded onto the UI
+*/
+$('.div5').on('click', '.storybox', function(e) {
+    get_story_data(e);
+    // refreshPageList();
+    // refreshMetaData();
+    refreshAllPage();
+});
+
+/*
+* Event listener for when a story is selected to be opened from database
+*/
+$('.popup').on('click', '.open_story', function(e) {
+    new_btn = document.createElement('button');
+    new_btn.innerHTML = e.target.innerHTML;
+    new_btn.setAttribute('class', 'storybox');
+    new_btn.setAttribute('id', e.target.id);
+
+    add_btn = document.getElementById('+');
+    $('#storage')[0].removeChild(add_btn);
+    $('#storage')[0].appendChild(new_btn);
+    $('#storage')[0].appendChild(add_btn);
+
+    $('#popup-box')[0].style.display = 'none';
+    new_btn.click();
+});
+
+/*
+* Event listener for when a page list is chosen to be loaded in the UI
+*/
+$('.div7').on('click', '.page_button', function(e) {
+    current_page = e.target.getAttribute('page_id');
+    // refreshOpenPage();
+    refreshAllPage();
+});
+
+$('#child-nodes').on('click', '.page_button', function(e) {
+    current_page = e.target.getAttribute('page_id');
+    // refreshOpenPage();
+    refreshAllPage();
+});
+
+$('#parent-nodes').on('click', '.page_button', function(e) {
+    current_page = e.target.getAttribute('page_id');
+    // refreshOpenPage();
+    refreshAllPage();
+});
+
+$('.div5').on('click', '.add_storybox', function(e) {
+    hidden = $('#popup-box')[0].style.display == 'none';
+    if (hidden){
+        $('#popup-box')[0].style.display = 'block';
+        refreshStoryPopup();
+    } else{
+        $('#popup-box')[0].style.display = 'none';
     }
+});
 
-    story = editor.getStoryState(current_story);
-    children = story['page_nodes'][page_id]['page_children']
-
-    child_names = []
-    child_ids = Object.keys(children)
-    fields = []
-
-    for (let i = 0; i < child_ids.length; i++) {
-        child_names.push(children[child_ids[i]]['child_name']);
-        fields.push(['page_button', child_ids[i]]);
+$('.popup').on('click', '.close', function(e) {
+    popup = e.target.parentElement;
+    hidden = popup.style.display == 'none';
+    if (hidden) {
+        popup.style.display = 'block';
+        refreshPopups();
+    } else {
+        popup.style.display = 'none';
     }
+});
 
-    populateButton('child-nodes', child_names, ['class', 'page_id'], fields)
-}
+$('.div8').on('click', '.wizard_btns', function(e) {
+    generateWizard(e);
+    $('#editor_wizard')[0].style.display = 'block';
+});
+
 
 $('#editor_wizard').on('click', '.submit_wizard', function(e) {
     submit = confirm('Confirm Submission?');
 
     if (submit) {
-        // Do the submission stuff
-        editor_function = editor.getOperations()[e.target.getAttribute('index')];
-        // param_list = Object.keys(editor_form['params'])
+        editor_function = editor.getOperations()[parseInt(e.target.getAttribute('index'))];
         params = []
 
         for (let i = 0; i < editor_function['params'].length; i++) {
@@ -489,8 +429,8 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             }
         }
 
-        let fake_btn = document.createElement('button');
-        let handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
+        fake_btn = document.createElement('button');
+        handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
         for (let i = 0; i < params.length; i++) {
             handlerFunction += '"' + params[i] + '"';
             if (i != params.length - 1) {
@@ -499,169 +439,43 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
         }
         handlerFunction += ')';
         fake_btn.setAttribute('onclick', handlerFunction);
-
         fake_btn.click();
 
+        refreshAllPage();
         $('#editor_wizard')[0].style.display = 'none';
-        console.log("Before Call");
-        refreshPageList();
-        refreshOpenPage();
-        refreshAllStoryPage();
-        refreshOpenStory();
-        refreshMetaData();
-
-        console.log("Complete Call");
     }
 });
 
-
-function refreshPageList() {
-    removeAllChildren('page-list')
-    var header = document.createElement("h1");
-    header.innerHTML = "Page List";
-    document.getElementById('page-list').appendChild(header);
-
-    // Checks if current_story is no longer valid
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        current_page = null;
-        return;
-    }
-s
-    // var page_name_dic = editor.getStoryPageList(current_story)
-    var page_name_dic = getStoryPageData()['page_name'];
-    all_page_ids = Object.keys(page_name_dic)
-    
-    // TODO: Get the page names instead of ids
-    // All id empty list, objects.values(current_story['page_nodes'])
-    for (let i = 0; i < all_page_ids.length; i++) {
-        var b = document.createElement("button");
-        b.innerHTML = page_name_dic[all_page_ids[i]];
-        b.setAttribute('class', 'page_button')
-        b.setAttribute('page_id', all_page_ids[i])
-        document.getElementById('page-list').appendChild(b);
-    }
-}
-
-function refreshOpenPage() {
-    console.log("Refresh Page Called");
-    // TODO: CHANGE THIS / FIX IT
-    updateChildNodes(current_page);
-    updateParentNodes(current_page);
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        current_page = null;
-        $('#page-pane-child')[0].innerHTML = '';
-        return;
-    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
-        $('#page-pane-child')[0].innerHTML = '';
+$('#save_story').click(function(e) {
+    if (current_story == null) {
+        alert('Select a story to save');
         return;
     }
 
-    body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
-    
-    $('#page-pane-child')[0].innerHTML = body_text;
-}
+    current_story_id = editor.getStoryState(current_story)['story_id'];
 
-function refreshOpenStory() {
-    openStoryIDs = editor.getOpenStoryIDs();
-
-    story_list = $('#storage')[0].children;
-    for (let i = 0; i < story_list.length - 1; i++) {
-        isIn = false;
-        
-        for (let j = 0; j < openStoryIDs.length; j++) {
-            if (story_list[i].innerHTML == openStoryIDs[j]) {
-                isIn = true;
-            }
+    $.post("/editor/save_story", 
+    {
+        'story_name': current_story_id,
+        'story_data': JSON.stringify(editor.getStoryState(current_story)),
+    },
+    function(data, status) {
+        if (status == "success") {
+            alert("Story successfully saved");
+        } else {
+            alert("Story failed to save");
         }
-
-        if (!isIn) {
-            console.log(story_list[i].innerHTML);
-            $('#storage')[0].removeChild(story_list[i]);
-        }
-    }
-}
-
-function refreshAllStoryPage() {
-    removeAllChildren('popup-box');
-    let span = document.createElement('span');
-    span.setAttribute('class', 'close');
-    span.innerHTML = '&times;';
-
-    let header = document.createElement('h1');
-    header.innerHTML = 'Select a Story to Open';
-
-    var pagelist = document.getElementsByClassName('popup')[0];
-    pagelist.appendChild(span);
-    pagelist.appendChild(header)
-
-    openStoryIDs = editor.getOpenStoryIDs();
-    for (let i = 0; i < all_story_ids.length; i++) {
-        isIn = false;
-
-        for (let j = 0; j < openStoryIDs.length; j++) {
-            if (all_story_ids[i] == openStoryIDs[j]) {
-                isIn = true;
-            }
-        }
-
-        if (!isIn) {
-            var b = document.createElement("button");
-            b.innerHTML = all_story_ids[i];
-            b.setAttribute('id', all_story_ids[i]);
-            b.setAttribute('class', 'open_story');
-
-            pagelist.appendChild(b);
-        }
-    }
-}
-
-function refreshMetaData() {
-    if (!(Object.keys(editor.openStories).includes(current_story))) {
-        current_page = null;
-        $('#metadata')[0].innerHTML = '';
-        return;
-    } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
-        $('#metadata')[0].innerHTML = '';
-        return;
-    }
-
-    $('#metadata')[0].innerHTML = '';
-
-    var button = $('#metadata')[0];
-    var text = "Metadata: ";
-    var num_pages = Object.keys(editor.getStoryPageList(current_story)).length
-    // TODO: Fill in metadata stuff later
-    // text = text + "id=" + button.id + ", \nroot=" + current_story['root_name'] + ",\nname=" + current_story["story_name"] + ", \n#pages=" + num_pages;
-    text = text + "id=" + button.id + ", name=" + current_story + ", root=" + editor.getStoryState(current_story)['root_name'] + ", #pages=" + num_pages;
-    button.innerHTML = text;
-}
+    });
+});
 
 
-// Buttons to event handlers --> field matthew stored
-// Setting some field to button --> distinguishing params needed
-
-
-/* Functionalities Needed
-TODO: Populate Open Stories Menu
-TODO: Populate Pages in Current Story
-TODO: Populate button settings
-TODO: Populate Parent Nodes     |
-TODO: Populate Child Nodes      | these three can be grouped together
-TODO: Populate Page Body Text   |
-TODO: Generate Wizard
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////// Helper Utility Functions //////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+/*
+* Removes all child elements of an element
+* @param parent_id: ID of the parent element to remove children from
 */
-
-/* Helper Functions to write/rewrite
-TODO: Remove all elements with a certain tag <- Returns all removed elements in order of first to last
-TODO: Create buttons with specified class tag, id tag (or null if not)
-*/
-
-/* Event Handlers
-TODO: Display Popup, Get All Available Stories
-TODO: 
-*/
-
-
 function removeAllChildren(parent_id) {
     let removed_elements = []
     parent_element = document.getElementById(parent_id);
@@ -683,23 +497,48 @@ function populateButton(parent_id, button_names, button_field_names, button_fiel
     }
 }
 
-// Parses the output fromt editor
-function getStoryPageData() {
-    let page_data = editor.getStoryPageList(current_story);
-    let parsed_dic = {};
-    parsed_dic['page_id'] = [];
-    parsed_dic['page_name'] = [];
+function populateOptions(parent_select, param_name) {
+    all_nodes = editor.getStoryState(current_story)['page_nodes']
 
-    for (let i = 0; i < page_data.length; i++) {
-        parsed_dic['page_id'].push(page_data[i]['page_id']);
-        parsed_dic['page_name'].push(page_data[i]['page_name']);
+    if (param_name == 'substory_name') {
+        // Get All the different stories
+        for (let i = 0; i < story_data['story_id'].length; i++) {
+            let option = document.createElement('option');
+            option.innerHTML = story_data['story_id'][i];
+            option.setAttribute('name', story_data['story_id'][i]);
+
+            parent_select.appendChild(option);
+        }
+
+        for (let i = 0; i < Object.keys(editor.openStories).length; i++) {
+            let option = document.createElement('option');
+            option.innerHTML = Object.keys(editor.openStories)[i];
+            option.setAttribute('name', Object.keys(editor.openStories)[i]);
+            
+            parent_select.appendChild(option);
+        }
+
+    } else {
+        all_page_ids = getStoryPageData()['page_id'];
+        for (let i = 0; i < all_page_ids.length; i++) {
+            let option = document.createElement('option');
+            option.innerHTML = all_nodes[all_page_ids[i]]['page_name'];
+            option.setAttribute('name', all_page_ids[i]);
+
+            parent_select.appendChild(option);
+        }
     }
-
-    return parsed_dic;
 }
 
 
-// Duplicate Story pages field shows up twice
-// Change param_label name to be distinct for root-id/page-id
-// Connect story Parent Story Page missing
-//  - One may be overriding the other
+function initializeWizard() {
+    operations = editor.getOperations();
+    for (let i = 0; i < operations.length; i++) {
+        new_btn = document.createElement('button');
+        new_btn.innerHTML = operations[i]['name'];
+        new_btn.setAttribute('id', operations[i]['name']);
+        new_btn.setAttribute('index', i);
+        new_btn.setAttribute('class', 'wizard_btns');
+        $('.div8')[0].appendChild(new_btn);
+    }
+}

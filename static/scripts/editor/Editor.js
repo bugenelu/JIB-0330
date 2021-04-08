@@ -159,23 +159,23 @@ class Editor {
                 ],
                 "function": "duplicateFromPage(story_name, page_id)"
             },
-            {
-                "name": "Edit Story ID",
-                "op_label": "Please input a new ID for this story.",
-                "params": [
-                    {
-                        "param": "story_name",
-                        "param_label": null,
-                        "param_type": "current_story" // implicit
-                    },
-                    {
-                        "param": "update_id",
-                        "param_label": "New Story ID",
-                        "param_type": "text" // seems like there are going to be restrictions on characters for this parameter ...
-                    }
-                ],
-                "function": "editStoryID(story_name, update_id)"
-            },
+            // {
+            //     "name": "Edit Story ID",
+            //     "op_label": "Please input a new ID for this story.",
+            //     "params": [
+            //         {
+            //             "param": "story_name",
+            //             "param_label": null,
+            //             "param_type": "current_story" // implicit
+            //         },
+            //         {
+            //             "param": "update_id",
+            //             "param_label": "New Story ID",
+            //             "param_type": "text" // seems like there are going to be restrictions on characters for this parameter ...
+            //         }
+            //     ],
+            //     "function": "editStoryID(story_name, update_id)"
+            // },
             {
                 "name": "Change Story Root",
                 "op_label": "Select a new root page for this story.",
@@ -437,6 +437,18 @@ class Editor {
         for (let i = 0; i < all_story_names.length; i++)
             open_story_ids.push(this.openStories[all_story_names[i]].getCurrent().toJSON()['story_id']);
         return open_story_ids;
+    }
+
+    getOpenStoryNames() {
+        return Object.keys(this.openStories);
+    }
+
+    getOpenStoryData() {
+        let all_story_names = Object.keys(this.openStories);
+        let open_story_ids = []
+        for (let i = 0; i < all_story_names.length; i++)
+            open_story_ids.push(this.openStories[all_story_names[i]].getCurrent().toJSON()['story_id']);
+        return {'story_name': all_story_names, 'story_id': open_story_ids};
     }
 
     /**
