@@ -84,99 +84,149 @@ const tree2 = {
 
 const editor = new Editor();
 editor.openStory(tree2);
+const tree_data = editor.getStoryPageTree("story2");
+const root_id = tree2["root_id"];
 
-var map = document.getElementById("map_canvas");
-var button = document.getElementById("load_map_button");
-var line_button = document.getElementById("add_line_button");
-
-function add_line() {
-    let essveegee = document.getElementById("line_haver");
-    let a_line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    a_line.setAttribute("style", "stroke:rgb(255,0,0);stroke-width:2");
-    a_line.setAttribute("x1","0");
-    a_line.setAttribute("x2","1000");
-    a_line.setAttribute("y1","0");
-    a_line.setAttribute("y2","1000");
-    essveegee.appendChild(a_line);
-}
 
 /**
  * Everything above the line is of dubious permanent value.
  */
- const tree_data = editor.getStoryPageTree("story2");
- const tree_layers = tree_data[0];
- const page_coords = {}
- const edge_set = tree_data[1];
 
- const layer_spacer = 1;
- const button_height = 2;
- const button_width = 12;
- const button_spacer = 1;
+function load_map(data = tree_data, current_page_id = root_id) {
+    
+    // tree data constants
+    const tree_layers = tree_data[0];
+    const page_coords = {}
+    const edge_set = tree_data[1];
+    
+    // layout constants
+    const max_frame_height = 750;
+    const max_frame_width = 750;
 
-function load_map() {
-    let max_width = 0;
+    const layer_spacer = 30;
+    const button_height = 30;
+    const button_width = 120;
+    const button_spacer = 30;
+    
+    // html elements
+    const frame = document.getElementById("map_frame");
+    const map = document.getElementById("map_canvas");
+
+    // TODO: clear previous contents...
+    // TODO: add position reset button
+
+    // tree measurements 
+    let tree_depth = tree_layers.length; // in unit layers
+    let max_width = 0; // in unit pages
     tree_layers.forEach(layer => {
         max_width = Math.max(max_width, layer.length);
     });
 
-    let y_pos = 0;
-
+    let y_pos = 0; // root button vertical offset
+    
+    // set map dimensions
+    const y_dimension = y_pos * 2 + tree_depth * (button_height + layer_spacer) - layer_spacer;
+    const x_dimension = max_width * (button_width + button_spacer) - button_spacer;
+    map.style.height = y_dimension + "px";
+    map.style.width = x_dimension + "px";
+    
+    // set frame dimensions
+    const frame_height = Math.min(y_dimension, max_frame_height);
+    const frame_width = Math.min(x_dimension, max_frame_width);
+    frame.style.height = frame_height + "px";
+    frame.style.width = frame_width + "px";
+    
+    
+    // main loop to create buttons
     tree_layers.forEach(layer => {
+        
+        // make new layer
         let layer_div = document.createElement('div');
         let attrib = "position:absolute;"
-        attrib = attrib.concat("top:" + y_pos + "em;");
+        attrib = attrib.concat("top:" + y_pos + ";");
         layer_div.setAttribute("style", attrib);
         layer_div.setAttribute("class", "map_layer");
-        // layer_div.innerHTML = "layer"
-        let x_pos = 0;
+        const x_mid = (max_width * (button_width + button_spacer) - button_spacer) * .5;
+        const num_pages = layer.length;
+        const layer_width = (button_width + button_spacer) * num_pages - button_spacer;
+        let x_pos = x_mid - (layer_width * .5);
+        
+        // add pages to layer
         layer.forEach(page => {
-            let page_div = document.createElement('button')
             
+            // make and append page to layer
+            let page_div = document.createElement('button')
             let attrib = "position:absolute;";
-            attrib = attrib.concat("left:"+ x_pos +"em;");
-            attrib = attrib.concat("height:"+ button_height +"em;");
-            attrib = attrib.concat("width:"+ button_width +"em;");
-
+            attrib = attrib.concat("left:"+ x_pos +";");
+            attrib = attrib.concat("height:"+ button_height +";");
+            attrib = attrib.concat("width:"+ button_width +";");
             page_div.setAttribute("style", attrib);
             page_div.setAttribute("class", "page_button");
             page_div.setAttribute("page_id", page["page_id"]);
             page_div.innerHTML = page["page_name"];
             layer_div.appendChild(page_div);
-
+            
+            // record page position for edge creation
             page_coords[page.page_id] = {"x": x_pos, "y": y_pos};
+            
+            // update x_pos for next page
             x_pos += button_width + button_spacer;
         });
+        
+        // add layer to HTML
         map.appendChild(layer_div);
+        // update y_pos for next layer
         y_pos += button_height + layer_spacer;
     });
 
+    // initial map offset
+    let x_init_offset = -1 * (page_coords[current_page_id]["x"] - frame_width * .5) - (button_width * .5);
+    let y_init_offset = page_coords[current_page_id]["y"];
+    map.style.left = x_init_offset + "px";
+    map.style.top = y_init_offset +"px";
+
+    // set map min and max offsets
+    const y_min_offset = (y_dimension - layer_spacer) * -1;
+    const y_max_offset = (y_dimension - layer_spacer);
+    const x_min_offset = (x_dimension - button_spacer) * -1;
+    const x_max_offset = (x_dimension - button_spacer);
+    map.setAttribute("y_min_offset", y_min_offset);
+    map.setAttribute("y_max_offset", y_max_offset);
+    map.setAttribute("x_min_offset", x_min_offset);
+    map.setAttribute("x_max_offset", x_max_offset);
+    
+    // create edges
     let edges_div = document.createElement('div');
     edges_div.setAttribute("id", "edges_div");
     edges_div.setAttribute("style", 
-        "height:"+ (y_pos + button_height)+ "em;"
-        +"width:"+(max_width * button_width + (max_width - 1) * button_spacer)+"em;"
+        "height:"+ (y_pos + button_height)+ ";"
+        +"width:"+(max_width * button_width + (max_width - 1) * button_spacer)+";"
         + "position:absolute;"
         + "top:0;"
         + "left:0;"
     );
     let edges_render = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    // edges_render.setAttribute("id", "edges_svg");
-    edges_render.setAttribute("height", (y_pos + button_height) + "em");
-    edges_render.setAttribute("width", (max_width * button_width + (max_width - 1) * button_spacer) + "em");
+    edges_render.setAttribute("height", (y_pos + button_height));
+    edges_render.setAttribute("width", (max_width * button_width + (max_width - 1) * button_spacer));
     for (edge of edge_set) {
         add_edge(edge, edges_render, page_coords)
     }
-    // edges_div.appendChild(edges_render);
-    // document.body.appendChild(edges_render);
-    map.appendChild(edges_render);
-}
 
-function add_edge(edge, e, coords) {
-    l = document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute("z-index", -1);
-    l.setAttribute("x1", coords[edge[0]]["x"] + "em");
-    l.setAttribute("x2", coords[edge[1]]["x"] + "em");
-    l.setAttribute("y1", coords[edge[0]]["y"] + button_height + "em");
-    l.setAttribute("y2", coords[edge[1]]["y"] + "em");
-    e.appendChild(l);
+    // add edges to HTML
+    map.appendChild(edges_render);
+
+    // helper function for edge creation
+    function add_edge(edge, e, coords) {
+        let xr_offset = button_width * .5;
+        let xc_offset = button_width * .5;
+        let yr_offset = button_height * .9;
+        let yc_offset = button_height * .1;
+        l = document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute("z-index", -1);
+        l.setAttribute("x1", coords[edge[0]]["x"] + xr_offset);
+        l.setAttribute("x2", coords[edge[1]]["x"] + xc_offset);
+        l.setAttribute("y1", coords[edge[0]]["y"] + yr_offset);
+        l.setAttribute("y2", coords[edge[1]]["y"] + yc_offset);
+        e.appendChild(l);
+    }
 }
