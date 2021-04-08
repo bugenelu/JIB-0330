@@ -26,8 +26,12 @@ function dragElement(elmnt) {
       pos3 = e.clientX;
       pos4 = e.clientY;
       // set the element's new position:
-      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      let y_min = elmnt.getAttribute("y_min_offset");
+      let y_max = elmnt.getAttribute("y_max_offset");
+      let x_min = elmnt.getAttribute("x_min_offset");
+      let x_max = elmnt.getAttribute("x_max_offset");
+      elmnt.style.top = Math.min(Math.max((elmnt.offsetTop - pos2), y_min), y_max) + "px";
+      elmnt.style.left = Math.min(Math.max((elmnt.offsetLeft - pos1), x_min), x_max) + "px";
     }
   
     function closeDragElement() {
