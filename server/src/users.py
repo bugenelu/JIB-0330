@@ -643,6 +643,8 @@ def add_admin():
 @admin_login_required
 def remove_admin():
     user = User.get_user(request.form['user_id'])
+    if user.email == current_user.email:
+        return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
     user.admin = False
     user.save()
 
