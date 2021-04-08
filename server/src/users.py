@@ -15,60 +15,129 @@ from utils import url, db, render_response, Mail
 
 
 
+# Used to access the current user
 current_user = LocalProxy(lambda: _get_current_user())
 
+# Stores User objects so that they can persist each time current_user is accessed.
+# Otherwise, current_user would be immutable
 _users = {}
 
 def _get_current_user():
+    """_get_current_user()
+    Retrieves the current user as a User object based on the session cookie
+    Returns None if the current user is anonymous
+    """
+
     global _users
 
     current_user = None
+
+    # Gets the session cookie
     session_key = request.cookies.get('__session')
     if session_key is not None:
-        session = FirebaseSession.get_session(session_key=session_key)
+        # Finds the session based on the session cookie
+        session = Session.get_session(session_key=session_key)
         if session:
+            # Returns the existing User object if the current user has already been
+            # loaded from the database
             if session.user_id in _users:
                 return _users[session.user_id]
+
+            # Loads the current user from the database
             current_user = User.get_user(email=session.user_id)
+
+            # Verifies that the current user is authenticated
             if not current_user.authenticated:
                 return None
+
+            # Stores the current user so it can be re-referenced
             _users[session.user_id] = current_user
+
+            # Updates the current user's last activity timestamp
             current_user.last_activity = datetime.now()
             current_user.save()
+
     return current_user
 
 
 def login_user(user):
-    session = FirebaseSession.get_session(user_id=user.email)
+    """login_user(user)
+    Used to log a user in
+    Requires a valid User object
+    """
+
+    # Looks for an existing session key in the database
+    session = Session.get_session(user_id=user.email)
+
+    # If a session does not already exists, makes a new session
     if not session:
-        session = FirebaseSession(user.email)
+        session = Session(user.email)
+
     return session
 
-
+ 
 def login_required(f):
+    """@login_required
+    Wrapper used to require that a user is logged in to access a page
+    """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Checks if the user is anonymous
         if not current_user:
             return redirect(url + url_for('user_blueprint.login'))
+
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 def admin_login_required(f):
+    """@admin_login_required
+    Wrapper used to require that a user is logged as an admin in to access a page
+    """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Checks if the user is anonymous
         if not current_user:
             return render_response(redirect(url + url_for('user_blueprint.login')))
+
+        # Checks if the user is an admin
         if not current_user.admin:
             return render_response(render_template('error_pages/admin_access_denied.html'))
+
         return f(*args, **kwargs)
+
     return decorated_function
 
 
 class User():
+    """User
+    Object used to represent users
+    Contains the following fields:
+        email
+        password
+        salt
+        first_name
+        last_name
+        authenticated
+        admin
+        last_activity
+        favorites
+        history
+        temp_password
+        temp_password_expire
+    """
+
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'user'
 
     def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None):
+        """User(email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None)
+        Creates a new User object
+        """
+
         self.email = email
         self.password = password
         self.salt = salt
@@ -88,7 +157,14 @@ class User():
             self.temp_password_expire = temp_password_expire.replace(tzinfo=None)
 
     def save(self):
+        """save()
+        Saves the User object to the Firestore database
+        """
+
+        # Gets the document containing the user
         user_doc = db.collection(User._collection_name).where('email', '==', self.email).get()
+
+        # If the user already has a document, updates the values
         if user_doc:
             user_ref = db.collection(User._collection_name).document(user_doc[0].id)
             user_ref.update({
@@ -105,6 +181,8 @@ class User():
                 'temp_password': self.temp_password,
                 'temp_password_expire': self.temp_password_expire
                 })
+
+        # If the user does not already have a document, creates a new document
         else:
             db.collection(User._collection_name).add({
                 'email': self.email,
@@ -123,12 +201,24 @@ class User():
 
     @staticmethod
     def get_user(email=None):
+        """get_user(email=None)
+        Retrieves a user based on the query parameters and returns a User object with the values populated from Firestore
+        """
+
+        # Creates a query on the user collection
         query = db.collection(User._collection_name)
+
+        # Filters the query by email, if one is provided
         if email:
             query = query.where('email', '==', email)
+
+        # Checks that exactly one user is found. If no users are found, we want to return None. If multiple users are found,
+        # we want to return None to ensure that no one can access a user account they are not meant to.
         query = query.get()
-        if (len(query) == 0):
+        if len(query) != 1:
             return None
+
+        # Creates and returns a User object with the values from Firestore
         return User(email=query[0].get('email'),
             password=query[0].get('password'),
             salt=query[0].get('salt'),
@@ -144,9 +234,18 @@ class User():
 
     @staticmethod
     def get_all_users():
+        """get_all_users()
+        Retrieves basic information for all users in Firestore
+        Only returns their email, first name, last name, last activity, and admin status
+        Does not return sensitive data like password and salt
+        """
+
         users = []
+
+        # Gets an iterator over all users in the user collection in Firestore
         query = db.collection(User._collection_name).stream()
         for user in query:
+            # Adds just the email, first name, last name, last activity, and admin status to the output
             users.append({
                 'email': user.get('email'),
                 'first_name': user.get('first_name'),
@@ -154,63 +253,129 @@ class User():
                 'admin': user.get('admin'),
                 'last_activity': user.get('last_activity')  
                 })
+
         return users
 
 
-class FirebaseSession():
+class Session():
+    """Session
+    Object used to represent sessions
+    Contains the following fields:
+        user_id
+        session_key
+    """
+
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'sessions'
 
     def __init__(self, user_id, session_key=None):
+        """Session(user_id, session_key=None)
+        Creates a new Session object
+        """
+
         self.user_id = user_id
+
+        # Checks if a session key was provided, if not it generates a new one and stores the session in Firestore
         if session_key:
             self.session_key = session_key
         else:
+            # Generates a session key
             self.session_key = str(uuid.uuid4())
-            db.collection(FirebaseSession._collection_name).add({
+
+            # Saves the session to Firestore
+            db.collection(Session._collection_name).add({
                 'session_key': self.session_key,
                 'user_id': self.user_id
                 })
 
     @staticmethod
     def get_session(session_key=None, user_id=None):
-        query = db.collection(FirebaseSession._collection_name)
+        """get_session(session_key=None, user_id=None)
+        Retrieves a session based on the query parameters and returns a Session object with the values populated from Firestore
+        """
+
+        # Creates a query on the user collection
+        query = db.collection(Session._collection_name)
+
+        # Filters the query by session key, if one is provided
         if session_key:
             query = query.where('session_key', '==', session_key)
+
+        # Filters the query by user ID, if one is provided
         if user_id:
             query = query.where('user_id', '==', user_id)
+        
+        # Checks that exactly one session is found. If no sessions are found, we want to return None. If multiple sessions are found,
+        # we want to return None to ensure that no one can access a session they are not meant to.
         query = query.get()
-        if (len(query) == 0):
+        if len(query) != 1:
             return None
-        return FirebaseSession(user_id=query[0].get('user_id'), session_key=query[0].get('session_key'))
+
+        # Creates and returns a Session object with the values from Firestore
+        return Session(user_id=query[0].get('user_id'), session_key=query[0].get('session_key'))
 
     @staticmethod
     def delete_session(session_key=None, user_id=None):
-        query = db.collection(FirebaseSession._collection_name)
+        """delete_session(session_key=None, user_id=None)
+        Deletes a session based on the query parameters and returns a Session object with the values populated from Firestore
+        """
+
+        # Creates a query on the user collection
+        query = db.collection(Session._collection_name)
+
+        # Filters the query by session key, if one is provided
         if session_key:
             query = query.where('session_key', '==', session_key)
+
+        # Filters the query by user ID, if one is provided
         if user_id:
             query = query.where('user_id', '==', user_id)
+
+        # Checks that exactly one session is found. If no sessions are found, we want to return None. If multiple sessions are found,
+        # we want to do nothing so that we don't end a session we don't intend to
         query = query.get()
-        if (len(query) > 0):
-            db.collection(FirebaseSession._collection_name).document(query[0].id).delete()
+        if len(query) == 1:
+            # Deletes the session from Firestore
+            db.collection(Session._collection_name).document(query[0].id).delete()
 
 
 
 class UserActivity():
+    """UserActivity
+    Object used to represent a user's activity
+    Contains the following fields:
+        user_id
+        story_activity
+    """
+
+    # The name of the collection in Firestore that stores objects of the same type
     _collection_name = 'activity'
 
     def __init__(self, user_id, story_activity=[]):
+        """UserActivity(user_id, story_activity=[])
+        Creates a new UserActivity object
+        """
+
         self.user_id = user_id
         self.story_activity = story_activity
 
     def save(self):
+        """save()
+        Saves the UserActivity object to the Firestore database
+        """
+
+        # Gets the document containing the user activity
         activity_doc = db.collection(UserActivity._collection_name).where('user_id', '==', self.user_id).get()
+
+        # If the user activity already has a document, updates the values
         if activity_doc:
             activity_ref = db.collection(UserActivity._collection_name).document(activity_doc[0].id)
             activity_ref.update({
                 'user_id': self.user_id,
                 'story_activity': self.story_activity
                 })
+
+        # If the user activity does not already have a document, creates a new document
         else:
             db.collection(UserActivity._collection_name).add({
                 'user_id': self.user_id,
@@ -219,32 +384,69 @@ class UserActivity():
 
     @staticmethod
     def get_user_activity(user_id):
+        """get_user_activity(user_id=None)
+        Retrieves a session based on the query parameters and returns a Session object with the values populated from Firestore
+        """
+
+        # Creates a query on the user collection
         query = db.collection(UserActivity._collection_name)
+
+        # Filters the query by user ID, if one is provided
         if user_id:
             query = query.where('user_id', '==', user_id)
+
+        # Checks that exactly one user activity is found. If no user activities are found, we want to create a new user activity.
+        # If multiple user activities are found, we want to return None to ensure that no one can access a user activity they are
+        # not meant to.
         query = query.get()
-        if (len(query) == 0):
-            return UserActivity(user_id=user_id)
+        if len(query) != 1:
+            # If no user activities are found, creates a new one
+            if len(query) == 0:
+                user = UserActivity(user_id=user_id)
+                user.save()
+                return user
+            return None
+
+        # Creates and returns a UserActivity object with the values from Firestore
         return UserActivity(user_id=query[0].get('user_id'), story_activity=query[0].get('story_activity'))
 
 
 
 
+# The Flask blueprint for user routes
 user_blueprint = Blueprint('user_blueprint', __name__)
 
 
-# Serves the login page
 @user_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
+    """login()
+    Serves the login page
+    Accessed at '/login' via a GET or POST request
+    """
+
+    # If the request is a POST request, attempts to log the user in using the form input
     if request.method == 'POST':
+        # Looks for a user with the provided email
         user = User.get_user(email=request.form['email'])
+
+        # If the user exists, attempts to log the user in
         if user:
+            # Creates the hashed password
             hashed_password = hashlib.sha512((request.form['password'] + str(user.salt)).encode('utf-8')).hexdigest()
+
+            # Checks if the provided password matches the user's password
             if user.password is not None and hashed_password == user.password:
+                # Marks the user as authenticated
                 user.authenticated = True
                 user.save()
+
+                # Creates a session for the user
                 session = login_user(user)
+
+                # Sets the session cookie and redirects to the homepage
                 return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
+
+        # Returns the login page with an error that the login failed
         return render_response(render_template('user_pages/login.html', failed_login=True))
 
     # Returns the login.html template with the given values
@@ -273,7 +475,7 @@ def logout():
     if current_user:
         current_user.authenticated = False
         current_user.save()
-        FirebaseSession.delete_session(user_id=current_user.email)
+        Session.delete_session(user_id=current_user.email)
     return render_response(redirect(url + url_for('index')), delete_cookies=['__session'])
 
 
@@ -441,6 +643,8 @@ def add_admin():
 @admin_login_required
 def remove_admin():
     user = User.get_user(request.form['user_id'])
+    if user.email == current_user.email:
+        return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
     user.admin = False
     user.save()
 

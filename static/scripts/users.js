@@ -8,7 +8,6 @@ $(function() {
                 type: "POST",
                 data: $("#admin-toggle-form-" + button.attr("value")).serialize(),
                 success: function() {
-                    console.log("success");
                     button.removeClass("fa-check-square");
                     button.addClass("fa-square");
                 }
@@ -19,7 +18,6 @@ $(function() {
                 type: "POST",
                 data: $("#admin-toggle-form-" + button.attr("value")).serialize(),
                 success: function() {
-                    console.log("success");
                     button.removeClass("fa-square");
                     button.addClass("fa-check-square");
                 }
