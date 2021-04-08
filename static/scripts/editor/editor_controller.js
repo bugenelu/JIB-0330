@@ -504,8 +504,11 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
 * Event listener for saving changes to the databasea
 */
 $('#save_story').click(function(e) {
+    if (!confirm('Confirm Save?')) {
+        return;
+    }
     if (current_story == null) {
-        alert('Select a story to save');
+        alert('No story selected to be saved');
         return;
     }
 
@@ -589,13 +592,24 @@ function populateOptions(parent_select, param_name) {
         }
 
     } else {
-        all_page_ids = getStoryPageData()['page_id'];
-        for (let i = 0; i < all_page_ids.length; i++) {
-            let option = document.createElement('option');
-            option.innerHTML = all_nodes[all_page_ids[i]]['page_name'];
-            option.setAttribute('name', all_page_ids[i]);
+        if (param_name == 'child_id') {
+            child_page_ids = editor.getStoryState(current_story)['page_nodes'][current_page]['page_children'];
+            for (let i = 0; i < Object.keys(child_page_ids).length; i++) {
+                let option = document.createElement('option');
+                option.innerHTML = child_page_ids[Object.keys(child_page_ids)[i]]['child_name'];
+                option.setAttribute('name', Object.keys(child_page_ids)[i]);
 
-            parent_select.appendChild(option);
+                parent_select.appendChild(option);
+            }            
+        } else {
+            all_page_ids = getStoryPageData()['page_id'];
+            for (let i = 0; i < all_page_ids.length; i++) {
+                let option = document.createElement('option');
+                option.innerHTML = all_nodes[all_page_ids[i]]['page_name'];
+                option.setAttribute('name', all_page_ids[i]);
+
+                parent_select.appendChild(option);
+            }
         }
     }
 }

@@ -328,7 +328,7 @@ class Editor {
                         "param_type": "current_page" // implicit
                     },
                     {
-                        "param": "child_id",
+                        "param": "page_id",
                         "param_label": "Page Link Target",
                         "param_type": "dropdown"
                     },
