@@ -70,6 +70,16 @@ def view_live_story():
         return {'list': live_story}, 200
     return None, 200
 
+@editor_blueprint.route('/editor/update_live_story', methods=['POST'])
+def update_live_story():  
+    if current_user is not None and current_user.admin == True:
+        new_live_story = request.form['new_live_story']        
+        live_story_data = {'active_story_id': new_live_story, 'active_story_ref': new_live_story}
+
+        app_states = db.collection('application_states')
+        app_states.document('application_state').update(live_story_data)
+    return {'list': new_live_story}, 200
+
 @editor_blueprint.route('/editor/open_story/<story_id>', methods=['GET'])
 def open_story(story_id):
     if current_user is not None and current_user.admin == True:
