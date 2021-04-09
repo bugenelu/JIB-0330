@@ -7,7 +7,6 @@ Welcome to the Editor. The Editor is responsible for:
     Rendering the current state (and data) of open StoryGraph objects for the Admin UI
     Rendering StoryGraph objects to JSON for storage in a database
 
----
 The Editor keeps an Object representing its open StoryGraphs with 'story_name' keys.
 The values are StoryStacks of StoryGraphs with the top of the stack being the most recent version of
 a particular graph identified by the key.
@@ -19,6 +18,14 @@ handling if this assumption is wrong.
 NOTE:
 Be careful when implementing functions that are meant to *read* from StoryGraphs in stacks not to
 *pop* a StoryGraph from the stack. This would cause the version to be lost.
+
+NOTE: Starting 4/9/21, the preferred term for a complete interactive narrative is 'Engine', which replaces
+use of the term 'Story'. This change will be reflected in labels of the UI. However, work to convert function 
+and variable names must wait until minimum viability is reached. Labels in Editor.getOperations() have been
+updated.
+
+TODO: Update terminology in the code base to reflect the preferred 'Engine' term 
+    e.g StoryGraph -> EngineGraph, StoryStack -> EngineStack, etc.
 
 */
 
@@ -57,6 +64,7 @@ class Editor {
      * @returns {Object} that has name, parameters, and function calls for edit operations that will need representations in the UI.
      */
     getOperations() {
+        // TODO: update 'story_name', 'story_id' parameters to 'engine_name', 'engine_id'
         return [
             {
                 "name": "Undo Last Edit",
@@ -83,8 +91,8 @@ class Editor {
             //     "function": "openStory(story_data)" // openStory requires an Object which is received from the database
             // },
             {
-                "name": "Close Story",
-                "op_label": "Would you like to close this story? Unsaved changes are lost.",
+                "name": "Close Engine",
+                "op_label": "Would you like to close this engine? Unsaved changes are lost.",
                 "params": [
                     {
                         "param": "story_name",
@@ -114,7 +122,7 @@ class Editor {
             //     "function": "newStory(story_name, story_id)"
             // },
             {
-                "name": "Duplicate Story",
+                "name": "Duplicate Engine",
                 "op_label": "Would you like to duplicate this story?",
                 "params": [
                     {
@@ -126,7 +134,7 @@ class Editor {
                 "function": "duplicateStory(story_name)"
             },
             {
-                "name": "Edit Story Name",
+                "name": "Edit Engine Name",
                 "op_label": "Please enter a new name for this story.",
                 "params": [
                     {
@@ -143,7 +151,7 @@ class Editor {
                 "function": "editStoryName(story_name, update_name)"
             },
             {
-                "name": "Duplicate Story From Page",
+                "name": "Duplicate Engine From Page",
                 "op_label": "Please select the page from which you would like to duplicate this story.",
                 "params": [
                     {
@@ -177,7 +185,7 @@ class Editor {
             //     "function": "editStoryID(story_name, update_id)"
             // },
             {
-                "name": "Change Story Root",
+                "name": "Change Engine Root",
                 "op_label": "Select a new root page for this story.",
                 "params": [
                     {
@@ -194,7 +202,7 @@ class Editor {
                 "function": "editRootID(story_name, page_id)"
             },
             {
-                "name": "Connect Stories",
+                "name": "Connect Engines",
                 "op_label": "Select a page in this story to receive a link to a selected story.",
                 "params": [
                     {
@@ -221,7 +229,7 @@ class Editor {
                 "function": "connectStoryGraphs(story_name, page_id, substory_name, link_text)"
             },
             {
-                "name": "Add Page to Story",
+                "name": "Add Page to Engine",
                 "op_label": "Create a new page to add to this story.",
                 "params": [
                     {
