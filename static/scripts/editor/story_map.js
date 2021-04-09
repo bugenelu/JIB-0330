@@ -95,9 +95,9 @@ const root_id = tree2["root_id"];
 function load_map(data = tree_data, current_page_id = root_id) {
     
     // tree data constants
-    const tree_layers = tree_data[0];
+    const tree_layers = data[0];
     const page_coords = {}
-    const edge_set = tree_data[1];
+    const edge_set = data[1];
     
     // layout constants
     const max_frame_height = 750;
