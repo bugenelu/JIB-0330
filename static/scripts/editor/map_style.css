@@ -3,10 +3,10 @@ div {
 }
 
 line {
-    stroke: rgb(71, 170, 216);
-    stroke-width: 4;
+    /* stroke: rgb(71, 170, 216); */
+    stroke-width: 1.5;
     stroke-linecap: round;
-    stroke-dasharray: 10, 9;
+    stroke-dasharray: 8, 4;
 }
 
 .page_button {

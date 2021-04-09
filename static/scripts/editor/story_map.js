@@ -136,7 +136,7 @@ function load_map(data = tree_data, current_page_id = root_id) {
     frame.style.height = frame_height + "px";
     frame.style.width = frame_width + "px";
     
-    
+    // TODO: Add button functionality creation: set 'current page', refresh 'page-pane', hide 'map_container'
     // main loop to create buttons
     tree_layers.forEach(layer => {
         
@@ -208,15 +208,19 @@ function load_map(data = tree_data, current_page_id = root_id) {
     let edges_render = document.createElementNS('http://www.w3.org/2000/svg','svg');
     edges_render.setAttribute("height", (y_pos + button_height));
     edges_render.setAttribute("width", (max_width * button_width + (max_width - 1) * button_spacer));
+    let color_index = 0;
     for (edge of edge_set) {
-        add_edge(edge, edges_render, page_coords)
+        let e = make_edge(edge, page_coords);
+        e.style.stroke = get_color(color_index);
+        edges_render.appendChild(e);
+        color_index += 1;
     }
 
     // add edges to HTML
     map.appendChild(edges_render);
 
     // helper function for edge creation
-    function add_edge(edge, e, coords) {
+    function make_edge(edge, coords) {
         let xr_offset = button_width * .5;
         let xc_offset = button_width * .5;
         let yr_offset = button_height * .9;
@@ -227,6 +231,11 @@ function load_map(data = tree_data, current_page_id = root_id) {
         l.setAttribute("x2", coords[edge[1]]["x"] + xc_offset);
         l.setAttribute("y1", coords[edge[0]]["y"] + yr_offset);
         l.setAttribute("y2", coords[edge[1]]["y"] + yc_offset);
-        e.appendChild(l);
+        return l;
+    }
+
+    function get_color(index) {
+        let hue = (index % 16) * 0.0625 * 360;
+        return "hsl(" + hue + ",70%,60%)";
     }
 }
