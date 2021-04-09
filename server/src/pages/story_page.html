@@ -36,7 +36,11 @@
 			{% endif %}
 		{% endif %}
 
+		{% if preview %}
+		<section>
+		{% else %}
 		<section class="story-content">
+		{% endif %}
 			<p class="storytext">{{ page['page_body_text'] | safe }}</p>
 		</section>
 

@@ -18,7 +18,7 @@
 			<!-- Dictionary variable -->
 			{% for element in favorites %}
 			<div class="content">
-				<form method="POST" class="hidden-form" action="/story/{{ element[1] }}">
+				<form method="POST" class="hidden-form" action="/story/{{ element[1] }}" target="_blank">
 					<input style="display: none" name="prev_page_id" type="text" value="">
 					<input style="display: none" name="history_id" type="number" value="{{ element[2] }}">
 					<input style="display: none" name="forward" type="text" value="True">

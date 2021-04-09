@@ -1,0 +1,25 @@
+div {
+    position: relative;
+}
+
+line {
+    /* stroke: rgb(71, 170, 216); */
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 8, 4;
+}
+
+.page_button {
+    color: red;
+    overflow: hidden;
+    padding: 0;
+    border-width: 3;
+}
+
+#map_frame {
+    overflow: hidden;
+}
+
+#map_canvas {
+    cursor: move;
+}

@@ -29,7 +29,7 @@ from datetime import datetime
 # Local imports
 from story_editing.TwineIngestFirestore import firestoreTwineConvert
 from utils import url, db, render_response
-from users import User, FirebaseSession, current_user, login_user, login_required, user_blueprint
+from users import User, UserActivity, current_user, login_user, login_required, user_blueprint
 from errors import errors_blueprint
 from editor_blueprint import editor_blueprint
 
@@ -94,20 +94,35 @@ def story_root(story):
     # Gets the root page's page ID
     page_id = story_doc.get('root_id')
 
+    # Gets whether or not the page is viewed as a preview (from history page)
     preview = request.args.get('preview')
     if preview == None:
         preview = False
+
+    # Gets whether or not the user is logged in
     guest = current_user == None
 
     history_id = None
     if not preview and not guest:
-        # Adds the root page to a new history
+        # Records the page visit to story activity
+        user_activity = UserActivity.get_user_activity(current_user.email)
+        user_activity.story_activity.append({
+            'timestamp': datetime.now(),
+            'story': story,
+            'page_id': page_id
+            })
+        user_activity.save()
+
+        # Checks for a matching history, to not add a duplicate history
         history_found = False
         for index, history in enumerate(current_user.history):
             if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
+                # Updates timestamp of matching history
                 history['last_updated'] = datetime.now()
                 history_found = True
                 history_id = index
+
+        # If a matching history does not already exists, adds the root page to a new history
         if not history_found:
             new_history = {}
             new_history['last_updated'] = datetime.now()
@@ -115,11 +130,14 @@ def story_root(story):
             new_history['pages'] = [page_id]
             current_user.history.append(new_history)
             history_id = len(current_user.history) - 1
+
+        # Saves the changes to the user
         current_user.save()
 
     # Gets the page data for the specified page ID
     page = story_doc.get('page_nodes.`' + page_id + '`')
 
+    # Gets whether or not the page is favorited
     favorited = False
     if not guest:
         for favorite in current_user.favorites:
@@ -165,19 +183,46 @@ def story_page(story, page_id):
     if preview == None:
         preview = False
 
+    ###############################################################################################################
+    # In order to log a user's history, each time they click a link when navigating a story we include the        #
+    # previous page, an ID for which history they are on (so if they have taken multiple paths through the        #
+    # story, which index in the database corresponds to the current one), and whether or not they are navigating  #
+    # forward or backwards. If a request to a story page comes from one of the ways we intend (homepage, history, #
+    # favorites, another story page), then it will be formed as a POST request with these fields so that we know  #
+    # exactly what the user is doing. If the user reaches the page through another means (most likely copying and #
+    # pasting the URL, i.e. a GET request), then we will treat this as the user starting a new history from       #
+    # whichever page they go to, since we don't have a history to tie this to.                                    #
+    ###############################################################################################################
+
+    # Checks that the request comes as a POST request and includes the information for recording user history
     if request.method == 'POST':
         prev_page_id = request.form['prev_page_id']
         history_id = request.form['history_id']
         forward = request.form['forward']
         back = prev_page_id
+
+        # Checks that the user is logged in
         if not guest:
+            # Records the page visit to story activity
+            user_activity = UserActivity.get_user_activity(current_user.email)
+            user_activity.story_activity.append({
+                'timestamp': datetime.now(),
+                'story': story,
+                'page_id': page_id
+                })
+            user_activity.save()
+
+            # Checks if a history ID is included, if not a new history is added
             if history_id == '':
+                # Checks for a matching history, to not add a duplicate history
                 history_found = False
                 for index, history in enumerate(current_user.history):
                     if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
                         history['last_updated'] = datetime.now()
                         history_found = True
                         history_id = index
+
+                # If a matching history does not already exists, adds the root page to a new history
                 if not history_found:
                     new_history = {}
                     new_history['last_updated'] = datetime.now()
@@ -185,15 +230,28 @@ def story_page(story, page_id):
                     new_history['pages'] = [page_id]
                     current_user.history.append(new_history)
                     history_id = len(current_user.history) - 1
+
+                # Saves the changes to the user
                 current_user.save()
+
+            # If a history ID is include, we will edit it according to the user's behavior
             else:
                 history_id = int(history_id)
                 history = current_user.history[history_id]
+
+                # If the user is moving forwards
                 if forward:
+                    # Checks if the current page is already included in the history, if not it is added
                     if page_id not in current_user.history[history_id]['pages']:
+                        # Checks if the previous page the user visited is the last page recorded in the current history
                         if prev_page_id == current_user.history[history_id]['pages'][-1]:
+                            # Appends the current page to the current history and updates the timestamp
                             current_user.history[history_id]['pages'].append(page_id)
                             current_user.history[history_id]['last_updated'] = datetime.now()
+
+                        # If the previous page is not the last page recorded, then the user is branching off from their previous
+                        # path, making a new decision. In this case, we want to copy the path up to the point of the previous page
+                        # and add the current page
                         else:
                             new_history = {}
                             new_history['pages'] = []
@@ -206,6 +264,9 @@ def story_page(story, page_id):
                             new_history['last_updated'] = datetime.now()
                             current_user.history.append(new_history)
                             history_id = len(current_user.history) - 1
+
+                        # Checks that the history updated or the new history created does not match another history. If there is one,
+                        # removes the current history and switches to the matching one that already existed
                         for index, h1 in enumerate(current_user.history):
                             for h2 in current_user.history:
                                 if h1 != h2 and len(h1['pages']) == len(h2['pages']):
@@ -217,32 +278,49 @@ def story_page(story, page_id):
                                         current_user.history.remove(h2)
                                         h1['last_updated'] = datetime.now()
                                         history_id = index
+
+                    # If the history already contains the current page, we can just update the timestamp, but
+                    # we don't want to add a duplicate page ID
                     else:
                         current_user.history[history_id]['last_updated'] = datetime.now()
+
+                    # Saves the changes to the user
                     current_user.save()
+
+                # If the user is moving backwards
                 else:
-                    # Added behavior for backwards navigation
+                    # Add any behavior for backwards navigation here
                     pass
+
+                # Sets the back page to the previous page in the history
                 back = None
                 for p in current_user.history[history_id]['pages']:
                     if p == page_id:
                         break
                     back = p
+
         # Returns the story_page.html template with the specified page
         return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview, back=back, history=history_id))
 
+    # Checks that the user is logged in and not previewing the page
+    # Adds a new history in case the user gets to this page from an external link that wouldn't include the information to append the page to a history
     if not preview and not guest:
+        # Checks for a matching history, to not add a duplicate history
         history_found = False
         for history in current_user.history:
             if history['story'] == story and history['pages'][0] == page_id and len(history['pages']) == 1:
                 history['last_updated'] = datetime.now()
                 history_found = True
+
+        # If a matching history does not already exists, adds the root page to a new history
         if not history_found:
             new_history = {}
             new_history['last_updated'] = datetime.now()
             new_history['story'] = story
             new_history['pages'] = [page_id]
             current_user.history.append(new_history)
+
+        # Saves the changes to the user
         current_user.save()
 
     # Returns the story_page.html template with the specified page
