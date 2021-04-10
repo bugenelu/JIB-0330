@@ -461,6 +461,16 @@ class Editor {
         return open_story_ids;
     }
 
+    /**
+     * 
+     * @param {string} story_id 
+     * @param {string} page_id 
+     * @returns {Object} representing the current contents of a page in an engine
+     */
+    getPageData(story_id, page_id) {
+        return this.openStories[story_id].getCurrent.page_nodes[page_id].toJSON();
+    }
+
     getOpenStoryNames() {
         return Object.keys(this.openStories);
     }
