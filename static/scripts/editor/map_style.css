@@ -1,4 +1,4 @@
-div {
+#map_frame div {
     position: relative;
 }
 
@@ -9,7 +9,7 @@ line {
     stroke-dasharray: 8, 4;
 }
 
-.page_button {
+#map_frame .page_button {
     color: red;
     overflow: hidden;
     padding: 0;
@@ -18,8 +18,10 @@ line {
 
 #map_frame {
     overflow: hidden;
+    display: relative;
 }
 
 #map_canvas {
     cursor: move;
+    display: relative;
 }
