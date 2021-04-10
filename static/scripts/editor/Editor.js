@@ -76,6 +76,7 @@ class Editor {
                         "param_type": "current_story" // implicit
                     }
                 ],
+                "global_op": false,
                 "function": "undoLast(story_name)"
             },
             // {
@@ -100,6 +101,7 @@ class Editor {
                         "param_type": "current_story" // implicit
                     }
                 ],
+                "global_op": true,
                 "function": "closeStory(story_name)"
             },
             // {
@@ -123,7 +125,7 @@ class Editor {
             // },
             {
                 "name": "Duplicate Engine",
-                "op_label": "Would you like to duplicate this story?",
+                "op_label": "Please enter a new name for the duplicate engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -131,28 +133,30 @@ class Editor {
                         "param_type": "current_story" // implicit
                     },
                 ],
+                "global_op": true,
                 "function": "duplicateStory(story_name)"
             },
-            {
-                "name": "Edit Engine Name",
-                "op_label": "Please enter a new name for this story.",
-                "params": [
-                    {
-                        "param": "story_name",
-                        "param_label": null,
-                        "param_type": "current_story" // implicit
-                    },
-                    {
-                        "param": "update_name",
-                        "param_label": "New Story Name",
-                        "param_type": "text"
-                    }
-                ],
-                "function": "editStoryName(story_name, update_name)"
-            },
+            // {
+            //     "name": "Edit Engine Name",
+            //     "op_label": "Please enter a new name for this engine.",
+            //     "params": [
+            //         {
+            //             "param": "story_name",
+            //             "param_label": null,
+            //             "param_type": "current_story" // implicit
+            //         },
+            //         {
+            //             "param": "update_name",
+            //             "param_label": "New Story Name",
+            //             "param_type": "text"
+            //         }
+            //     ],
+            //     "global_op": true,
+            //     "function": "editStoryName(story_name, update_name)"
+            // },
             {
                 "name": "Duplicate Engine From Page",
-                "op_label": "Please select the page from which you would like to duplicate this story.",
+                "op_label": "Please select the page from which you would like to duplicate this story and enter a new new for the duplicate engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -165,6 +169,7 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": true,
                 "function": "duplicateFromPage(story_name, page_id)"
             },
             // {
@@ -186,7 +191,7 @@ class Editor {
             // },
             {
                 "name": "Change Engine Root",
-                "op_label": "Select a new root page for this story.",
+                "op_label": "Select a new root page for this engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -199,11 +204,12 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": true,
                 "function": "editRootID(story_name, page_id)"
             },
             {
                 "name": "Connect Engines",
-                "op_label": "Select a page in this story to receive a link to a selected story.",
+                "op_label": "Select a page in this engine to receive a link to the selected engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -226,11 +232,12 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": true,
                 "function": "connectStoryGraphs(story_name, page_id, substory_name, link_text)"
             },
             {
                 "name": "Add Page to Engine",
-                "op_label": "Create a new page to add to this story.",
+                "op_label": "Create a new page to add to this engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -240,13 +247,13 @@ class Editor {
                     {
                         "param": "parent_id",
                         "param_label": "Parent Page",
-                        "param_type": "dropdown"
+                        "param_type": "dropdown" // TODO: option to make the new page the root in an empty engine...
                     },
-                    {
-                        "param": "page_body_text",
-                        "param_label": "New Page Content",
-                        "param_type": "rich_text"
-                    },
+                    // {
+                    //     "param": "page_body_text",
+                    //     "param_label": "New Page Content",
+                    //     "param_type": "rich_text"
+                    // },
                     {
                         "param": "page_name",
                         "param_label": "New Page Name",
@@ -258,11 +265,12 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "addNodeInGraph(story_name, parent_id, page_body_text, page_name, link_text)"
             },
             {
                 "name": "Delete Page",
-                "op_label": "Deleting a page also removes its descendant trees and opens them as new stories.",
+                "op_label": "Deleting a page also removes its descendant pages and opens them as new engines.",
                 "params": [
                     {
                         "param": "story_name",
@@ -275,6 +283,7 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": false,
                 "function": "deleteNodeFromGraph(story_name, page_id)"
             },
             {
@@ -297,6 +306,7 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "editPageName(story_name, page_id, page_name)"
             },
             {
@@ -319,6 +329,7 @@ class Editor {
                         "param_type": "rich_text"
                     }
                 ],
+                "global_op": false,
                 "function": "editPageText(story_name, page_id, page_text)"
             },
             {
@@ -346,6 +357,7 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "addLinkInGraph(story_name, page_id, child_id, link_text)"
             },
             {
@@ -368,6 +380,7 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": false,
                 "function": "deleteLinkInGraph(story_name, page_id, child_id)"
             },
             {
@@ -395,6 +408,7 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "editLinkText(story_name, page_id, child_id, link_text)"
             }
         ]
