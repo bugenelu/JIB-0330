@@ -606,6 +606,15 @@ button.page_button {
   margin-top: 4px;
 }
 
+button#view_storymap {
+  font-size: 15px;
+  margin: 0px;
+  margin-left: 4px;
+  margin-top: 4px;
+  background-color: var(--paleyellow);
+  border-color: var(--paleyellow);
+}
+
 button.page_op {
   background: var(--paleyellow);
   border: solid 1px var(--paleyellow);

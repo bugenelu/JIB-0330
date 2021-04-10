@@ -112,12 +112,3 @@ def save_story():
             stories.document(story_name).set(story_data)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
-@editor_blueprint.route('/rename_story', methods=['POST'])
-def rename_story():
-    if current_user is not None and current_user.admin == True:
-        old_story_name = request.args.get()
-        new_story_name = request.args.get()
-
-        stories = db.collection('stories')
-        

@@ -239,10 +239,11 @@ function refreshOpenStoryOptions() {
 * Refreshes the Page List menu
 */
 function refreshPageList() {
+    header = $('.div7 > h1')[0];
+    story_map = $('#view_storymap')[0];
     removeAllChildren('page-list');
-    header = document.createElement('h1');
-    header.innerHTML = 'Page List';
     $('#page-list')[0].appendChild(header);
+    $('#page-list')[0].appendChild(story_map);
 
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_page = null;
@@ -547,6 +548,29 @@ $('#save_story').click(function(e) {
             alert("Story failed to save");
         }
     });
+});
+
+/*
+* Event handler for opening the storymap view
+*/
+$('.div7').on('click', '#view_storymap', function(e) {
+    if (current_story != null) {
+        page_pane = $('#page-pane')[0];
+        story_map = $('#map_frame')[0];
+
+        if (story_map.style.display == 'none') {
+            tree_data = editor.getStoryPageTree(current_story);
+            focus_page = current_page == null ?
+                editor.getStoryState(current_story)['root_id'] : current_page;
+
+            load_map(tree_data, focus_page);
+        }
+
+        page_pane.style.display = page_pane.style.display == 'none' ?
+            '' : 'none';
+        story_map.style.display = story_map.style.display == 'none' ?
+            '' : 'none';
+    }
 });
 
 
