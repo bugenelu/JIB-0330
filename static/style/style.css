@@ -6,6 +6,7 @@
   --paleyellow: #D8D883;
   --palepurple: #D083D8;
   --paleorange: #FFDFBF;
+  --palered: #D38080;
 }
 
 /*Add Custom Font Family*/
@@ -133,6 +134,10 @@ button:hover {
   font-weight: bold;
 }
 
+button.unclickable {
+  pointer-events: none;
+}
+
 button:hover.unclickable {
   font-style: normal;
   font-weight: normal;
@@ -220,38 +225,35 @@ input[type=submit]:hover, input[type=button]:hover {
 	text-align: center;
 }
 
-.div1 { 
-	grid-area: 1 / 1 / 2 / 2; 
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: repeat(3, 1fr);
-	grid-column-gap: 0px;
-	grid-row-gap: 0px;
+.engine_info { 
+  height: 100%;
 }
 
-.div2 { 
+.open_or_new { 
 	padding: 100px;
 	grid-area: 1 / 2 / 2 / 4; 
 }
 
-.div3 { 
+.live_engine_display { 
 	border-radius: 10px;
 	border: 3px solid var(--palegreen);
-	grid-area: 1 / 1 / 2 / 2; 
+  height: 15%;
+  margin: 5px;
 }
-.div4 { 
+.saved_engines { 
 	border-radius: 10px;
 	border: 3px solid var(--palegreen);
-	grid-area: 2 / 1 / 4 / 2; 
+  height: 82%;
+  margin: 5px;
 }
 
-.div2 button {
+.open_or_new button {
 	width: 300px;
 	margin-bottom: 30px;
 	font-size: 50px;
 }
 
-.div4 button {
+.saved_engines button {
 	margin-bottom: 5px;
 }
 
@@ -678,4 +680,14 @@ tr:last-child td {
 .admin-toggle {
   cursor: pointer;
   font-size: 25px;
+}
+
+.armed {
+  background: var(--palered);
+  border: solid 1px var(--palered);
+}
+
+.disarmed {
+  background: var(--paleorange);
+  border: solid 1px var(--paleorange);
 }
