@@ -174,7 +174,7 @@ function refreshStoryPopup() {
     open_ids = editor.getOpenStoryIDs();
     
     header = document.createElement('h1');
-    header.innerHTML = 'Select a Story to Open';
+    header.innerHTML = 'Select an Engine to Open';
     close_btn = document.createElement('span');
     close_btn.innerHTML = '&times;';
     close_btn.setAttribute('class', 'close');
