@@ -451,6 +451,11 @@ $('.div8').on('click', '.wizard_btns', function(e) {
     $('#editor_wizard')[0].style.display = 'block';
 });
 
+$('.div6').on('click', '.wizard_btns', function(e) {
+    generateWizard(e);
+    $('#editor_wizard')[0].style.display = 'block';
+});
+
 /*
 * Event listener for submitting edits from wizard
 */
@@ -625,6 +630,10 @@ function initializeWizard() {
         new_btn.setAttribute('id', operations[i]['name']);
         new_btn.setAttribute('index', i);
         new_btn.setAttribute('class', 'wizard_btns');
-        $('.div8')[0].appendChild(new_btn);
+        if (operations[i]['global_op']) {
+            $('.div6')[0].appendChild(new_btn);
+        } else {
+            $('.div8')[0].appendChild(new_btn);
+        }
     }
 }
