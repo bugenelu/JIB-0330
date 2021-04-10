@@ -36,11 +36,16 @@ $.get('/editor/view_live_story', function(event, status) {
 
 $(".div4").on("click", ".displayed_story", function(e) {
     var live_story = document.getElementById('live_story_display');
-    var new_live_story = e.target.innerHTML;
-    live_story.innerHTML = new_live_story;
-    console.log(e.target.innerHTML);
+    var old_live_story = live_story.innerHTML;
 
+    if (confirm("REMINDER: The selection for Live Engine determines what content users will see when creating their stories. This is a global setting for all users of the Knowledge Hub. Are you ready to change the Live Engine?")) {
+        var new_live_story = e.target.innerHTML;
+        live_story.innerHTML = new_live_story;
 
+    } else {
+        var new_live_story = old_live_story;
+    }
+    
     $.post("/editor/update_live_story", 
     {
         'new_live_story': new_live_story,
