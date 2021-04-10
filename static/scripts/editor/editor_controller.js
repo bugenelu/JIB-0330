@@ -538,14 +538,36 @@ $('#save_story').click(function(e) {
 
     $.post("/editor/save_story", 
     {
-        'story_name': current_story_id,
+        'story_id': current_story_id,
         'story_data': JSON.stringify(editor.getStoryState(current_story)),
+        'confirm_save': false
     },
-    function(data, status) {
+    function(data, status, response) {
         if (status == "success") {
             alert("Story successfully saved");
         } else {
-            alert("Story failed to save");
+            if (response['status'] == 406) {
+                if (confirm('Story already exists in database. Do you wish to overwrite?')) {
+                    $.post("/editor/save_story", 
+                    {
+                        'story_id': current_story_id,
+                        'story_data': JSON.stringify(editor.getStoryState(current_story)),
+                        'confirm_save': true
+                    },
+                    function(data, status) {
+                        if (status == 'success') {
+                            alert('Story successfully saved');
+                        } else {
+                            alert("Story failed to save");
+                        }
+                    });
+                }
+
+            } else if (response['status'] == 403) {
+                alert('Cannot overwrite live story, duplicate story to save changes');
+            } else {
+                alert("Story failed to save");
+            }
         }
     });
 });

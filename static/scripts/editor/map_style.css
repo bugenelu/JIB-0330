@@ -19,6 +19,7 @@ line {
 #map_frame {
     overflow: hidden;
     display: relative;
+    z-index: 10;
 }
 
 #map_canvas {
