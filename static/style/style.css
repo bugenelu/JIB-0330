@@ -5,6 +5,7 @@
 	--palegreen: #8DD883;
   --paleyellow: #D8D883;
   --palepurple: #D083D8;
+  --paleorange: #FFDFBF;
 }
 
 /*Add Custom Font Family*/
@@ -589,6 +590,15 @@ p#page-pane-child {
 /*  text-shadow: 2px 2px 5px black;*/
 }
 
+p.link_text {
+  text-align: center;
+  font-family: Muli, Helvetica, sans-serif;
+  font-size: 1em;
+  color: var(--offwhite);
+  text-decoration: underline;
+/*  text-shadow: 2px 2px 5px black;*/
+}
+
 button.page_button {
   font-size: 15px;
   margin: 0px;
@@ -596,11 +606,18 @@ button.page_button {
   margin-top: 4px;
 }
 
-button.wizard_btns {
+button.page_op {
   background: var(--paleyellow);
   border: solid 1px var(--paleyellow);
   margin: 0px;
   margin-top: 4px;
+}
+
+button.engine_op {
+  background: var(--paleorange);
+  border: solid 1px var(--paleorange);
+  margin: 0px;
+  margin-left: 4px;
 }
 
 .div7 button {

@@ -468,7 +468,7 @@ class Editor {
      * @returns {Object} representing the current contents of a page in an engine
      */
     getPageData(story_id, page_id) {
-        return this.openStories[story_id].getCurrent.page_nodes[page_id].toJSON();
+        return this.openStories[story_id].getCurrent().page_nodes[page_id].toJSON();
     }
 
     getOpenStoryNames() {

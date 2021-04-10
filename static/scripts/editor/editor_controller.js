@@ -296,8 +296,24 @@ function refreshOpenPage() {
         return;
     }
 
-    body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
-    $('#page-pane-child')[0].innerHTML = body_text;
+    $('#page-body').empty();
+
+    page_data = editor.getPageData(current_story, current_page);
+    body_text = page_data['page_body_text'];
+    child_dic = page_data['page_children'];
+
+    page_pane_child = document.createElement('p');
+    page_pane_child.innerHTML = body_text;
+    page_pane_child.setAttribute('id', 'page-pane-child')
+    $('#page-body')[0].appendChild(page_pane_child);
+
+    Object.values(child_dic).forEach(child => {
+        child_link = document.createElement('p');
+        child_link.innerHTML = child['link_text'];
+        child_link.setAttribute('class', 'link_text');
+        $('#page-body')[0].appendChild(child_link);
+    });
+    
 }
 
 /*
@@ -446,12 +462,12 @@ $('.popup').on('click', '.close', function(e) {
 /*
 * Event listener for opening a wizard for editing
 */
-$('.div8').on('click', '.wizard_btns', function(e) {
+$('.div8').on('click', '.page_op', function(e) {
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
 
-$('.div6').on('click', '.wizard_btns', function(e) {
+$('.div6').on('click', '.engine_op', function(e) {
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
@@ -629,10 +645,11 @@ function initializeWizard() {
         new_btn.innerHTML = operations[i]['name'];
         new_btn.setAttribute('id', operations[i]['name']);
         new_btn.setAttribute('index', i);
-        new_btn.setAttribute('class', 'wizard_btns');
         if (operations[i]['global_op']) {
+            new_btn.setAttribute('class', 'engine_op');
             $('.div6')[0].appendChild(new_btn);
         } else {
+            new_btn.setAttribute('class', 'page_op');
             $('.div8')[0].appendChild(new_btn);
         }
     }
