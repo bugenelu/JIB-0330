@@ -1,0 +1,8 @@
+File upload -> Media manager
+
+Discuss at next meeting:
+	For file upload:
+		Need to make it possible for @admin_login_required for upload page
+	Other things:
+		Need a delete history option (for entire history path rather than a singular page)
+		Not sure if this is only due to local testing, but we need to make the "password breached" message when a user logs in to not display

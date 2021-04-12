@@ -19,8 +19,8 @@ from firebase_admin.auth import UserRecord
 import google.auth.credentials
 
 # Other installed modules imports
-import mock
 from werkzeug.utils import secure_filename
+import mock
 
 # Built-in modules imports
 import os, json, sys, requests, uuid
@@ -355,9 +355,9 @@ def move_forward():
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-	# Checks to see if the HTML method request is 'POST'
+    # Checks to see if the HTML method request is 'POST'
     if request.method == 'POST':
-    	# Checks to make sure a file was uploaded
+        # Checks to make sure a file was uploaded
         if 'files' not in request.files:
             #flash('No file part')
             return render_response(redirect(request.url))
@@ -375,9 +375,9 @@ def upload():
             #flash('File uploaded successfully')
         else:
             #flash('Files uploaded successfully')
-        return render_response(redirect(request.url))
+            return render_response(redirect(request.url))
     # Returns the file_upload.html template with the given values
-    return render_response(render_template('file_upload.html'))
+    return render_response(render_template('admin_pages/file_upload.html'))
 
 
 @app.route('/admin/editor')
