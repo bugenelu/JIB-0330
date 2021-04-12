@@ -1,0 +1,32 @@
+<!-- Include the TinyMCE script -->
+<!-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+
+<!-- Initialize TinyMCE as part of a web form -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+      tinymce.init({
+ 	    selector: 'textarea',  // change this value according to your HTML
+ 	    content_css: 'default',
+  		plugin: 'advlist link image lists',
+  		a_plugin_option: true,
+  		a_configuration_option: 400,
+  		height: 450,
+  		plugins: 'code'
+	  });
+    </script>
+
+  </head>
+
+  <body>
+    <form method="post">
+      <textarea id="mytextarea">Hello, World!</textarea>
+    </form>
+  </body>
+</html>
