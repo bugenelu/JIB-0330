@@ -1,6 +1,6 @@
 /*Declare Color Variables*/
 :root {
-	--offwhite: rgba(255, 255, 255, 0.90);
+	--offwhite: hsl(0, 0%, 90%);
 	--darkgray: #2D3030;
 	--palegreen: #8DD883;
   --paleyellow: #D8D883;

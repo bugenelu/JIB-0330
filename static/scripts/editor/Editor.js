@@ -471,6 +471,12 @@ class Editor {
         return this.openStories[story_name].getCurrent().page_nodes[page_id].toJSON();
     }
 
+    /**
+     * 
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @returns A list of the page's children
+     */
     getPageChildList(story_name, page_id) {
         let page = this.getPageData(story_name, page_id);
         let children = [];
