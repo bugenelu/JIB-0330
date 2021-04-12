@@ -124,8 +124,8 @@ class Editor {
             //     "function": "newStory(story_name, story_id)"
             // },
             {
-                "name": "Duplicate Engine",
-                "op_label": "Please enter a new name for the duplicate engine.",
+                "name": "Duplicate Engine", 
+                "op_label": "Please enter a new name for the duplicate engine.", // TODO: Should this label ask for a name if name is auto-generated?
                 "params": [
                     {
                         "param": "story_name",
@@ -550,16 +550,17 @@ class Editor {
      */
     duplicateStory(story_name) {
         let stamp = Date.now().toString();
-        let copy_name = story_name.concat(stamp.substr(stamp.length - 12));
+        let copy_name = story_name.concat(" copy");
         let data = this.openStories[story_name].getCurrent().toJSON();
-        data.story_id = data.story_id.concat(stamp);
+        data.story_id = data.story_id.concat(stamp.substring(stamp.length - 4));
         data.story_name = copy_name;
         this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
 
     /**
      * TODO: Testing needed.
-     *
+     * TODO: change this so the whole stack gets reassigned with a new key of the update_name in openStories{}, then delete key for story_name
+     * TODO: change undo() to check if the name of the new latest version matches the stack it's in. If not, update the stack name.
      * Creates a duplicate of the indicated story with an updated name in a new StoryStack
      * @param {string} story_name
      * @param {string} update_name
@@ -577,8 +578,8 @@ class Editor {
      */
     duplicateFromPage(story_name, page_id) {
         let data = this.openStories[story_name].getCurrent().reachable(page_id);
-        data.story_id = data.story_id.concat("." + page_id);
-        data.story_name = data.story_name.concat("." + page_id);
+        data.story_id = data.story_id.concat("_" + page_id);
+        data.story_name = data.story_name.concat(" " + page_id);
         this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
 
