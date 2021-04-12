@@ -649,3 +649,19 @@ def remove_admin():
     user.save()
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+# Serves the media manager page
+@user_blueprint.route('/media')
+@admin_login_required
+def media():
+    return render_response(render_template('admin_pages/media_manager.html'))
+
+# Serves the file explorer page
+@user_blueprint.route('/files')
+@admin_login_required
+def files():
+    files = []
+    for file in os.listdir('file_uploads'):
+        files.append([file, file.rsplit('.', 1)[0].lower()])
+    return render_response(render_template('admin_pages/files.html', files=files))

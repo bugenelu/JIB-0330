@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+	<title>File Explorer | GA Knowledge Hub</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='style/style.css')}}">
+</head>
+
+<body>
+	<header>
+		{% include 'templates/navbar_admin.html' %}
+		<section class="header-content">
+		    <h1>Media Explorer</h1>
+		    <p> View and delete uploaded files here </p>
+		    <button onclick="window.location.href='/media';">Return to Media Manager</button>
+		</section>
+		<div>
+			{% for file in files %}
+				<div>
+					<form method="POST" class="hidden-form" action="/file/{{ file[1] }}" target="_blank">
+						<input type="submit" value="{{ file[0] }}">
+					</form>
+				</div>
+			{% endfor %}
+		</div>
+	</header>
+</body>
