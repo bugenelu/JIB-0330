@@ -48,6 +48,12 @@ if platform == 'local':
 # Initialize the Flask application
 app = Flask(__name__, template_folder='pages', static_folder=static_folder)
 
+# Sets the path for the file upload folder
+app.config['UPLOAD_FOLDER'] = 'file_uploads'
+
+# Sets the allowed extensions for file uploads
+app.config['ALLOWED_EXTENSIONS'] = ['html', 'jpeg', 'mp3', 'mp4', 'pdf', 'png', 'svg', 'tgif', 'txt']
+
 # blueprints
 app.register_blueprint(user_blueprint)
 app.register_blueprint(errors_blueprint)
@@ -349,21 +355,26 @@ def move_forward():
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
+	# Checks to see if the HTML method request is 'POST'
     if request.method == 'POST':
+    	# Checks to make sure a file was uploaded
         if 'files' not in request.files:
-            flash('No file part')
+            #flash('No file part')
             return render_response(redirect(request.url))
         file = request.files['files']
+        # Checks to make sure the file has an actual name and not just empty
         if file.filename == '':
-            flash('No selected file')
+            #flash('No selected file')
             return render_response(redirect(request.url))
-        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'html', 'pdf', 'jpeg', 'png', 'tgif',
-                                                                                'svg', 'mp4', 'mp3'}:
+        # Checks to make sure the file extension/type is allowed
+        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']:
+            # Secures the file name for security purposes
             filename = secure_filename(file.filename)
+            # Saves the file in the specified upload folder
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('File uploaded successfully')
+            #flash('File uploaded successfully')
         else:
-            flash('Files uploaded successfully')
+            #flash('Files uploaded successfully')
         return render_response(redirect(request.url))
     # Returns the file_upload.html template with the given values
     return render_response(render_template('file_upload.html'))

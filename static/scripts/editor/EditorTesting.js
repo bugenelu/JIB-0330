@@ -191,6 +191,9 @@ const editor = new Editor();
 
 editor.openStory(tree1);
 editor.openStory(tree2);
+
+console.log(editor.getPageChildList("story1", "1000-1"));
+
 editor.newStory("A New And Empty Story", "test3");
 editor.addNodeInGraph("A New And Empty Story", null, "Mr. Root Node", null);
 editor.addNodeInGraph("A New And Empty Story", "A New And Empty Story-1", "i yr child", "linked p1 to p2");

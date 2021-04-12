@@ -174,7 +174,7 @@ function refreshStoryPopup() {
     open_ids = editor.getOpenStoryIDs();
     
     header = document.createElement('h1');
-    header.innerHTML = 'Select a Story to Open';
+    header.innerHTML = 'Select an Engine to Open';
     close_btn = document.createElement('span');
     close_btn.innerHTML = '&times;';
     close_btn.setAttribute('class', 'close');
@@ -239,10 +239,11 @@ function refreshOpenStoryOptions() {
 * Refreshes the Page List menu
 */
 function refreshPageList() {
+    header = $('.div7 > h1')[0];
+    story_map = $('#view_storymap')[0];
     removeAllChildren('page-list');
-    header = document.createElement('h1');
-    header.innerHTML = 'Page List';
     $('#page-list')[0].appendChild(header);
+    $('#page-list')[0].appendChild(story_map);
 
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_page = null;
@@ -296,8 +297,24 @@ function refreshOpenPage() {
         return;
     }
 
-    body_text = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
-    $('#page-pane-child')[0].innerHTML = body_text;
+    $('#page-body').empty();
+
+    page_data = editor.getPageData(current_story, current_page);
+    body_text = page_data['page_body_text'];
+    child_dic = page_data['page_children'];
+
+    page_pane_child = document.createElement('p');
+    page_pane_child.innerHTML = body_text;
+    page_pane_child.setAttribute('id', 'page-pane-child')
+    $('#page-body')[0].appendChild(page_pane_child);
+
+    Object.values(child_dic).forEach(child => {
+        child_link = document.createElement('p');
+        child_link.innerHTML = child['link_text'];
+        child_link.setAttribute('class', 'link_text');
+        $('#page-body')[0].appendChild(child_link);
+    });
+    
 }
 
 /*
@@ -446,7 +463,12 @@ $('.popup').on('click', '.close', function(e) {
 /*
 * Event listener for opening a wizard for editing
 */
-$('.div8').on('click', '.wizard_btns', function(e) {
+$('.div8').on('click', '.page_op', function(e) {
+    generateWizard(e);
+    $('#editor_wizard')[0].style.display = 'block';
+});
+
+$('.div6').on('click', '.engine_op', function(e) {
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
@@ -516,16 +538,61 @@ $('#save_story').click(function(e) {
 
     $.post("/editor/save_story", 
     {
-        'story_name': current_story_id,
+        'story_id': current_story_id,
         'story_data': JSON.stringify(editor.getStoryState(current_story)),
+        'confirm_save': false
     },
-    function(data, status) {
+    function(data, status, response) {
         if (status == "success") {
             alert("Story successfully saved");
         } else {
-            alert("Story failed to save");
+            if (response['status'] == 406) {
+                if (confirm('Story already exists in database. Do you wish to overwrite?')) {
+                    $.post("/editor/save_story", 
+                    {
+                        'story_id': current_story_id,
+                        'story_data': JSON.stringify(editor.getStoryState(current_story)),
+                        'confirm_save': true
+                    },
+                    function(data, status) {
+                        if (status == 'success') {
+                            alert('Story successfully saved');
+                        } else {
+                            alert("Story failed to save");
+                        }
+                    });
+                }
+
+            } else if (response['status'] == 403) {
+                alert('Cannot overwrite live story, duplicate story to save changes');
+            } else {
+                alert("Story failed to save");
+            }
         }
     });
+});
+
+/*
+* Event handler for opening the storymap view
+*/
+$('.div7').on('click', '#view_storymap', function(e) {
+    if (current_story != null) {
+        page_pane = $('#page-pane')[0];
+        story_map = $('#map_frame')[0];
+
+        if (story_map.style.display == 'none') {
+            tree_data = editor.getStoryPageTree(current_story);
+            focus_page = current_page == null ?
+                editor.getStoryState(current_story)['root_id'] : current_page;
+
+            load_map(tree_data, focus_page);
+        }
+
+        page_pane.style.display = page_pane.style.display == 'none' ?
+            '' : 'none';
+        story_map.style.display = story_map.style.display == 'none' ?
+            '' : 'none';
+    }
 });
 
 
@@ -624,7 +691,12 @@ function initializeWizard() {
         new_btn.innerHTML = operations[i]['name'];
         new_btn.setAttribute('id', operations[i]['name']);
         new_btn.setAttribute('index', i);
-        new_btn.setAttribute('class', 'wizard_btns');
-        $('.div8')[0].appendChild(new_btn);
+        if (operations[i]['global_op']) {
+            new_btn.setAttribute('class', 'engine_op');
+            $('.div6')[0].appendChild(new_btn);
+        } else {
+            new_btn.setAttribute('class', 'page_op');
+            $('.div8')[0].appendChild(new_btn);
+        }
     }
 }

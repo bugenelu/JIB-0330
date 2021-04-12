@@ -77,7 +77,8 @@ def view_live_story():
 def update_live_story():  
     if current_user is not None and current_user.admin == True:
         new_live_story = request.form['new_live_story']        
-        live_story_data = {'active_story_id': new_live_story, 'active_story_ref': new_live_story}
+        live_story_data = {'active_story_id': new_live_story, 
+            'active_story_ref': db.collection('stories').document(new_live_story)}
 
         app_states = db.collection('application_states')
         app_states.document('application_state').update(live_story_data)
@@ -96,27 +97,29 @@ def open_story(story_id):
 @editor_blueprint.route('/editor/save_story', methods=['POST'])
 def save_story():    
     if current_user is not None and current_user.admin == True:
-        story_name = request.form['story_name']
+        story_id = request.form['story_id']
         story_data = json.loads(request.form['story_data'])
+        confirm_save = request.form['confirm_save']
+        live_story_id = db.collection('application_states').document('active_story_id')
         
         stories = db.collection('stories')
 
-        # if request.json is None:
-        #     print("It is none so work")
-        #     return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
+        print(confirm_save)
+        print(story_id)
+        print('-----------------')
 
-        if stories.document(story_name).get().exists:
-            stories.document(story_name).update(story_data)
+        if not confirm_save:
+            # print(story_id)
+            # print(live_story_id)
+            # print('--------------')
+            if story_id == live_story_id:
+                return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
+            elif stories.document(story_id).get().exists:
+                return json.dumps({'success': False}), 406, {'ContentType': 'application/json'}
+
+        if stories.document(story_id).get().exists:
+            stories.document(story_id).update(story_data)
         else:
-            stories.document(story_name).set(story_data)
+            stories.document(story_id).set(story_data)
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
-@editor_blueprint.route('/rename_story', methods=['POST'])
-def rename_story():
-    if current_user is not None and current_user.admin == True:
-        old_story_name = request.args.get()
-        new_story_name = request.args.get()
-
-        stories = db.collection('stories')
-        
