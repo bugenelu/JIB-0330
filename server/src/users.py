@@ -432,6 +432,7 @@ def login():
         # If the user exists, attempts to log the user in
         if user:
             # Creates the hashed password
+            # (?) TODO: Switch hashing to key derivation function
             hashed_password = hashlib.sha512((request.form['password'] + str(user.salt)).encode('utf-8')).hexdigest()
 
             # Checks if the provided password matches the user's password
@@ -472,6 +473,7 @@ def signup():
         salt = str(uuid.uuid4())
 
         # Hashes the password
+        # (?) TODO: Switch hashing to key derivation function
         hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
 
         # Creates the user with the values from the form and the hashed password
@@ -530,11 +532,10 @@ def forgot_password():
             # Emails the temporary password to the user's email address
             mail = Mail(user.email, 'Temporary Password', '<p>Here is your temporary password:</p><h3>' + user.temp_password + '</h3>')
 
-            # Returns the next page, where the user can reset their password
+            # Returns the next page where the user provides the temporary password to verify they own the account
             return render_response(render_template('user_pages/reset_password_1.html', email=user.email))
 
         # Returns the forgot password page with an error that their is not an account with the email provided
-        # TODO: Add error for no account
         return render_response(render_template('user_pages/forgot_password.html', no_account=True))
 
     # Returns the forgot password page
@@ -548,21 +549,43 @@ def reset_password():
     Accessed at '/reset_password' via a POST request
     """
 
+    # Gets the user by email
     user = User.get_user(email=request.form['email'])
+
+    # Checks that the user exists
     if user:
+        # Checks that the temporary password exists, has not expired, and matches the password provided by the user
         if user.temp_password and user.temp_password_expire > datetime.now(user.temp_password_expire.tzinfo) and user.temp_password == request.form['password']:
+            # Sets the user's password to None so it can be reset
             user.password = None
+
+            # Sets the temporary password and expiration to None so it cannot be used again
             user.temp_password = None
             user.temp_password_expire = None
             user.save()
+
+            # Returns the next page where the user can reset their password
             return render_response(render_template('user_pages/reset_password_2.html', email=user.email))
+
+        # Checks that the user's password is None and therefore ready to be reset
         if user.password is None:
+            # Creates the salt used in hashing the password
             salt = str(uuid.uuid4())
+
+            # Hashes the password
+            # (?) TODO: Switch hashing to key derivation function
             hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+
+            # Stores the updated hashed password and salt
             user.password = hashed_password
             user.salt = salt
             user.save()
+
+            # Redirects to the login page
             return render_response(redirect(url + url_for('user_blueprint.login')))
+
+    # If the user does not exists, redirects to the login page
+    # The email is passed by the system, not user input, so this shouldn't happen unless the user mistakenly navigates here with an out of context POST request
     return render_response(redirect(url + url_for('user_blueprint.login')))
 
 
@@ -594,6 +617,7 @@ def edit_profile():
     Requires that the user is logged in
     """
 
+    # If the request is a POST request, updates the user based on the form input
     if request.method == 'POST':
         # Updates values of the current user's profile from the form
         current_user.email = request.form['email']
@@ -602,14 +626,21 @@ def edit_profile():
 
         # Updates the password only if a new one is provided
         if request.form['password'] != '':
+            # Creates the salt used in hashing the password
             salt = str(uuid.uuid4())
+
+            # Hashes the password and stores the new hashed password and salt
             current_user.password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
             current_user.salt = salt
+
+        # Saves the changes to the user
+        current_user.save()
         return render_response(redirect(url + url_for('user_blueprint.profile')))
 
     # Returns the edit profile page for admins
     if current_user.admin:
         return render_response(render_template('admin_pages/edit_profile.html', email=current_user.email, first_name=current_user.first_name, last_name=current_user.last_name))
+
     # Returns the edit profile page for users
     return render_response(render_template('user_pages/edit_profile.html', email=current_user.email, first_name=current_user.first_name, last_name=current_user.last_name))
 
@@ -624,11 +655,17 @@ def favorites():
     Requires that the user is logged in
     """
 
+    # Creates an array of the user's favorites with information about each page
     favorites = []
     for favorite in current_user.favorites:
+        # Gets the story the favorite belongs to
         story_ref = db.collection('stories').document(favorite['story'])
         story_doc = story_ref.get()
+
+        # Gets the page data for the favorite
         page = story_doc.get('page_nodes.`' + favorite['page_id'] + '`')
+
+        # Adds the favorite's page name, the favorite's page link, and which history the favorite belongs to
         favorites.insert(0, (page['page_name'], favorite['story'] + "/" + favorite['page_id'], favorite['history_id']))
 
     # Returns the favorites.html template with the given values
@@ -644,6 +681,7 @@ def add_favorite():
     Requires that the user is logged in
     """
 
+    # Adds the current page ot the user's favorites
     current_user.favorites.append({
         'page_id': request.form['page_id'],
         'story': request.form['story'],
@@ -651,6 +689,7 @@ def add_favorite():
     })
     current_user.save()
 
+    # Returns a successful message
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
@@ -663,14 +702,21 @@ def remove_favorite():
     Requires that the user is logged in
     """
 
+    # Gets the page ID, story, and history ID of the current page
     page_id, story, history_id = request.form['page_id'], request.form['story'], request.form['history_id']
 
+    # Looks for a matching favorite in the current user's favorites
     for favorite in current_user.favorites:
-        if favorite['page_id'] == page_id and favorite['story'] == story and favorite['history_id'] == history_id:
+        # Checks for a favorite with a matching page ID and story
+        if favorite['page_id'] == page_id and favorite['story'] == story:
+            # Removes the matching favorite
             current_user.favorites.remove(favorite)
             break
+
+    # Saves the changes to the user
     current_user.save()
 
+    # Returns a successful message
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
@@ -684,28 +730,40 @@ def history():
     Requires that the user is logged in
     """
 
+    # The current user's history
     history = current_user.history
-    history_arr = []
+
+    # The array with the history information to pass to the history page
     # [[(page_id, history)]]
+    history_arr = []
 
-    # Tracking which story a page belongs to
-
-    # Sort the history
+    # Sorts the history
     for i in range(len(history)):
         for j in range(i + 1, len(history)):
             if history[i]['last_updated'].replace(tzinfo=None) < history[j]['last_updated'].replace(tzinfo=None):
                 history[i], history[j] = history[j], history[i]
 
+    # Builds the array to pass to the history page
     for hist in history:
+        # The array with the history information for this history
         new_arr = []
+
+        # Gets the story the history belongs to
         story_ref = db.collection('stories').document(hist['story'])
         story_doc = story_ref.get()
+
+        # Adds each page in this history to the array
         for page_id in hist['pages']:
+            # Gets the page data by page ID
             page = story_doc.get('page_nodes.`' + page_id + '`')
+
+            # Adds the page's name and link
             new_arr.insert(0, (page['page_name'], hist['story'] + "/" + page_id))
+
+        # Appends the 
         history_arr.append(new_arr)
 
-    # Returns the history.html template with the given values
+    # Returns the history page with the history data
     return render_response(render_template('user_pages/history.html', history=history_arr))
 
 
@@ -718,7 +776,11 @@ def users():
     Requires that the user is logged in
     """
 
+    # Gets basic information for all users
+    # Does NOT contain passwords, salt, or any other sensitive data
     users = User.get_all_users()
+
+    # Returns the user page with the users data
     return render_response(render_template('admin_pages/edit_users.html', users=users))
 
 
@@ -731,10 +793,14 @@ def add_admin():
     Requires that the user is logged in as an admin
     """
 
+    # Gets the user by email
     user = User.get_user(request.form['user_id'])
+
+    # Sets the user to an admin
     user.admin = True
     user.save()
 
+    # Returns a successful message
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
@@ -747,12 +813,19 @@ def remove_admin():
     Requires that the user is logged in as an admin
     """
 
+    # Gets the user by email
     user = User.get_user(request.form['user_id'])
+
+    # Checks that the user being removed as an admin is not the current
+    # A user should not be able to remove themselves as an admin to avoid the situation where no admins exist
     if user.email == current_user.email:
         return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
+
+    # Sets the admin to a regular user
     user.admin = False
     user.save()
 
+    # Returns a successful message
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
@@ -766,6 +839,7 @@ def media():
     Requires that the user is logged in as an admin
     """
 
+    # Returns the media manager page
     return render_response(render_template('admin_pages/media_manager.html'))
 
 
@@ -779,7 +853,12 @@ def files():
     Requires that the user is logged in as an admin
     """
 
+    # The file names
     files = []
+
+    # Gets the names of all files in the file_uploads folder
     for file in os.listdir('file_uploads'):
         files.append(file)
+
+    # Returns the files page with the files
     return render_response(render_template('admin_pages/files.html', files=files, url_root=request.url_root))
