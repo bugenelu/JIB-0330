@@ -665,4 +665,4 @@ def files():
     files = []
     for file in os.listdir('file_uploads'):
         files.append(file)
-    return render_response(render_template('admin_pages/files.html', files=files))
+    return render_response(render_template('admin_pages/files.html', files=files, url_root=request.url_root))
