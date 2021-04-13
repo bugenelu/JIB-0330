@@ -10,7 +10,7 @@ app.register_blueprint(example_blueprint)
 """
 
 # Flask imports
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response, abort
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response, abort, send_from_directory
 
 # Firebase imports
 import firebase_admin
@@ -335,6 +335,7 @@ def story_page(story, page_id):
 
 # Serves the editor page
 @app.route('/editor')
+@admin_login_required
 def myedit():
     # Returns the editor.html template with the given values
     return render_template('editor.html')
@@ -342,26 +343,29 @@ def myedit():
 
 # Serves the editor page
 @app.route('/openeditor')
+@admin_login_required
 def openedit():
     # Returns the editor.html template with the given values
     return render_template('openeditor.html')
 
 
 @app.route('/forward/', methods=["POST"])
+@admin_login_required
 def move_forward():
     render_template('openeditor.html', button_color="blue")
 
 
 # Serves the upload page
 @app.route('/upload', methods=['GET', 'POST'])
+@admin_login_required
 def upload():
     # Checks to see if the HTML method request is 'POST'
     if request.method == 'POST':
         # Checks to make sure a file was uploaded
-        if 'files' not in request.files:
+        if 'file' not in request.files:
             #flash('No file part')
             return render_response(redirect(request.url))
-        file = request.files['files']
+        file = request.files['file']
         # Checks to make sure the file has an actual name and not just empty
         if file.filename == '':
             #flash('No selected file')
@@ -380,7 +384,19 @@ def upload():
     return render_response(render_template('admin_pages/file_upload.html'))
 
 
+# Serves the page of an open file
+@app.route('/file/<file>', methods=['GET', 'POST'])
+@admin_login_required
+def open_file(file):
+    if request.method == 'POST':
+        fileName = request.form['file']
+        filePath = app.config['UPLOAD_FOLDER'] + '/'
+        return send_from_directory(filePath, fileName)
+    return render_response(render_template('admin_pages/files.html'))
+
+
 @app.route('/admin/editor')
+@admin_login_required
 def editor():
     input_file_name = 'story_editing/demo_html/GA_draft.html'
     import_id = '2000'
@@ -389,6 +405,7 @@ def editor():
 
 
 @app.route('/admin/twine')
+@admin_login_required
 def twine():
     twine_files = [
         {

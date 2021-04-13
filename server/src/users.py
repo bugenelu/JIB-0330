@@ -657,11 +657,12 @@ def remove_admin():
 def media():
     return render_response(render_template('admin_pages/media_manager.html'))
 
+
 # Serves the file explorer page
-@user_blueprint.route('/files')
+@user_blueprint.route('/files', methods=['GET', 'POST'])
 @admin_login_required
 def files():
     files = []
     for file in os.listdir('file_uploads'):
-        files.append([file, file.rsplit('.', 1)[0].lower()])
+        files.append(file)
     return render_response(render_template('admin_pages/files.html', files=files))

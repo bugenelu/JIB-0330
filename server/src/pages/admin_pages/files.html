@@ -15,8 +15,9 @@
 		<div>
 			{% for file in files %}
 				<div>
-					<form method="POST" class="hidden-form" action="/file/{{ file[1] }}" target="_blank">
-						<input type="submit" value="{{ file[0] }}">
+					<form method="POST" class="hidden-form" action="/file/{{ file }}" target="_blank">
+						<input style="display: none" name="file" type="text" value="{{ file }}">
+						<input type="submit" value="{{ file }}">
 					</form>
 				</div>
 			{% endfor %}
