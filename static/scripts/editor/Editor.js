@@ -115,17 +115,18 @@ class Editor {
             //         },
             //         {
             //             "param": "story_id",
-            //             "param_label": "Unique ID For This Story", // I don't even know anymore (-MF)
+            //             "param_label": "Unique ID For This Story",
             //             "param_type": "text"
             //         },
             //         "story_name",
             //         "story_id"
             //     ],
+            //     "global_op": true,
             //     "function": "newStory(story_name, story_id)"
             // },
             {
                 "name": "Duplicate Engine", 
-                "op_label": "Please enter a new name for the duplicate engine.", // TODO: Should this label ask for a name if name is auto-generated?
+                "op_label": "Would you like to duplicate this Engine?",
                 "params": [
                     {
                         "param": "story_name",
@@ -486,10 +487,18 @@ class Editor {
         return children;
     }
 
+    /**
+     * TODO: Comment needed
+     * @returns {string[]} array of strings that are the names of the open stories
+     */
     getOpenStoryNames() {
         return Object.keys(this.openStories);
     }
 
+    /**
+     * TODO: Comment needed
+     * @returns 
+     */
     getOpenStoryData() {
         let all_story_names = Object.keys(this.openStories);
         let open_story_ids = []
@@ -559,8 +568,6 @@ class Editor {
 
     /**
      * TODO: Testing needed.
-     * TODO: change this so the whole stack gets reassigned with a new key of the update_name in openStories{}, then delete key for story_name
-     * TODO: change undo() to check if the name of the new latest version matches the stack it's in. If not, update the stack name.
      * Creates a duplicate of the indicated story with an updated name in a new StoryStack
      * @param {string} story_name
      * @param {string} update_name
@@ -568,7 +575,8 @@ class Editor {
     editStoryName(story_name, update_name) {
         let data = this.openStories[story_name].getCurrent().toJSON();
         data.story_name = update_name;
-        this.openStories[update_name] = new StoryStack(new StoryGraph(data));
+        this.openStories[update_name] = this.openStories[story_name];
+        delete this.openStories[story_name];
     }
 
     /**
@@ -590,7 +598,14 @@ class Editor {
      */
     undoLast(story_name) {
         if (this.openStories[story_name].size > 1) {
-            return this.openStories[story_name].pop();
+            let undone = this.openStories[story_name].pop();
+            let un_name = undone.story_name;
+            let new_name = this.openStories[story_name].getCurrent().story_name;
+            if (un_name != new_name) {
+                this.openStories[new_name] = this.openStories[un_name];
+                delete this.openStories[un_name];
+            }
+            return undone;
         } else {
             console.log('error: attempted to undo initial state');
             return null;
