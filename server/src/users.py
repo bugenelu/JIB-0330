@@ -420,7 +420,7 @@ user_blueprint = Blueprint('user_blueprint', __name__)
 @user_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     """login()
-    Serves the login page
+    Serves the login page or logs the user in, depending on the request method
     Accessed at '/login' via a GET or POST request
     """
 
@@ -449,54 +449,105 @@ def login():
         # Returns the login page with an error that the login failed
         return render_response(render_template('user_pages/login.html', failed_login=True))
 
-    # Returns the login.html template with the given values
+    # If the request is a GET request, returns the login page
     return render_response(render_template('user_pages/login.html'))
 
 
 # Serves the sign up page
 @user_blueprint.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """signup()
+    Serves the signup page or signs the user up, depending on the request method
+    Accessed at '/signup' via a GET or POST request
+    """
+
+    # If the request is a POST request, attempts to create the user using the form input
     if request.method == 'POST':
+        # Checks for an existing user with the same email
         if User.get_user(email=request.form['email']):
+            # Returns the signup page with an error that an account already exists with that email
             return render_response(render_template('user_pages/signup.html', user_exists=True))
+
+        # Creates the salt used in hashing the password
         salt = str(uuid.uuid4())
+
+        # Hashes the password
         hashed_password = hashlib.sha512((request.form['password'] + salt).encode('utf-8')).hexdigest()
+
+        # Creates the user with the values from the form and the hashed password
         user = User(email=request.form['email'], password=hashed_password, salt=salt, first_name=request.form['first-name'], last_name=request.form['last-name'], authenticated=True)
         user.save()
+
+        # Creates a session for the user
         session = login_user(user)
+
+        # Sets the session cookie and redirects to the homepage
         return render_response(redirect(url + url_for('index')), cookies={'__session': session.session_key})
 
-    # Returns the signup.html template with the given values
+    # If the request is a GET request, returns the signup page
     return render_response(render_template('user_pages/signup.html'))
 
 
 @user_blueprint.route('/logout')
+@login_required
 def logout():
-    if current_user:
-        current_user.authenticated = False
-        current_user.save()
-        Session.delete_session(user_id=current_user.email)
+    """logout()
+    Logs the user out of the application
+    Accessed at '/logout' via a GET request
+    Requires that the user is logged in
+    """
+
+    # Sets the user to unauthenticated
+    current_user.authenticated = False
+    current_user.save()
+
+    # Deletes the session associated with the user
+    Session.delete_session(user_id=current_user.email)
+
+    # Deletes the session cookie and redirects to the homepage of the application
     return render_response(redirect(url + url_for('index')), delete_cookies=['__session'])
 
 
 @user_blueprint.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
+    """forgot_password()
+    Serves the forgot password page or creates a temporary password the user can use to reset their password, depending on the request method
+    Accessed at '/forgot_password' via a GET or POST request
+    """
+
+    # If the request is a POST request, creates a temporary password for the user to reset their password
     if request.method == 'POST':
+        # Gets the user by email
         user = User.get_user(email=request.form['email'])
+
+        # Checks that the user exists
         if user:
+            # Creates a temporary password and an expiration time of 15 minutes later
             user.temp_password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
             user.temp_password_expire = datetime.now() + timedelta(minutes=15)
             user.save()
+
+            # Emails the temporary password to the user's email address
             mail = Mail(user.email, 'Temporary Password', '<p>Here is your temporary password:</p><h3>' + user.temp_password + '</h3>')
+
+            # Returns the next page, where the user can reset their password
             return render_response(render_template('user_pages/reset_password_1.html', email=user.email))
+
+        # Returns the forgot password page with an error that their is not an account with the email provided
+        # TODO: Add error for no account
         return render_response(render_template('user_pages/forgot_password.html', no_account=True))
 
-    # Returns the forgot_password.html template with the given values
+    # Returns the forgot password page
     return render_response(render_template('user_pages/forgot_password.html'))
 
 
 @user_blueprint.route('/reset_password', methods=['POST'])
 def reset_password():
+    """reset_password()
+    Verifies the temporary password used by the user or resets the user's password, depending on the state of the application
+    Accessed at '/reset_password' via a POST request
+    """
+
     user = User.get_user(email=request.form['email'])
     if user:
         if user.temp_password and user.temp_password_expire > datetime.now(user.temp_password_expire.tzinfo) and user.temp_password == request.form['password']:
@@ -519,6 +570,12 @@ def reset_password():
 @user_blueprint.route('/profile')
 @login_required
 def profile():
+    """profile()
+    Serves the profile page
+    Accessed at '/profile' via a GET request
+    Requires that the user is logged in
+    """
+
     # Returns the profile page for admins
     if current_user.admin:
         return render_response(render_template('admin_pages/profile.html'))
@@ -531,6 +588,12 @@ def profile():
 @user_blueprint.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
+    """edit_profile()
+    Serves the edit profile page or updates the profile, depending on the request method
+    Accessed at '/logout' via a GET or POST request
+    Requires that the user is logged in
+    """
+
     if request.method == 'POST':
         # Updates values of the current user's profile from the form
         current_user.email = request.form['email']
@@ -555,6 +618,12 @@ def edit_profile():
 @user_blueprint.route('/favorites')
 @login_required
 def favorites():
+    """favorites()
+    Serves the favorites page with the user's favorites
+    Accessed at '/favorites' via a GET request
+    Requires that the user is logged in
+    """
+
     favorites = []
     for favorite in current_user.favorites:
         story_ref = db.collection('stories').document(favorite['story'])
@@ -568,7 +637,13 @@ def favorites():
 
 @user_blueprint.route('/add_favorite', methods=['POST'])
 @login_required
-def add_favorites():
+def add_favorite():
+    """add_favorite()
+    Adds a page to a user's favorites
+    Accessed at '/add_favorites' via a POST request
+    Requires that the user is logged in
+    """
+
     current_user.favorites.append({
         'page_id': request.form['page_id'],
         'story': request.form['story'],
@@ -582,6 +657,12 @@ def add_favorites():
 @user_blueprint.route('/remove_favorite', methods=['POST'])
 @login_required
 def remove_favorite():
+    """remove_favorite()
+    Removes a page from a user's favorites
+    Accessed at '/remove_favorite' via a GET request
+    Requires that the user is logged in
+    """
+
     page_id, story, history_id = request.form['page_id'], request.form['story'], request.form['history_id']
 
     for favorite in current_user.favorites:
@@ -597,6 +678,12 @@ def remove_favorite():
 @user_blueprint.route('/history')
 @login_required
 def history():
+    """history()
+    Serves the history page with the user's history
+    Accessed at '/history' via a GET request
+    Requires that the user is logged in
+    """
+
     history = current_user.history
     history_arr = []
     # [[(page_id, history)]]
@@ -625,6 +712,12 @@ def history():
 @user_blueprint.route('/users')
 @admin_login_required
 def users():
+    """users()
+    Serves the users page with all of the users
+    Accessed at '/users' via a GET request
+    Requires that the user is logged in
+    """
+
     users = User.get_all_users()
     return render_response(render_template('admin_pages/edit_users.html', users=users))
 
@@ -632,6 +725,12 @@ def users():
 @user_blueprint.route('/add_admin', methods=['POST'])
 @admin_login_required
 def add_admin():
+    """add_admin()
+    Makes a user an admin
+    Accessed at '/add_admin' via a POST request
+    Requires that the user is logged in as an admin
+    """
+
     user = User.get_user(request.form['user_id'])
     user.admin = True
     user.save()
@@ -642,6 +741,12 @@ def add_admin():
 @user_blueprint.route('/remove_admin', methods=['POST'])
 @admin_login_required
 def remove_admin():
+    """remove_admin()
+    Makes an admin a regular user
+    Accessed at '/remove_admin' via a POST request
+    Requires that the user is logged in as an admin
+    """
+
     user = User.get_user(request.form['user_id'])
     if user.email == current_user.email:
         return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
@@ -655,13 +760,25 @@ def remove_admin():
 @user_blueprint.route('/media')
 @admin_login_required
 def media():
+    """media()
+    Serves the media manager page
+    Accessed at '/media' via a GET request
+    Requires that the user is logged in as an admin
+    """
+
     return render_response(render_template('admin_pages/media_manager.html'))
 
 
 # Serves the file explorer page
-@user_blueprint.route('/files', methods=['GET', 'POST'])
+@user_blueprint.route('/files')
 @admin_login_required
 def files():
+    """profile()
+    Serves the files page
+    Accessed at '/files' via a GET request
+    Requires that the user is logged in as an admin
+    """
+
     files = []
     for file in os.listdir('file_uploads'):
         files.append(file)
