@@ -3,7 +3,6 @@ $(function() {
 		event.preventDefault();
 		if ($("input[name=password]").val() == $("input[name=confirm-password]").val()) {
 			$(this).parent().validate();
-			console.log($(this).parent().valid());
 			if ($(this).parent().valid()) {
 				$(this).parent().submit();
 			}
