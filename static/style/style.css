@@ -692,11 +692,24 @@ tr:last-child td {
   border: solid 1px var(--paleorange);
 }
 
-#map_iframe {
+/* #map_iframe {
   position: absolute;
   width: 1000px;
   height: 1000px;
   top: 50px;
   left: 50px;
   z-index: 5;
+} */
+
+
+#map_frame {
+  z-index: 3;
+  width: 80%;
+  height: 80%;
+  background-color: white;
+  display: none;
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  overflow: hidden;
 }

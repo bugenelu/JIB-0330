@@ -137,24 +137,24 @@ class Editor {
                 "global_op": true,
                 "function": "duplicateStory(story_name)"
             },
-            // {
-            //     "name": "Edit Engine Name",
-            //     "op_label": "Please enter a new name for this engine.",
-            //     "params": [
-            //         {
-            //             "param": "story_name",
-            //             "param_label": null,
-            //             "param_type": "current_story" // implicit
-            //         },
-            //         {
-            //             "param": "update_name",
-            //             "param_label": "New Story Name",
-            //             "param_type": "text"
-            //         }
-            //     ],
-            //     "global_op": true,
-            //     "function": "editStoryName(story_name, update_name)"
-            // },
+            {
+                "name": "Edit Engine Name",
+                "op_label": "Please enter a new name for this engine.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": null,
+                        "param_type": "current_story" // implicit
+                    },
+                    {
+                        "param": "update_name",
+                        "param_label": "New Engine Name",
+                        "param_type": "text"
+                    }
+                ],
+                "global_op": true,
+                "function": "editStoryName(story_name, update_name)"
+            },
             {
                 "name": "Duplicate Engine From Page",
                 "op_label": "Please select the page from which you would like to duplicate this story and enter a new new for the duplicate engine.",

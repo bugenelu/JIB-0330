@@ -92,7 +92,7 @@
  * Everything above the line is of dubious permanent value.
  */
 
-function load_map(data = tree_data, current_page_id = root_id) {
+function load_map(data, current_page_id) {
     
     // tree data constants
     const tree_layers = data[0];

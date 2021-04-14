@@ -58,6 +58,7 @@ function get_story_data(e) {
         story_data = editor.getOpenStoryData();
         if (!(story_data['story_name'].includes(e.target.innerHTML))) {
             current_story = null;
+            current_page = null;
             return;    
         }
 
@@ -586,22 +587,27 @@ $('.div7').on('click', '#view_storymap', function(e) {
     if (current_story != null) {
         page_pane = $('#page-pane')[0];
         // story_map = $('#map_iframe')[0];
-        story_iframe = $('#map_iframe')[0];
+        // story_iframe = $('#map_iframe')[0];
         // story_map = story_iframe.contentWindow.document.getElementById('map_canvas');
-        story_map = $('#map_canvas')[0];
+        story_map = $('#map_frame')[0];
 
-        // if (story_map.style.display == 'none') {
+        if (story_map.style.display == 'none') {
+            $('#map_canvas').empty();
+            header = document.createElement('h1');
+            header.innerHTML = 'Story Map';
+            $('#map_canvas')[0].appendChild(header);
+
             tree_data = editor.getStoryPageTree(current_story);
             focus_page = current_page == null ?
                 editor.getStoryState(current_story)['root_id'] : current_page;
 
             load_map(tree_data, focus_page);
-        // }
+        }
 
         page_pane.style.display = page_pane.style.display == 'none' ?
             '' : 'none';
         story_map.style.display = story_map.style.display == 'none' ?
-            '' : 'none';
+            'block' : 'none';
     }
 });
 

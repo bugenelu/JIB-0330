@@ -25,7 +25,7 @@ from users import current_user
 
 
 
-editor_blueprint = Blueprint('editor_blueprint', __name__)
+editor_blueprint = Blsueprint('editor_blueprint', __name__)
 # editor = Editor(db)
 
 
