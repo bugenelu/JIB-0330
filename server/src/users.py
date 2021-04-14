@@ -15,6 +15,8 @@ from utils import url, db, render_response, Mail
 
 
 
+# TODO: Check private/protected methods and variables
+
 # Used to access the current user
 current_user = LocalProxy(lambda: _get_current_user())
 

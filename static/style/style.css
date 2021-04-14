@@ -145,7 +145,7 @@ button:hover.unclickable {
 }
 
 /*Style Story Text */
-p.storytext {
+.storytext {
 	text-align: center;
 	font-family: Muli, Helvetica, sans-serif;
 	font-size: 2em;

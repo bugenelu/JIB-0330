@@ -41,7 +41,7 @@
 		{% else %}
 		<section class="story-content">
 		{% endif %}
-			<p class="storytext">{{ page['page_body_text'] | safe }}</p>
+			<div class="storytext">{{ page['page_body_text'] | safe }}</div>
 		</section>
 
 		{% for child in page['page_children'] %}
