@@ -126,11 +126,17 @@ function generateWizard(e) {
             tinymce.init({
                 selector: 'textarea',  // change this value according to your HTML
                 content_css: 'default',
-                plugin: 'advlist link image lists',
                 a_plugin_option: true,
                 a_configuration_option: 400,
                 height: 450,
-                plugins: 'code'
+                menu: {
+  					edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
+  					format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats fontformats fontsizes align lineheight | removeformat' },
+  					tools: { title: 'Tools', items: 'wordcount' },
+    				HTML: { title: 'HTML', items: 'code' }
+  				},
+                plugins: 'code wordcount',
+                menubar: 'edit format tools HTML'  // adds happy to the menu bar
             });
 
         } else if (operations[index]['params'][i]['param_type'] == 'current_story') {
