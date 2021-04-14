@@ -586,10 +586,26 @@ class Editor {
      * @param {string} page_id
      */
     duplicateFromPage(story_name, page_id) {
-        let data = this.openStories[story_name].getCurrent().reachable(page_id);
-        data.story_id = data.story_id.concat("_" + page_id);
-        data.story_name = data.story_name.concat(" " + page_id);
-        this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
+        let pages = this.openStories[story_name].getCurrent().reachableNodes(page_id);
+        let data = this.storyDataFromPages(pages, page_id);
+        this.openStories[data.story_name] = new StoryStack(new StoryGraph(data));
+        return;
+    }
+    
+    storyDataFromPages(page_data, root_id) {
+        let data = {
+            "story_id": null,
+            "story_name": null,
+            "root_id": null,
+            "root_name": null,
+            "page_nodes": null,
+        };
+        data.page_nodes = page_data;
+        data.story_id = root_id.concat("_engine");
+        data.story_name = page_data[root_id].page_name;
+        data.root_id = root_id;
+        data.root_name = page_data[root_id].page_name;
+        return data;
     }
 
     /**
@@ -631,14 +647,15 @@ class Editor {
      * @returns
      */
     editRootID(story_name, new_root_id) {
-        current = this.openStories[story_name].getCurrent();
-        if (!(new_root_id in Object.keys(current.page_nodes))) {
+        let current = this.openStories[story_name].getCurrent();
+        if (!(new_root_id in current.page_nodes)) {
             console.log('attempted to assign unknown page. aborted')
             return false;
         } else {
-            update = this.openStories[story_name].getCurrent.getCopy();
+            let update = this.openStories[story_name].getCurrent().getCopy();
             update.root_id = new_root_id;
             update.root_name = update.page_nodes[new_root_id].page_name;
+            this.openStories[story_name].push(update);
             return true;
         }
     }
@@ -896,6 +913,15 @@ class StoryGraph {
                 Object.keys(current.page_children).forEach(child => {
                     open_list.push(this.page_nodes[child]);
                 });
+            }
+        }
+        for (const current in this.page_nodes) {
+            let current_page = this.page_nodes[current];
+            if (!visited_set.has(current_page)) {
+                let page_elem = {}
+                page_elem["page_id"] = current_page.page_id;
+                page_elem["page_name"] = current_page.page_name;
+                page_info.push(page_elem);
             }
         }
         return page_info;
