@@ -15,22 +15,20 @@ from utils import url, db, render_response, Mail
 
 
 
-# TODO: Check private/protected methods and variables
-
 # Used to access the current user
-current_user = LocalProxy(lambda: _get_current_user())
+current_user = LocalProxy(lambda: __get_current_user())
 
 # Stores User objects so that they can persist each time current_user is accessed.
 # Otherwise, current_user would be immutable
-_users = {}
+__users = {}
 
-def _get_current_user():
+def __get_current_user():
     """_get_current_user()
     Retrieves the current user as a User object based on the session cookie
     Returns None if the current user is anonymous
     """
 
-    global _users
+    global __users
 
     current_user = None
 
@@ -42,8 +40,8 @@ def _get_current_user():
         if session:
             # Returns the existing User object if the current user has already been
             # loaded from the database
-            if session.user_id in _users:
-                return _users[session.user_id]
+            if session.user_id in __users:
+                return __users[session.user_id]
 
             # Loads the current user from the database
             current_user = User.get_user(email=session.user_id)
@@ -53,7 +51,7 @@ def _get_current_user():
                 return None
 
             # Stores the current user so it can be re-referenced
-            _users[session.user_id] = current_user
+            __users[session.user_id] = current_user
 
             # Updates the current user's last activity timestamp
             current_user.last_activity = datetime.now()
@@ -133,7 +131,7 @@ class User():
     """
 
     # The name of the collection in Firestore that stores objects of the same type
-    _collection_name = 'user'
+    __collection_name = 'user'
 
     def __init__(self, email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None):
         """User(email, password, salt, first_name, last_name, authenticated=False, admin=False, last_activity=None, favorites=[], history=[], temp_password=None, temp_password_expire=None)
@@ -164,11 +162,11 @@ class User():
         """
 
         # Gets the document containing the user
-        user_doc = db.collection(User._collection_name).where('email', '==', self.email).get()
+        user_doc = db.collection(User.__collection_name).where('email', '==', self.email).get()
 
         # If the user already has a document, updates the values
         if user_doc:
-            user_ref = db.collection(User._collection_name).document(user_doc[0].id)
+            user_ref = db.collection(User.__collection_name).document(user_doc[0].id)
             user_ref.update({
                 'email': self.email,
                 'password': self.password,
@@ -186,7 +184,7 @@ class User():
 
         # If the user does not already have a document, creates a new document
         else:
-            db.collection(User._collection_name).add({
+            db.collection(User.__collection_name).add({
                 'email': self.email,
                 'password': self.password,
                 'salt': self.salt,
@@ -208,7 +206,7 @@ class User():
         """
 
         # Creates a query on the user collection
-        query = db.collection(User._collection_name)
+        query = db.collection(User.__collection_name)
 
         # Filters the query by email, if one is provided
         if email:
@@ -245,7 +243,7 @@ class User():
         users = []
 
         # Gets an iterator over all users in the user collection in Firestore
-        query = db.collection(User._collection_name).stream()
+        query = db.collection(User.__collection_name).stream()
         for user in query:
             # Adds just the email, first name, last name, last activity, and admin status to the output
             users.append({
@@ -268,7 +266,7 @@ class Session():
     """
 
     # The name of the collection in Firestore that stores objects of the same type
-    _collection_name = 'sessions'
+    __collection_name = 'sessions'
 
     def __init__(self, user_id, session_key=None):
         """Session(user_id, session_key=None)
@@ -285,7 +283,7 @@ class Session():
             self.session_key = str(uuid.uuid4())
 
             # Saves the session to Firestore
-            db.collection(Session._collection_name).add({
+            db.collection(Session.__collection_name).add({
                 'session_key': self.session_key,
                 'user_id': self.user_id
                 })
@@ -297,7 +295,7 @@ class Session():
         """
 
         # Creates a query on the user collection
-        query = db.collection(Session._collection_name)
+        query = db.collection(Session.__collection_name)
 
         # Filters the query by session key, if one is provided
         if session_key:
@@ -323,7 +321,7 @@ class Session():
         """
 
         # Creates a query on the user collection
-        query = db.collection(Session._collection_name)
+        query = db.collection(Session.__collection_name)
 
         # Filters the query by session key, if one is provided
         if session_key:
@@ -338,7 +336,7 @@ class Session():
         query = query.get()
         if len(query) == 1:
             # Deletes the session from Firestore
-            db.collection(Session._collection_name).document(query[0].id).delete()
+            db.collection(Session.__collection_name).document(query[0].id).delete()
 
 
 
@@ -351,7 +349,7 @@ class UserActivity():
     """
 
     # The name of the collection in Firestore that stores objects of the same type
-    _collection_name = 'activity'
+    __collection_name = 'activity'
 
     def __init__(self, user_id, story_activity=[]):
         """UserActivity(user_id, story_activity=[])
@@ -367,11 +365,11 @@ class UserActivity():
         """
 
         # Gets the document containing the user activity
-        activity_doc = db.collection(UserActivity._collection_name).where('user_id', '==', self.user_id).get()
+        activity_doc = db.collection(UserActivity.__collection_name).where('user_id', '==', self.user_id).get()
 
         # If the user activity already has a document, updates the values
         if activity_doc:
-            activity_ref = db.collection(UserActivity._collection_name).document(activity_doc[0].id)
+            activity_ref = db.collection(UserActivity.__collection_name).document(activity_doc[0].id)
             activity_ref.update({
                 'user_id': self.user_id,
                 'story_activity': self.story_activity
@@ -379,7 +377,7 @@ class UserActivity():
 
         # If the user activity does not already have a document, creates a new document
         else:
-            db.collection(UserActivity._collection_name).add({
+            db.collection(UserActivity.__collection_name).add({
                 'user_id': self.user_id,
                 'story_activity': self.story_activity
                 })
@@ -391,7 +389,7 @@ class UserActivity():
         """
 
         # Creates a query on the user collection
-        query = db.collection(UserActivity._collection_name)
+        query = db.collection(UserActivity.__collection_name)
 
         # Filters the query by user ID, if one is provided
         if user_id:
