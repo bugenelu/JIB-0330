@@ -575,6 +575,7 @@ class Editor {
     editStoryName(story_name, update_name) {
         let data = this.openStories[story_name].getCurrent().toJSON();
         data.story_name = update_name;
+        this.openStories[story_name].push(new StoryGraph(data));
         this.openStories[update_name] = this.openStories[story_name];
         delete this.openStories[story_name];
     }
