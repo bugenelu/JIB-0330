@@ -1,4 +1,9 @@
-dragElement(document.getElementById("map_canvas"));
+// var iframe = document.getElementById("map_iframe");
+// var elmnt =   iframe.contentWindow.document.getElementById("map_canvas");
+
+// dragElement(elmnt);
+
+dragElement(document.getElementById('map_canvas'));
 
 // TODO: Limit movement range to slighly less than total map dimension
 

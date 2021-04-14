@@ -100,8 +100,8 @@ function load_map(data = tree_data, current_page_id = root_id) {
     const edge_set = data[1];
     
     // layout constants
-    const max_frame_height = 750;
-    const max_frame_width = 750;
+    const max_frame_height = 10000;
+    const max_frame_width = 10000;
 
     const layer_spacer = 30;
     const button_height = 30;
@@ -109,8 +109,11 @@ function load_map(data = tree_data, current_page_id = root_id) {
     const button_spacer = 30;
     
     // html elements
-    const frame = document.getElementById("map_frame");
-    const map = document.getElementById("map_canvas");
+    // const frame = document.getElementById('map_iframe').contentWindow.document.getElementById("map_frame");
+    // const map = document.getElementById('map_iframe').contentWindow.document.getElementById("map_canvas");
+
+    const frame = document.getElementById('map_frame');
+    const map = document.getElementById('map_canvas');
 
     // TODO: clear previous contents...
     // TODO: add position reset button
@@ -161,7 +164,7 @@ function load_map(data = tree_data, current_page_id = root_id) {
             attrib = attrib.concat("height:"+ button_height +";");
             attrib = attrib.concat("width:"+ button_width +";");
             page_div.setAttribute("style", attrib);
-            page_div.setAttribute("class", "page_button");
+            page_div.setAttribute("class", "map_page_button");
             page_div.setAttribute("page_id", page["page_id"]);
             page_div.innerHTML = page["page_name"];
             layer_div.appendChild(page_div);

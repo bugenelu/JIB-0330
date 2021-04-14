@@ -691,3 +691,12 @@ tr:last-child td {
   background: var(--paleorange);
   border: solid 1px var(--paleorange);
 }
+
+#map_iframe {
+  position: absolute;
+  width: 1000px;
+  height: 1000px;
+  top: 50px;
+  left: 50px;
+  z-index: 5;
+}

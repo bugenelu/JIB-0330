@@ -109,17 +109,27 @@ function generateWizard(e) {
             element.setAttribute('param_name', operations[index]['params'][i]['param']);
             form.appendChild(element);
         } else if (operations[index]['params'][i]['param_type'] == 'rich_text') {
-            let div = document.createElement('div');
+            let div = document.createElement('form');
             div.setAttribute('id', 'editor');
-            let p = document.createElement('p');
+            let p = document.createElement('textarea');
             p.innerHTML = editor.getStoryState(current_story)['page_nodes'][current_page]['page_body_text'];
             div.setAttribute('param_name', operations[index]['params'][i]['param']);
             div.appendChild(p);
             
             form.appendChild(div);
 
-            quill = new Quill('#editor', {
-                theme: 'snow'
+            // quill = new Quill('#editor', {
+            //     theme: 'snow'
+            // });
+
+            tinymce.init({
+                selector: 'textarea',  // change this value according to your HTML
+                content_css: 'default',
+                plugin: 'advlist link image lists',
+                a_plugin_option: true,
+                a_configuration_option: 400,
+                height: 450,
+                plugins: 'code'
             });
 
         } else if (operations[index]['params'][i]['param_type'] == 'current_story') {
@@ -477,49 +487,46 @@ $('.div6').on('click', '.engine_op', function(e) {
 * Event listener for submitting edits from wizard
 */
 $('#editor_wizard').on('click', '.submit_wizard', function(e) {
-    submit = confirm('Confirm Submission?');
+    editor_function = editor.getOperations()[parseInt(e.target.getAttribute('index'))];
+    params = []
 
-    if (submit) {
-        editor_function = editor.getOperations()[parseInt(e.target.getAttribute('index'))];
-        params = []
+    for (let i = 0; i < editor_function['params'].length; i++) {
+        param_name = editor_function['params'][i]['param'];
+        param_type = editor_function['params'][i]['param_type'];
 
-        for (let i = 0; i < editor_function['params'].length; i++) {
-            param_name = editor_function['params'][i]['param'];
-            param_type = editor_function['params'][i]['param_type'];
-
-            if (param_type == 'current_page') {
-                params.push(current_page);
-            } else if (param_type == 'current_story') {
-                params.push(current_story);
-            } else if (param_type == 'rich_text') {
-                params.push(quill.root.innerHTML);
-            } else if (param_type == 'dropdown') {
-                field = "[param_name=" + '"' + param_name + '"]';
-                console.log(field);
-                selected = document.querySelectorAll(field)[0];
-                console.log("complete");
-                params.push(selected.options[selected.selectedIndex].getAttribute('name'));
-            } else {
-                field = "[param_name=" + '"' + param_name + '"]';
-                params.push(document.querySelectorAll(field)[0].value);
-            }
+        if (param_type == 'current_page') {
+            params.push(current_page);
+        } else if (param_type == 'current_story') {
+            params.push(current_story);
+        } else if (param_type == 'rich_text') {
+            params.push(tinymce.activeEditor.getContent().replaceAll('\n', ''));
+        } else if (param_type == 'dropdown') {
+            field = "[param_name=" + '"' + param_name + '"]';
+            console.log(field);
+            selected = document.querySelectorAll(field)[0];
+            console.log("complete");
+            params.push(selected.options[selected.selectedIndex].getAttribute('name'));
+        } else {
+            field = "[param_name=" + '"' + param_name + '"]';
+            params.push(document.querySelectorAll(field)[0].value);
         }
-
-        fake_btn = document.createElement('button');
-        handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
-        for (let i = 0; i < params.length; i++) {
-            handlerFunction += '"' + params[i] + '"';
-            if (i != params.length - 1) {
-                handlerFunction += ', ';
-            }
-        }
-        handlerFunction += ')';
-        fake_btn.setAttribute('onclick', handlerFunction);
-        fake_btn.click();
-
-        refreshAllPage();
-        $('#editor_wizard')[0].style.display = 'none';
     }
+
+    fake_btn = document.createElement('button');
+    handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
+    for (let i = 0; i < params.length; i++) {
+        handlerFunction += '"' + params[i] + '"';
+        if (i != params.length - 1) {
+            handlerFunction += ', ';
+        }
+    }
+    handlerFunction += ')';
+    console.log(handlerFunction);
+    fake_btn.setAttribute('onclick', handlerFunction);
+    fake_btn.click();
+
+    refreshAllPage();
+    $('#editor_wizard')[0].style.display = 'none';
 });
 
 /*
@@ -578,15 +585,18 @@ $('#save_story').click(function(e) {
 $('.div7').on('click', '#view_storymap', function(e) {
     if (current_story != null) {
         page_pane = $('#page-pane')[0];
-        story_map = $('#map_frame')[0];
+        // story_map = $('#map_iframe')[0];
+        story_iframe = $('#map_iframe')[0];
+        // story_map = story_iframe.contentWindow.document.getElementById('map_canvas');
+        story_map = $('#map_canvas')[0];
 
-        if (story_map.style.display == 'none') {
+        // if (story_map.style.display == 'none') {
             tree_data = editor.getStoryPageTree(current_story);
             focus_page = current_page == null ?
                 editor.getStoryState(current_story)['root_id'] : current_page;
 
             load_map(tree_data, focus_page);
-        }
+        // }
 
         page_pane.style.display = page_pane.style.display == 'none' ?
             '' : 'none';
