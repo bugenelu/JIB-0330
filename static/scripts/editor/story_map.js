@@ -1,91 +1,91 @@
-const tree2 = {
-    "story_id": 2000,
-    "story_name": "story2",
-    "root_id": "2000-1",
-    "root_name": "2000-START",
-    "page_nodes": {
-        "2000-1": {
-            "page_id": "2000-1",
-            "page_name": "2000-START",
-            "page_body_text": "I am hungry.",
-            "page_children": {
-                "2000-2": {
-                    "child_name": "2000-HAM",
-                    "link_text": "I would like a ham sandwhich.",
-                    "child_id": "2000-2"
-                },
-                "2000-3": {
-                    "child_name": "2000-VEGETARIAN",
-                    "link_text": "I am a vegetarian.",
-                    "child_id": "2000-3"
-                }
-            }
-        },
-        "2000-2": {
-            "page_id": "2000-2",
-            "page_name": "2000-HAM",
-            "page_body_text": "You are making a ham sandwhich.\n",
-            "page_children": {
-                "2000-6": {
-                    "child_name": "2000-MAYONAISE",
-                    "link_text": "...with mayonaise.",
-                    "child_id": "2000-6"
-                },
-                "2000-7": {
-                    "child_name": "2000-MUSTARD",
-                    "link_text": "...with mustard.",
-                    "child_id": "2000-7"
-                }
-            }
-        },
-        "2000-3": {
-            "page_id": "2000-3",
-            "page_name": "2000-VEGETARIAN",
-            "page_body_text": "How about noodles and peanut sauce?\n",
-            "page_children": {
-                "2000-4": {
-                    "child_name": "2000-GREAT",
-                    "link_text": "That sounds great.",
-                    "child_id": "2000-4"
-                },
-                "2000-5": {
-                    "child_name": "2000-CHEESE",
-                    "link_text": "I would rather eat cheese.",
-                    "child_id": "2000-5"
-                }
-            }
-        },
-        "2000-4": {
-            "page_id": "2000-4",
-            "page_name": "2000-GREAT",
-            "page_body_text": "It turns out it <em>was<em> great.",
-            "page_children": {}
-        },
-        "2000-5": {
-            "page_id": "2000-5",
-            "page_name": "2000-CHEESE",
-            "page_body_text": "The cheese is bleu.</a>",
-            "page_children": {}
-        },
-        "2000-6": {
-            "page_id": "2000-6",
-            "page_name": "2000-MAYONAISE",
-            "page_body_text": "DELIGHTFUL.",
-            "page_children": {}
-        },
-        "2000-7": {
-            "page_id": "2000-7",
-            "page_name": "2000-MUSTARD",
-            "page_body_text": "REMARKABLE.",
-            "page_children": {}
-        }
-    }
-}
+// const tree2 = {
+//     "story_id": 2000,
+//     "story_name": "story2",
+//     "root_id": "2000-1",
+//     "root_name": "2000-START",
+//     "page_nodes": {
+//         "2000-1": {
+//             "page_id": "2000-1",
+//             "page_name": "2000-START",
+//             "page_body_text": "I am hungry.",
+//             "page_children": {
+//                 "2000-2": {
+//                     "child_name": "2000-HAM",
+//                     "link_text": "I would like a ham sandwhich.",
+//                     "child_id": "2000-2"
+//                 },
+//                 "2000-3": {
+//                     "child_name": "2000-VEGETARIAN",
+//                     "link_text": "I am a vegetarian.",
+//                     "child_id": "2000-3"
+//                 }
+//             }
+//         },
+//         "2000-2": {
+//             "page_id": "2000-2",
+//             "page_name": "2000-HAM",
+//             "page_body_text": "You are making a ham sandwhich.\n",
+//             "page_children": {
+//                 "2000-6": {
+//                     "child_name": "2000-MAYONAISE",
+//                     "link_text": "...with mayonaise.",
+//                     "child_id": "2000-6"
+//                 },
+//                 "2000-7": {
+//                     "child_name": "2000-MUSTARD",
+//                     "link_text": "...with mustard.",
+//                     "child_id": "2000-7"
+//                 }
+//             }
+//         },
+//         "2000-3": {
+//             "page_id": "2000-3",
+//             "page_name": "2000-VEGETARIAN",
+//             "page_body_text": "How about noodles and peanut sauce?\n",
+//             "page_children": {
+//                 "2000-4": {
+//                     "child_name": "2000-GREAT",
+//                     "link_text": "That sounds great.",
+//                     "child_id": "2000-4"
+//                 },
+//                 "2000-5": {
+//                     "child_name": "2000-CHEESE",
+//                     "link_text": "I would rather eat cheese.",
+//                     "child_id": "2000-5"
+//                 }
+//             }
+//         },
+//         "2000-4": {
+//             "page_id": "2000-4",
+//             "page_name": "2000-GREAT",
+//             "page_body_text": "It turns out it <em>was<em> great.",
+//             "page_children": {}
+//         },
+//         "2000-5": {
+//             "page_id": "2000-5",
+//             "page_name": "2000-CHEESE",
+//             "page_body_text": "The cheese is bleu.</a>",
+//             "page_children": {}
+//         },
+//         "2000-6": {
+//             "page_id": "2000-6",
+//             "page_name": "2000-MAYONAISE",
+//             "page_body_text": "DELIGHTFUL.",
+//             "page_children": {}
+//         },
+//         "2000-7": {
+//             "page_id": "2000-7",
+//             "page_name": "2000-MUSTARD",
+//             "page_body_text": "REMARKABLE.",
+//             "page_children": {}
+//         }
+//     }
+// }
 
-const editor = new Editor();
-editor.openStory(tree2);
-const tree_data = editor.getStoryPageTree("story2");
-const root_id = tree2["root_id"];
+// const editor = new Editor();
+// editor.openStory(tree2);
+// const tree_data = editor.getStoryPageTree("story2");
+// const root_id = tree2["root_id"];
 
 
 /**
