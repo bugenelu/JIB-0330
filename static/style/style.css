@@ -713,3 +713,8 @@ tr:last-child td {
   top: 10%;
   overflow: hidden;
 }
+
+.error {
+  font-size: 15px;
+  color: red;
+}
