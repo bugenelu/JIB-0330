@@ -715,9 +715,12 @@ tr:last-child td {
   overflow: hidden;
 }
 
-.error {
-  font-size: 15px;
-  color: red;
+input.error {
+  border: 2px solid red;
+}
+
+label.error {
+  display: none !important;
 }
 
 #form_container form input, #form_container form label, #form_container form select {
