@@ -521,7 +521,7 @@ input[type="submit"].popout {
 }
 
 .story-nav {
-  position: fixed;
+  position: absolute;
   left: 90px;
   top: 38px;
   height: 50px;
@@ -549,6 +549,10 @@ input[type="submit"].storylink {
   width: 100%;
   text-decoration: underline;
   font-size: 32px;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
 }
 
 .collapsible-content .hidden-form input[type="submit"], .content .hidden-form input[type="submit"] {
@@ -556,6 +560,10 @@ input[type="submit"].storylink {
   color: white;
   text-decoration: underline;
   text-align: left;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
 }
 
 #parent-nodes, #child-nodes {
