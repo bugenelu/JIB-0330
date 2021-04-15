@@ -150,6 +150,7 @@ button:hover.unclickable {
 	font-family: Muli, Helvetica, sans-serif;
 	font-size: 2em;
 	color: var(--palegreen);
+  margin: 5px 10px 10px 5px;
 /*	text-shadow: 2px 2px 5px black;*/
 }
 
@@ -497,8 +498,11 @@ input[type="submit"].popout {
   display: flex;
 }
 
-#page-pane { 
-  width: auto;
+#page-pane {
+  font-size: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: inherit;
   max-width: 65%;
 }
 
@@ -508,8 +512,8 @@ input[type="submit"].popout {
 
 #page-list-parent {
   /* max-height: 100%; */
-  height: auto;
-  max-height: 85%;
+  height: inherit;
+  max-height: 82%;
   overflow: hidden;
   /* max-height: 850px; */
   display: flex;
@@ -558,12 +562,15 @@ input[type="submit"].popout {
 }
 
 input[type="submit"].storylink {
+  all: unset;
   color: white;
   background-color: transparent;
   text-align: center;
   width: 100%;
   text-decoration: underline;
   font-size: 32px;
+  padding:0;
+  cursor: pointer;
 }
 
 .collapsible-content .hidden-form input[type="submit"], .content .hidden-form input[type="submit"] {
@@ -614,6 +621,8 @@ p.link_text {
   font-size: 1em;
   color: var(--offwhite);
   text-decoration: underline;
+  margin-top: .1em;
+  margin-bottom: 0;
 /*  text-shadow: 2px 2px 5px black;*/
 }
 
