@@ -756,7 +756,7 @@ class Editor {
      * @param {string} link_text
      */
     addLinkInGraph(story_name, page_id, child_id, link_text) {
-        let data = this.openStories[story_name].getCurrent().toJSON;
+        let data = this.openStories[story_name].getCurrent().toJSON();
         let child_name = data.page_nodes[child_id].page_name;
         data.page_nodes[page_id].page_children[child_id] = {
             "child_id": child_id,
