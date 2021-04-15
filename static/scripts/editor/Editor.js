@@ -540,13 +540,22 @@ class Editor {
      */
     newStory(story_name, story_id) {
         if (!(story_name in Object.keys(this.openStories))) {
+            let page_name = "New Story Root Page";
+            let page_id = story_id.concat("_root");
+            let empty_root_page = {
+                "page_name": page_name,
+                "page_body_text": "",
+                "page_parents": [],
+                "page_children": {}
+                }
             let data = {
                 "story_id": story_id,
                 "story_name": story_name,
-                "root_id": null,
-                "root_name": null,
+                "root_id": page_id,
+                "root_name": "Root Page",
                 "page_nodes": {}
             }
+            data.page_nodes[page_name] = empty_root_page;
             this.openStories[story_name] = new StoryStack(new StoryGraph(data));
         }
     }
@@ -713,13 +722,18 @@ class Editor {
      */
     deleteNodeFromGraph(story_name, page_id) {
         let graph = this.openStories[story_name].getCurrent();
-        let updates = graph.deleteNode(page_id);
-        this.openStories[story_name].push(updates[0]);
-        if (updates.length > 1) {
-            updates.shift();
-            updates.forEach(update => {
-                this.openStories[update.story_name] = new StoryStack(update);
-            });
+        if (graph.getGraphSize > 1) {
+            let updates = graph.deleteNode(page_id);
+            this.openStories[story_name].push(updates[0]);
+            if (updates.length > 1) {
+                updates.shift();
+                updates.forEach(update => {
+                    this.openStories[update.story_name] = new StoryStack(update);
+                });
+            }
+        } else {
+            console.log("Illegal Editor Operation: Attempted to delete last remaining page in an engine. " 
+                        + "An engine must always have at least one page.");
         }
     }
 
