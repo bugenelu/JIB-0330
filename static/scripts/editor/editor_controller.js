@@ -203,7 +203,7 @@ function refreshStoryPopup() {
     close_btn.setAttribute('class', 'close');
     create_btn = document.createElement('button');
     create_btn.setAttribute('id', 'create_story');
-    create_btn.innerHTML = 'Create New Story';
+    create_btn.innerHTML = 'New Engine';
     create_btn.setAttribute('index', '2');          // This value is HARDCODED, sue me
     $('#popup-box')[0].appendChild(close_btn);
     $('#popup-box')[0].appendChild(header);
@@ -304,7 +304,8 @@ function refreshMetaData() {
 
     meta = 'Metadata: ';
     num_pages = Object.keys(editor.getStoryPageList(current_story)).length;
-    meta += 'id=' + $('#metadata')[0].id + ', name=' + current_story + ', root=' + 
+    story_id = editor.openStories[current_story].getCurrent().story_id;
+    meta += 'id=' + story_id + ', name=' + current_story + ', root=' + 
         editor.getStoryState(current_story)['root_name'] + ', #pages=' + num_pages;
     $('#metadata')[0].innerHTML = meta;
 }
@@ -577,31 +578,31 @@ $('#save_story').click(function(e) {
         'confirm_save': false
     },
     function(data, status, response) {
+        console.log(response);
         if (status == "success") {
-            alert("Story successfully saved");
-        } else {
-            if (response['status'] == 406) {
-                if (confirm('Story already exists in database. Do you wish to overwrite?')) {
+
+            if (response['responseJSON']['success']) {
+                alert('Story saved successfully');
+            } else {
+                if (response['responseJSON']['rename']) {
+                    alert('Attempting to override existing story');
+
+                    new_story_id = current_story_id;
                     $.post("/editor/save_story", 
                     {
-                        'story_id': current_story_id,
+                        'story_id': new_story_id,
                         'story_data': JSON.stringify(editor.getStoryState(current_story)),
                         'confirm_save': true
                     },
-                    function(data, status) {
-                        if (status == 'success') {
-                            alert('Story successfully saved');
-                        } else {
-                            alert("Story failed to save");
-                        }
-                    });
-                }
+                    function(data, status, response) {
 
-            } else if (response['status'] == 403) {
-                alert('Cannot overwrite live story, duplicate story to save changes');
-            } else {
-                alert("Story failed to save");
+                    });
+                } else {
+                    alert('Cannot save over live story, duplicate engine and try saving again');
+                }
             }
+        } else {
+            alert('Failed to properly contact server for save');
         }
     });
 });

@@ -722,7 +722,7 @@ class Editor {
      */
     deleteNodeFromGraph(story_name, page_id) {
         let graph = this.openStories[story_name].getCurrent();
-        if (graph.getGraphSize > 1) {
+        if (graph.getGraphSize() > 1) {
             let updates = graph.deleteNode(page_id);
             this.openStories[story_name].push(updates[0]);
             if (updates.length > 1) {

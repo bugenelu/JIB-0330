@@ -99,27 +99,20 @@ def save_story():
     if current_user is not None and current_user.admin == True:
         story_id = request.form['story_id']
         story_data = json.loads(request.form['story_data'])
-        confirm_save = request.form['confirm_save']
-        live_story_id = db.collection('application_states').document('active_story_id')
+        confirm_save = request.form['confirm_save'] != 'false'
+        live_story_id = db.collection('application_states').document('application_state').get().get('active_story_id')
         
         stories = db.collection('stories')
 
-        print(confirm_save)
-        print(story_id)
-        print('-----------------')
-
         if not confirm_save:
-            # print(story_id)
-            # print(live_story_id)
-            # print('--------------')
             if story_id == live_story_id:
-                return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
+                return {'success': False, 'rename': False}, 200, {'ContentType': 'application/json'}
             elif stories.document(story_id).get().exists:
-                return json.dumps({'success': False}), 406, {'ContentType': 'application/json'}
+                return {'success': False, 'rename': True}, 200, {'ContentType': 'application/json'}
 
         if stories.document(story_id).get().exists:
             stories.document(story_id).update(story_data)
         else:
             stories.document(story_id).set(story_data)
 
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    return {'success': True, 'rename': False}, 200, {'ContentType': 'application/json'}

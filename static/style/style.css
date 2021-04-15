@@ -615,6 +615,7 @@ button#view_storymap {
   margin-top: 4px;
   background-color: var(--paleyellow);
   border-color: var(--paleyellow);
+  display: none;
 }
 
 button.page_op {
