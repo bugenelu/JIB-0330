@@ -1213,7 +1213,7 @@ class PageNode {
      * @param {string} child_id - id of the ChildLink to remove from this PageNode.
      */
     removeLink(child_id) {
-        this.page_children.delete[child_id];
+        delete this.page_children[child_id];
     }
 
     /**
