@@ -258,25 +258,31 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 .parent2 {
-	display: grid;
+	/* display: grid; */
 	/* grid-template-columns: repeat(3, 1fr);
 	grid-template-rows: repeat(5, 1fr); */
-	grid-column-gap: 0px;
-	grid-row-gap: 0px;
+	/* grid-column-gap: 0px;
+	grid-row-gap: 0px; */
 	height: 100%;
 }
 
-.div5 { 
+#storage {
+  max-height: 7%;
+  width: 100%; 
 	border: 1px solid var(--palegreen);
-	grid-area: 1 / 1 / 2 / 4; 
+  display: flex;
+  flex-flow: row wrap;
+	/* grid-area: 1 / 1 / 2 / 4;  */
 }
 
-.div6 { 
+.div6 {
+  min-height: 8%;
+  width: 100%; 
   color: var(--offwhite);
-  font-family: Muli;
+  /* font-family: Muli; */
   font-size: 20px;
   border: 1px solid var(--palegreen);
-	grid-area: 2 / 1 / 3 / 4; 
+	/* grid-area: 2 / 1 / 3 / 4;  */
 }
 
 .div7 { 
@@ -285,8 +291,10 @@ input[type=submit]:hover, input[type=button]:hover {
 /*	grid-area: 3 / 1 / 9 / 1;*/
   overflow: scroll;
   overflow-x: hidden;
-  width: 15%;
-  height: 100%;
+  width: 19%;
+  min-width: 15%;
+  height: inherit;
+  /* max-height: 100%; */
 }
 
 .div7 h1 {
@@ -297,9 +305,13 @@ input[type=submit]:hover, input[type=button]:hover {
 
 .div8 { 
 	/*grid-area: 3 / 2 / 9 / 4;*/ 
-  width: 20%;
-  position: absolute;
-  right: 30px;
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: 3px;
+  /* position: absolute;
+  right: 30px; */
 }
 
 .collapsible {
@@ -486,9 +498,8 @@ input[type="submit"].popout {
 }
 
 #page-pane { 
-  /*width: 1000px;*/
-  min-width: 60%;
-  max-width: 67%;
+  width: auto;
+  max-width: 65%;
 }
 
 #story-name {
@@ -497,8 +508,12 @@ input[type="submit"].popout {
 
 #page-list-parent {
   /* max-height: 100%; */
-  max-height: 850px;
-  display: flex; 
+  height: auto;
+  max-height: 85%;
+  overflow: hidden;
+  /* max-height: 850px; */
+  display: flex;
+  flex-direction: row; 
   width: 100%;
 }
 
@@ -561,9 +576,10 @@ input[type="submit"].storylink {
 #parent-nodes, #child-nodes {
   display: flex;
   width: 100%;
-  overflow: auto;
+  flex-flow: row wrap;
+  /* overflow: auto;
   text-align: center;
-  justify-content: center;
+  justify-content: center; */
 }
 
 #editor_wizard > input, #editor_wizard > label {
@@ -730,4 +746,13 @@ label.error {
     margin-right: 2%;
     text-align: left;
     font-size: smaller;
+}
+
+.add_storybox {
+  background:var(--paleyellow);
+  border:var(--paleyellow);
+}
+
+#metadata {
+  width: 100%;
 }
