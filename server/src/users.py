@@ -38,26 +38,40 @@ def __get_current_user():
         # Finds the session based on the session cookie
         session = Session.get_session(session_key=session_key)
         if session:
-            # Returns the existing User object if the current user has already been
-            # loaded from the database
-            if session.user_id in __users:
-                return __users[session.user_id]
-
-            # Loads the current user from the database
-            current_user = User.get_user(email=session.user_id)
+            # Gets the user by the user_id matching the session key
+            current_user = get_user(session.user_id)
 
             # Verifies that the current user is authenticated
             if not current_user.authenticated:
                 return None
-
-            # Stores the current user so it can be re-referenced
-            __users[session.user_id] = current_user
 
             # Updates the current user's last activity timestamp
             current_user.last_activity = datetime.now()
             current_user.save()
 
     return current_user
+
+
+def get_user(user_id):
+    """get_user(user_id)
+    Returns the user corresponding to the user_id
+    requires a valid user_id
+    """
+
+    # Returns the existing User object if the current user has already been
+    # loaded from the database
+    if user_id in __users:
+        return __users[user_id]
+
+    # Loads the current user from the database
+    user = User.get_user(email=user_id)
+
+    # Checks that the user exists
+    if user:
+        # Stores the current user so it can be re-referenced
+        __users[user_id] = user
+
+    return user
 
 
 def login_user(user):
@@ -427,7 +441,7 @@ def login():
     # If the request is a POST request, attempts to log the user in using the form input
     if request.method == 'POST':
         # Looks for a user with the provided email
-        user = User.get_user(email=request.form['email'])
+        user = get_user(request.form['email'])
 
         # If the user exists, attempts to log the user in
         if user:
@@ -465,7 +479,7 @@ def signup():
     # If the request is a POST request, attempts to create the user using the form input
     if request.method == 'POST':
         # Checks for an existing user with the same email
-        if User.get_user(email=request.form['email']):
+        if get_user(request.form['email']):
             # Returns the signup page with an error that an account already exists with that email
             return render_response(render_template('user_pages/signup.html', user_exists=True))
 
@@ -499,12 +513,15 @@ def logout():
     Requires that the user is logged in
     """
 
+    # Gets the current user, since the current user will be lost once authenticated is set to false
+    user = __get_current_user()
+
     # Sets the user to unauthenticated
-    current_user.authenticated = False
-    current_user.save()
+    user.authenticated = False
+    user.save()
 
     # Deletes the session associated with the user
-    Session.delete_session(user_id=current_user.email)
+    Session.delete_session(user_id=user.email)
 
     # Deletes the session cookie and redirects to the homepage of the application
     return render_response(redirect(url + url_for('index')), delete_cookies=['__session'])
@@ -520,7 +537,7 @@ def forgot_password():
     # If the request is a POST request, creates a temporary password for the user to reset their password
     if request.method == 'POST':
         # Gets the user by email
-        user = User.get_user(email=request.form['email'])
+        user = get_user(request.form['email'])
 
         # Checks that the user exists
         if user:
@@ -550,7 +567,7 @@ def reset_password():
     """
 
     # Gets the user by email
-    user = User.get_user(email=request.form['email'])
+    user = get_user(request.form['email'])
 
     # Checks that the user exists
     if user:
@@ -794,7 +811,7 @@ def add_admin():
     """
 
     # Gets the user by email
-    user = User.get_user(request.form['user_id'])
+    user = get_user(request.form['user_id'])
 
     # Sets the user to an admin
     user.admin = True
@@ -814,7 +831,7 @@ def remove_admin():
     """
 
     # Gets the user by email
-    user = User.get_user(request.form['user_id'])
+    user = get_user(request.form['user_id'])
 
     # Checks that the user being removed as an admin is not the current
     # A user should not be able to remove themselves as an admin to avoid the situation where no admins exist
