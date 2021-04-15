@@ -52,7 +52,7 @@ function get_story_data(e) {
         type: 'GET',
         url: '/editor/open_story/' + e.target.id,
         async: false
-    })
+    });
 
     if (response['status'] != 200) {
         story_data = editor.getOpenStoryData();
@@ -86,7 +86,7 @@ function get_story_data(e) {
 function generateWizard(e) {
     operations = editor.getOperations();
     index = parseInt(e.target.getAttribute('index'));
-;
+
     $('#wizard_title')[0].innerHTML = operations[index]['name'];
     $('#wizard_instruction')[0].innerHTML = operations[index]['op_label'];
 
@@ -135,7 +135,13 @@ function generateWizard(e) {
   					tools: { title: 'Tools', items: 'wordcount' },
     				HTML: { title: 'HTML', items: 'code' }
   				},
-                plugins: 'code wordcount',
+                plugins: [
+                    ' advlist anchor autolink codesample fullscreen help image imagetools',
+                    ' lists link media noneditable preview',
+                    ' searchreplace table visualblocks wordcount'
+                ],
+                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image tinydrive',
+                spellchecker_dialog: true,
                 menubar: 'edit format tools HTML'  // adds happy to the menu bar
             });
 
@@ -195,8 +201,13 @@ function refreshStoryPopup() {
     close_btn = document.createElement('span');
     close_btn.innerHTML = '&times;';
     close_btn.setAttribute('class', 'close');
+    create_btn = document.createElement('button');
+    create_btn.setAttribute('id', 'create_story');
+    create_btn.innerHTML = 'Create New Story';
+    create_btn.setAttribute('index', '2');          // This value is HARDCODED, sue me
     $('#popup-box')[0].appendChild(close_btn);
     $('#popup-box')[0].appendChild(header);
+    $('#popup-box')[0].appendChild(create_btn);
     open_stories = Object.keys(editor.openStories);
 
     btn_names = []
@@ -421,6 +432,15 @@ $('.popup').on('click', '.open_story', function(e) {
 
     $('#popup-box')[0].style.display = 'none';
     new_btn.click();
+});
+
+/*
+* Event listener for when the create story option is selected
+*/
+$('.popup').on('click', '#create_story', function(e) {
+    $('#popup-box')[0].style.display = 'none';
+    generateWizard(e);
+    $('#editor_wizard')[0].style.display = 'block';
 });
 
 /*

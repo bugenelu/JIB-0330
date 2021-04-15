@@ -104,26 +104,24 @@ class Editor {
                 "global_op": true,
                 "function": "closeStory(story_name)"
             },
-            // {
-            //     "name": "New Story",
-            //     "op_label": "Create a new story.",
-            //     "params": [
-            //         {
-            //             "param": "story_name",
-            //             "param_label": "New Story Name",
-            //             "param_type": "text"
-            //         },
-            //         {
-            //             "param": "story_id",
-            //             "param_label": "Unique ID For This Story",
-            //             "param_type": "text"
-            //         },
-            //         "story_name",
-            //         "story_id"
-            //     ],
-            //     "global_op": true,
-            //     "function": "newStory(story_name, story_id)"
-            // },
+            {
+                "name": "New Engine",
+                "op_label": "Create a new engine.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": "New Engine Name",
+                        "param_type": "text"
+                    },
+                    {
+                        "param": "story_id",
+                        "param_label": "Unique ID For This Engine",
+                        "param_type": "text"
+                    },
+                ],
+                "global_op": true,
+                "function": "newStory(story_name, story_id)"
+            },
             {
                 "name": "Duplicate Engine", 
                 "op_label": "Would you like to duplicate this Engine?",
