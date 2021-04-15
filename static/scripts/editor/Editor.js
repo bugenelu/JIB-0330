@@ -545,8 +545,8 @@ class Editor {
             let data = {
                 "story_id": story_id,
                 "story_name": story_name,
-                "root_id": '',
-                "root_name": '',
+                "root_id": null,
+                "root_name": null,
                 "page_nodes": {}
             }
             this.openStories[story_name] = new StoryStack(new StoryGraph(data));
