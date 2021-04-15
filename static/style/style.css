@@ -718,3 +718,12 @@ tr:last-child td {
   font-size: 15px;
   color: red;
 }
+
+#form_container form input, #form_container form label, #form_container form select {
+    display: block;
+    width: 95%;
+    margin-left: 2%;
+    margin-right: 2%;
+    text-align: left;
+    font-size: smaller;
+}

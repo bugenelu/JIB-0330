@@ -729,8 +729,6 @@ function populateOptions(parent_select, param_name) {
 function initializeWizard() {
     operations = editor.getOperations();
     for (let i = 0; i < operations.length; i++) {
-        if (i == 2) // this is hardcoded
-            continue;
         new_btn = document.createElement('button');
         new_btn.innerHTML = operations[i]['name'];
         new_btn.setAttribute('id', operations[i]['name']);
