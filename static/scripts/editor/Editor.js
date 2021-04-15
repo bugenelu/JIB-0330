@@ -544,6 +544,7 @@ class Editor {
             let page_id = story_id.concat("_root");
             let empty_root_page = {
                 "page_name": page_name,
+                "page_id": page_id,
                 "page_body_text": "",
                 "page_parents": [],
                 "page_children": {}
@@ -552,10 +553,10 @@ class Editor {
                 "story_id": story_id,
                 "story_name": story_name,
                 "root_id": page_id,
-                "root_name": "Root Page",
+                "root_name": page_name,
                 "page_nodes": {}
             }
-            data.page_nodes[page_name] = empty_root_page;
+            data.page_nodes[page_id] = empty_root_page;
             this.openStories[story_name] = new StoryStack(new StoryGraph(data));
         }
     }
