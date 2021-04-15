@@ -213,6 +213,55 @@ class User():
                 'temp_password_expire': self.temp_password_expire
                 })
 
+    def update_email(self, email):
+        """update_email(email)
+        Used to update the user's email, since the save function looks for the document to update by email
+        """
+
+        # Stores the old email
+        old_email = self.email
+
+        # Updates the User object's email field
+        self.email = email
+
+        # Gets the document containing the user searching by the old email
+        user_doc = db.collection(User.__collection_name).where('email', '==', old_email).get()
+
+        # If the user already has a document, updates the values
+        if user_doc:
+            user_ref = db.collection(User.__collection_name).document(user_doc[0].id)
+            user_ref.update({
+                'email': self.email,
+                'password': self.password,
+                'salt': self.salt,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'authenticated': self.authenticated,
+                'admin': self.admin,
+                'last_activity': self.last_activity,
+                'favorites': self.favorites,
+                'history': self.history,
+                'temp_password': self.temp_password,
+                'temp_password_expire': self.temp_password_expire
+                })
+
+        # If the user does not already have a document, creates a new document
+        else:
+            db.collection(User.__collection_name).add({
+                'email': self.email,
+                'password': self.password,
+                'salt': self.salt,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'authenticated': self.authenticated,
+                'admin': self.admin,
+                'last_activity': self.last_activity,
+                'favorites': self.favorites,
+                'history': self.history,
+                'temp_password': self.temp_password,
+                'temp_password_expire': self.temp_password_expire
+                })
+
     @staticmethod
     def get_user(email=None):
         """get_user(email=None)
@@ -297,6 +346,29 @@ class Session():
             self.session_key = str(uuid.uuid4())
 
             # Saves the session to Firestore
+            db.collection(Session.__collection_name).add({
+                'session_key': self.session_key,
+                'user_id': self.user_id
+                })
+
+    def save(self):
+        """save()
+        Saves the Session object to the Firestore database
+        """
+
+        # Gets the document containing the session
+        session_doc = db.collection(Session.__collection_name).where('session_key', '==', self.session_key).get()
+
+        # If the user already has a document, updates the values
+        if session_doc:
+            session_ref = db.collection(Session.__collection_name).document(session_doc[0].id)
+            session_ref.update({
+                'session_key': self.session_key,
+                'user_id': self.user_id
+                })
+
+        # If the user does not already have a document, creates a new document
+        else:
             db.collection(Session.__collection_name).add({
                 'session_key': self.session_key,
                 'user_id': self.user_id
@@ -637,9 +709,24 @@ def edit_profile():
     # If the request is a POST request, updates the user based on the form input
     if request.method == 'POST':
         # Updates values of the current user's profile from the form
-        current_user.email = request.form['email']
         current_user.first_name = request.form['first-name']
         current_user.last_name = request.form['last-name']
+
+        # Updates the email only if a new one is provided
+        if request.form['email'] != current_user.email:
+            # Stores old user_id
+            old_user_id = current_user.email
+
+            # Updates the user's email
+            current_user.update_email(request.form['email'])
+
+            # Updates the session key with the new user_id
+            session = Session.get_session(user_id=old_user_id)
+            session.user_id = current_user.email
+            session.save()
+
+            # Removes the user at the old user_id from memory
+            __users.pop(old_user_id, None)
 
         # Updates the password only if a new one is provided
         if request.form['password'] != '':
