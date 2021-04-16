@@ -554,7 +554,7 @@ input[type="submit"].storylink {
   color: white;
   background-color: transparent;
   text-align: center;
-  width: 100%;
+  width: auto;
   text-decoration: underline;
   font-size: 32px;
   white-space: pre-wrap;
