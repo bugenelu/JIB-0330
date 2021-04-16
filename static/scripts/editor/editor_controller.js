@@ -570,7 +570,7 @@ $('#save_story').click(function(e) {
         return;
     }
     if (current_story == null) {
-        alert('No story selected to be saved');
+        alert('No story selected to be saved.');
         return;
     }
 
@@ -617,7 +617,7 @@ $('#save_story').click(function(e) {
  */
 $('#export_data').click(function(e) {
     if (current_story == null) {
-        alert('No story selected to be saved');
+        alert('No story selected to be exported.');
         return;
     }
 
