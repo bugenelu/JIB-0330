@@ -6,7 +6,7 @@ open_story_list = [] // names of the open stories
 open_story_btn = null;
 all_page_ids = null;
 
-$.get('/editor/load_all_stories', function(event, status) {
+$.get('/editor/get_all_stories', function(event, status) {
     if (status == 'success') {
         // Success
         console.log('Success');
@@ -21,10 +21,10 @@ $.get('/editor/load_all_stories', function(event, status) {
         savedstories.appendChild(b2);
         savedstories.appendChild(document.createElement("br"));
 
-        for (let i = 0; i < event['list'].length; i++) {
+        for (let i = 0; i < event['story_id'].length; i++) {
             var b = document.createElement("button");
-            b.innerHTML = event['list'][i];
-            b.setAttribute('id', event['list'][i]);
+            b.innerHTML = event['story_name'][i];
+            b.setAttribute('id', event['story_id'][i]);
             b.setAttribute('class', 'displayed_story');
             // b.setAttribute('class', 'unclickable');
             savedstories.appendChild(b);
