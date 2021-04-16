@@ -14,6 +14,10 @@ def index():
 # Flask imports
 from flask import Blueprint, request
 
+# Other installed modules imports
+from werkzeug.utils import secure_filename
+import os
+
 # Built-in modules imports
 import random
 import json
@@ -21,7 +25,7 @@ import json
 # Local imports
 # from story_editing.Editor import Editor
 from utils import db
-from users import current_user
+from users import current_user, admin_login_required
 
 
 
@@ -146,3 +150,32 @@ def delete_engine():
         db.collection('stories').document(engine_id).delete()
 
         return {'success': True}, 200
+
+
+@editor_blueprint.route('/editor/import', methods=['POST'])
+@admin_login_required
+def import_engine():
+    # Checks to make sure a file was uploaded
+    if 'file' not in request.files:
+        return {'success': False}, 500
+    file = request.files['file']
+    # Checks to make sure the file has an actual name and not just empty
+    if file.filename == '':
+        return {'success': False}, 500
+    # Checks to make sure the file extension/type is allowed
+    if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() == 'json':
+        # Secures the file name for security purposes
+        filename = secure_filename('upload.json')
+        # Saves the file in the specified upload folder
+        file.save(os.path.join('import_uploads', filename))
+        #flash('File uploaded successfully')
+        return {'success': False}, 200
+    return {'success': False}, 500
+
+
+@editor_blueprint.route('/import_uploads')
+@admin_login_required
+def import_files():
+    file_data = json.load(open(os.path.join('import_uploads', secure_filename('upload.json'))))
+    os.remove(os.path.join('import_uploads', secure_filename('upload.json')))
+    return json.dumps(file_data)

@@ -213,6 +213,7 @@ function refreshStoryPopup() {
     $('#popup-box')[0].appendChild(header);
     $('#popup-box')[0].appendChild(create_btn);
     $('#popup-box')[0].appendChild(import_btn);
+    $("#import_story").on('click', import_data_listener);
     open_stories = Object.keys(editor.openStories);
 
     btn_names = []
@@ -653,8 +654,38 @@ $('#export_data').click(function(e) {
         a.click();
     }
 
-    download(JSON.stringify(data, null, 4), current_story + '.json' , 'text/plain');
+    download(JSON.stringify(data, null, 4), current_story + ".json" , "text/plain");
 });
+
+function import_data_listener(e) {
+    $("body").append("<form id=\"import-upload\" class=\"popup\" enctype=\"multipart/form-data\"><h1 for=\"selectfile\">Select Engine JSON to Import:</h1><br><input type=\"file\" id =\"selectfile\" name=\"file\" value=\"Select File\" multiple><br><input type=\"submit\" id=\"submitfile\" value=\"Upload File\"><button id=\"import-cancel\">Cancel</button></form>");
+    $("#import-cancel").on("click", function(e) {
+        e.preventDefault();
+        $("#popup-box").show();
+        $("#import-upload").remove();
+    });
+    $("#import-upload").on("submit", function(e) {
+        e.preventDefault();
+        $("#popup-box").hide();
+        domain = window.location.protocol + "//" + window.location.hostname + (window.location.port == "" ? "" : ":") + window.location.port
+        formData = new FormData(document.getElementById("import-upload"));
+        formData.append("file", document.getElementById("selectfile").files[0])
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("readystatechange", (event) => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                $.getJSON("import_uploads", function(data) {
+                    editor.openStory(data);
+                    current_story = data.story_name;
+                    current_page = data.root_id;
+                    refreshAllPage();
+                    $("#import-upload").remove();
+                });
+            }
+        });
+        xhr.open("POST", domain + "/editor/import", true);
+        xhr.send(formData);
+    })
+}
 
 /*
 * Event handler for opening the storymap view
