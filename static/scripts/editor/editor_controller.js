@@ -318,10 +318,10 @@ function refreshOpenPage() {
 
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_page = null;
-        $('#page-pane-child')[0].innerHTML = '';
+        $('#page-body').empty();
         return;
     } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
-        $('#page-pane-child')[0].innerHTML = '';
+        $('#page-body').empty();
         return;
     }
 

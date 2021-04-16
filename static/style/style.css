@@ -587,6 +587,8 @@ input[type="submit"].storylink {
   /* overflow: auto;
   text-align: center;
   justify-content: center; */
+  justify-content: center;
+  text-align: center;
 }
 
 #editor_wizard > input, #editor_wizard > label {
