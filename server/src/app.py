@@ -84,6 +84,10 @@ def index():
     return render_response(render_template('home.html'))
 
 
+# Defines which attributes of a User can be used in the page contents
+# $$attr$$ is replaced with current_user.attr
+allowed_user_attr = ['first_name', 'last_name', 'email']
+
 # Serves the root page of the specified story
 @app.route('/story/<story>')
 def story_root(story):
@@ -100,6 +104,9 @@ def story_root(story):
     # Gets the root page's page ID
     page_id = story_doc.get('root_id')
 
+    # Gets the page data for the specified page ID
+    page = story_doc.get('page_nodes.`' + page_id + '`')
+
     # Gets whether or not the page is viewed as a preview (from history page)
     preview = request.args.get('preview')
     if preview == None:
@@ -107,6 +114,10 @@ def story_root(story):
 
     # Gets whether or not the user is logged in
     guest = current_user == None
+
+    # Replaces user attributes in the page content with the current user's values
+    for user_attr in allowed_user_attr:
+        page['page_body_text'] = page['page_body_text'].replace('$$' + user_attr + '$$', 'Guest' if guest else getattr(current_user, user_attr))
 
     history_id = None
     if not preview and not guest:
@@ -140,9 +151,6 @@ def story_root(story):
         # Saves the changes to the user
         current_user.save()
 
-    # Gets the page data for the specified page ID
-    page = story_doc.get('page_nodes.`' + page_id + '`')
-
     # Gets whether or not the page is favorited
     favorited = False
     if not guest:
@@ -174,8 +182,17 @@ def story_page(story, page_id):
     # Gets the page data for the specified page ID
     page = story_doc.get('page_nodes.`' + page_id + '`')
 
+    # Gets whether or not the page should be displayed as a preview
+    preview = request.args.get('preview')
+    if preview == None:
+        preview = False
+
     # Gets whether or not the user is a guest
     guest = current_user == None
+
+    # Replaces user attributes in the page content with the current user's values
+    for user_attr in allowed_user_attr:
+        page['page_body_text'] = page['page_body_text'].replace('$$' + user_attr + '$$', 'Guest' if guest else getattr(current_user, user_attr))
 
     # Gets whether or not the page is favorited
     favorited = False
@@ -183,11 +200,6 @@ def story_page(story, page_id):
         for favorite in current_user.favorites:
             if favorite['story'] == story and favorite['page_id'] == page_id:
                 favorited = True
-
-    # Gets whether or not the page should be displayed as a preview
-    preview = request.args.get('preview')
-    if preview == None:
-        preview = False
 
     ###############################################################################################################
     # In order to log a user's history, each time they click a link when navigating a story we include the        #
@@ -305,8 +317,8 @@ def story_page(story, page_id):
                     if p == page_id:
                         break
                     back = p
-                    back_page = story_doc.get('page_nodes.`' + back + '`')
-                    back_name = back_page['page_name']
+                    # Gets the page name of the page that the back button points to
+                    back_name = story_doc.get('page_nodes.`' + back + '`')['page_name']
 
         # Returns the story_page.html template with the specified page
         return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview, back=back, back_name=back_name, history=history_id))
