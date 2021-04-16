@@ -246,7 +246,7 @@ class Editor {
                     {
                         "param": "parent_id",
                         "param_label": "Parent Page",
-                        "param_type": "dropdown" // TODO: option to make the new page the root in an empty engine...
+                        "param_type": "dropdown"
                     },
                     // {
                     //     "param": "page_body_text",
@@ -534,9 +534,10 @@ class Editor {
     }
 
     /**
-     *
-     * @param {string} story_name - a name to identify the story
-     * @param {string} story_id - a unique identifier for the story
+     * Creates a new StoryGraph i.e. engine with an empty root node. 
+     * All StoryGraphs must always have at least one PageNode.
+     * @param {string} story_name - a name to identify the engine
+     * @param {string} story_id - a unique identifier for the engine
      */
     newStory(story_name, story_id) {
         if (!(story_name in Object.keys(this.openStories))) {
@@ -600,6 +601,12 @@ class Editor {
         return;
     }
     
+    /**
+     * Helper function in duplicateFromPage. Creates the Object to construct a new StoryGraph from the indicated page.
+     * @param {*} page_data 
+     * @param {*} root_id 
+     * @returns 
+     */
     storyDataFromPages(page_data, root_id) {
         let data = {
             "story_id": null,

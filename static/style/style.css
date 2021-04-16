@@ -118,7 +118,7 @@ header{
 }
 button, input[type="submit"] {
   min-width: 140px;
-  margin: 20px 10px;
+  margin: 10px 0px 10px 10px;
   color: var(--darkgray);
   font-family: Muli;
   font-size: 18px;
@@ -250,8 +250,10 @@ input[type=submit]:hover, input[type=button]:hover {
 
 .open_or_new button {
 	width: 300px;
-	margin-bottom: 30px;
-	font-size: 50px;
+	/* margin-bottom: 30px; */
+	font-size: 30px;
+  position: relative;
+  top: 200px
 }
 
 .saved_engines button {
@@ -509,10 +511,11 @@ input[type="submit"].popout {
   border: 1px solid var(--palegreen);
 }
 
-#save_story {
+button.save_export {
   background: #838DD8; 
   border-color: #838DD8;
 }
+
 
 #discard_story {
   background: #D88D83; 
@@ -651,8 +654,7 @@ button.page_op {
 button.engine_op {
   background: var(--paleorange);
   border: solid 1px var(--paleorange);
-  margin: 0px;
-  margin-left: 4px;
+  margin: 10px 0px 10px 10px;
 }
 
 .div7 button {
