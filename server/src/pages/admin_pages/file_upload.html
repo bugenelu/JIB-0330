@@ -9,25 +9,26 @@
 
 	<header>
 		{% include 'templates/navbar_admin.html' %}
-		<section class="header-content">
-		    <h1>File Upload</h1>
-		    <p> Upload files here </p>
-		    <button onclick="window.location.href='/media';">Return to Media Manager</button>
-		</section>
 	</header>
-
+	
+	<section class="header-content">
+		<h1>File Upload</h1>
+		<p> Upload files here </p>
+		<div class="centerbox">
+			<form enctype="multipart/form-data" method="POST">
+				<label for="selectfile">Select File:</label>
+				<br>
+				<input type="file" id ="selectfile" name="file" value="Select File" multiple>
+				<br>
+				<input type="submit" id="submitfile" value="Upload File">
+			</form>
+		</div>
+		<br>
+		<button onclick="window.location.href='/media';">Return to Media Manager</button>
+	</section>
 	<!-- This is the file upload page. -->
 
 	<!-- The "file upload" button and corresponding functionality -->
-	<div class="centerbox">
-	<form enctype="multipart/form-data" method="POST">
-		<label for="selectfile">Select File:</label>
-		<br>
-		<input type="file" id ="selectfile" name="file" value="Select File" multiple>
-		<br>
-		<input type="submit" id="submitfile" value="Upload File">
-	</form>
-	</div>
 
 	{% with messages = get_flashed_messages() %}
 	  {% if messages %}

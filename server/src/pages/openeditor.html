@@ -14,10 +14,10 @@
 </head>
 
 <body>
-	<header style="padding-bottom-bottom: 100px;">
+	<header >
 		{% include 'templates/navbar_admin.html' %}
 	</header>
-	<div class="spacer"> </div> 
+	<div class="spacer"></div>
 	<div id="map_frame">
 		<div id="map_canvas">
 			<h1> Story Map </h1>
@@ -28,9 +28,10 @@
 		<div class="div5" id="storage">
 			<button id="+" class="add_storybox">+</button>
 		</div>
-		<div class="div6" id="other-storage"> 
-			<div id="metadata">Engine Details: </div>
-			<button id="save_story" style="background: #838DD8; border-color: #838DD8;">save</button>
+		<div class="div6" id="other-storage">
+			<div id="metadata">Engine Details:</div>
+			<button id="save_story" class="save_export">Save</button>
+			<button id="export_data" class="save_export">Export</button>
 		</div>
 
 		<div id="page-list-parent">
@@ -38,7 +39,7 @@
 				<h1>Page List</h1>
 				<button id='view_storymap'>View Story Map</button>
 			</div>
-			
+
 
 			<div id="page-pane">
 				<h4 style="color: white"> Parent Pages </h4>
@@ -51,10 +52,10 @@
 				</div>
 				<h4 style="color: white"> Child Pages </h4>
 				<div id="child-nodes">
-					
+
 				</div>
 			</div>
-			
+
 			<div class="div8">
 			</div>
 		</div>
@@ -63,7 +64,7 @@
 
 	<div class="popup" id="popup-box">
 		<span class="close">&times;</span>
-		<h1> Select an Engine to Open</h1> 
+		<h1> Select an Engine to Open</h1>
 	</div>
 
 	<div class="popup" id="editor_wizard" style='display: none'>
@@ -82,11 +83,11 @@
 		<button class="submit_wizard"> Confirm </button>
 	</div>
 
-	
+
 	<!-- <div id="map_frame" style='display:none'>
 		<div id="map_canvas"></div>
 	</div> -->
-<!-- 
+<!--
 	<iframe src="{{url_for('static', filename='scripts/EngineMap.html')}}" title="Engine Map" id="map_iframe">
 
 	</iframe> -->

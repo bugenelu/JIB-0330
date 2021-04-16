@@ -205,9 +205,14 @@ function refreshStoryPopup() {
     create_btn.setAttribute('id', 'create_story');
     create_btn.innerHTML = 'New Engine';
     create_btn.setAttribute('index', '2');          // This value is HARDCODED, sue me
+    import_btn = document.createElement('button');
+    import_btn.setAttribute('id', 'import_story');
+    import_btn.innerHTML = 'Import Engine';
+    import_btn.setAttribute('index', '3');          // This value is HARDCODED, sue me
     $('#popup-box')[0].appendChild(close_btn);
     $('#popup-box')[0].appendChild(header);
     $('#popup-box')[0].appendChild(create_btn);
+    $('#popup-box')[0].appendChild(import_btn);
     open_stories = Object.keys(editor.openStories);
 
     btn_names = []
@@ -569,7 +574,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
 */
 $('#save_story').click(function(e) {
     if (current_story == null) {
-        alert('No story selected to be saved');
+        alert('No story selected to be saved.');
         return;
     }
 
@@ -626,6 +631,29 @@ $('#save_story').click(function(e) {
             alert('Failed to properly contact server for save');
         }
     });
+});
+
+/**
+ * Event listener for downloading data
+ */
+$('#export_data').click(function(e) {
+    if (current_story == null) {
+        alert('No story selected to be exported.');
+        return;
+    }
+
+    // current_story_id = editor.getStoryState(current_story)['story_id'];
+    data = editor.getStoryState(current_story);
+
+    function download(content, fileName, contentType) {
+        var a = document.createElement("a");
+        var file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
+
+    download(JSON.stringify(data, null, 4), current_story + '.json' , 'text/plain');
 });
 
 /*
