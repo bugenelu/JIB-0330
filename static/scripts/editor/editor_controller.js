@@ -557,7 +557,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
     fake_btn = document.createElement('button');
     handlerFunction = 'editor.' + editor_function['function'].split('(')[0] + '(';
     for (let i = 0; i < params.length; i++) {
-        handlerFunction += '"' + params[i] + '"';
+        handlerFunction += '"' + params[i].replaceAll('"', '\\"') + '"';
         if (i != params.length - 1) {
             handlerFunction += ', ';
         }
