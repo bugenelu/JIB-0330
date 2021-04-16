@@ -302,7 +302,7 @@ function refreshMetaData() {
         return;
     }
 
-    meta = 'Metadata: ';
+    meta = 'Engine Details: ';
     num_pages = Object.keys(editor.getStoryPageList(current_story)).length;
     story_id = editor.openStories[current_story].getCurrent().story_id;
     meta += 'id=' + story_id + ', name=' + current_story + ', root=' + 
