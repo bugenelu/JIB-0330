@@ -501,11 +501,15 @@ $('.popup').on('click', '.close', function(e) {
 * Event listener for opening a wizard for editing
 */
 $('.div8').on('click', '.page_op', function(e) {
+    if (current_story == null)
+        return;
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
 
 $('.div6').on('click', '.engine_op', function(e) {
+    if (current_story == null && e.target.innerHTML != 'New Engine') 
+        return
     generateWizard(e);
     $('#editor_wizard')[0].style.display = 'block';
 });
@@ -546,7 +550,6 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
         }
     }
     handlerFunction += ')';
-    console.log(handlerFunction);
     fake_btn.setAttribute('onclick', handlerFunction);
     fake_btn.click();
 
