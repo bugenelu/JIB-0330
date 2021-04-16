@@ -528,7 +528,7 @@ input[type="submit"].popout {
 }
 
 .story-nav {
-  position: fixed;
+  position: absolute;
   left: 90px;
   top: 38px;
   height: 50px;
@@ -557,6 +557,10 @@ input[type="submit"].storylink {
   width: 100%;
   text-decoration: underline;
   font-size: 32px;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
   padding:0;
   cursor: pointer;
 }
@@ -566,6 +570,10 @@ input[type="submit"].storylink {
   color: white;
   text-decoration: underline;
   text-align: left;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
 }
 
 #parent-nodes, #child-nodes {
@@ -575,6 +583,8 @@ input[type="submit"].storylink {
   /* overflow: auto;
   text-align: center;
   justify-content: center; */
+  justify-content: center;
+  text-align: center;
 }
 
 #editor_wizard > input, #editor_wizard > label {

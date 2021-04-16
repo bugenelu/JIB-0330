@@ -300,13 +300,16 @@ def story_page(story, page_id):
 
                 # Sets the back page to the previous page in the history
                 back = None
+                back_name = None
                 for p in current_user.history[history_id]['pages']:
                     if p == page_id:
                         break
                     back = p
+                    back_page = story_doc.get('page_nodes.`' + back + '`')
+                    back_name = back_page['page_name']
 
         # Returns the story_page.html template with the specified page
-        return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview, back=back, history=history_id))
+        return render_response(render_template("story_page.html", guest=guest, favorited=favorited, story=story, page=page, preview=preview, back=back, back_name=back_name, history=history_id))
 
     # Checks that the user is logged in and not previewing the page
     # Adds a new history in case the user gets to this page from an external link that wouldn't include the information to append the page to a history
