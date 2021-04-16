@@ -94,7 +94,6 @@ function generateWizard(e) {
     $('#wizard_form').empty();
 
     for (let i = 0; i < operations[index]['params'].length; i++) {
-        console.log("Running");
         let element_label = document.createElement('label');
         element_label.innerHTML = operations[index]['params'][i]['param_label'];
         form.appendChild(element_label);
@@ -530,9 +529,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
             params.push(tinymce.activeEditor.getContent().replaceAll('\n', ''));
         } else if (param_type == 'dropdown') {
             field = "[param_name=" + '"' + param_name + '"]';
-            console.log(field);
             selected = document.querySelectorAll(field)[0];
-            console.log("complete");
             params.push(selected.options[selected.selectedIndex].getAttribute('name'));
         } else {
             field = "[param_name=" + '"' + param_name + '"]';
@@ -549,6 +546,7 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
         }
     }
     handlerFunction += ')';
+    console.log(handlerFunction);
     fake_btn.setAttribute('onclick', handlerFunction);
     fake_btn.click();
 
@@ -581,7 +579,6 @@ $('#save_story').click(function(e) {
         'confirm_save': false
     },
     function(data, status, response) {
-        console.log(response);
         if (status == "success") {
             if (response['responseJSON']['success']) {
                 alert(response['responseJSON']['msg']);
@@ -694,22 +691,24 @@ function populateOptions(parent_select, param_name) {
     all_nodes = editor.getStoryState(current_story)['page_nodes']
 
     if (param_name == 'substory_name') {
-        // Get All the different stories
-        for (let i = 0; i < story_data['story_id'].length; i++) {
+        // Get All the different stories opened
+        open_story_data = editor.getOpenStoryData();
+        for (let i = 0; i < open_story_data['story_id'].length; i++) {
             let option = document.createElement('option');
-            option.innerHTML = story_data['story_id'][i];
-            option.setAttribute('name', story_data['story_id'][i]);
+            option.innerHTML = open_story_data['story_name'][i];
+            option.setAttribute('name', open_story_data['story_name'][i]);
+            option.setAttribute('story_id', open_story_data['story_id'][i]);
 
             parent_select.appendChild(option);
         }
 
-        for (let i = 0; i < Object.keys(editor.openStories).length; i++) {
-            let option = document.createElement('option');
-            option.innerHTML = Object.keys(editor.openStories)[i];
-            option.setAttribute('name', Object.keys(editor.openStories)[i]);
+        // for (let i = 0; i < Object.keys(editor.openStories).length; i++) {
+        //     let option = document.createElement('option');
+        //     option.innerHTML = Object.keys(editor.openStories)[i];
+        //     option.setAttribute('name', Object.keys(editor.openStories)[i]);
             
-            parent_select.appendChild(option);
-        }
+        //     parent_select.appendChild(option);
+        // }
 
     } else {
         if (param_name == 'child_id') {
