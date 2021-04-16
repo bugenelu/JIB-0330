@@ -612,6 +612,29 @@ $('#save_story').click(function(e) {
     });
 });
 
+/**
+ * Event listener for downloading data
+ */
+$('#export_data').click(function(e) {
+    if (current_story == null) {
+        alert('No story selected to be saved');
+        return;
+    }
+
+    // current_story_id = editor.getStoryState(current_story)['story_id'];
+    data = editor.getStoryState(current_story);
+
+    function download(content, fileName, contentType) {
+        var a = document.createElement("a");
+        var file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
+
+    download(JSON.stringify(data, null, 4), current_story + '.json' , 'text/plain');
+});
+
 /*
 * Event handler for opening the storymap view
 */
