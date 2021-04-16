@@ -130,7 +130,7 @@ $('.saved_engines').on('click', '#delete_engine_btn', function(e) {
     delete_story = e.target.getAttribute('engine_id');
     delete_name = e.target.getAttribute('engine_name');
     
-    delete_confirm = prompt('Enter Engine Name to Delete: ' + delete_name);
+    delete_confirm = prompt('WARNING: You are about to delete an engine from the database.\nTHIS CANNOT BE UNDONE!\nEnter Engine Name to Confirm Delete: ' + delete_name);
     if (delete_confirm == delete_name) {
         $.post("/editor/delete_engine", 
         {

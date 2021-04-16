@@ -248,6 +248,14 @@ input[type=submit]:hover, input[type=button]:hover {
   margin: 5px;
 }
 
+#set_engine_button {
+  margin-bottom: 50px
+}
+
+#delete_engine_btn {
+  margin-top: 50px;
+}
+
 .open_or_new button {
 	width: 300px;
 	/* margin-bottom: 30px; */
