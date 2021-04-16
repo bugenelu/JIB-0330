@@ -29,7 +29,7 @@ $.get('/editor/get_all_stories', function(event, status) {
         }
 
         delete_btn = document.createElement('button');
-        delete_btn.innerHTML = 'Select An Engine to Delete'
+        delete_btn.innerHTML = 'Select An Engine To Delete'
         delete_btn.classList.add('unclickable')
         delete_btn.classList.add('disarmed')
         delete_btn.id = 'delete_engine_btn';
@@ -93,7 +93,7 @@ $(".saved_engines").on("click", "#set_engine_button", function(e) {
         } else {
             console.log("Update not successful");
         }
-    })
+    });
 
     e.target.innerHTML = "Select An Engine To Change Live Engine";
     e.target.classList.remove('armed');
@@ -101,22 +101,13 @@ $(".saved_engines").on("click", "#set_engine_button", function(e) {
     e.target.classList.add('disarmed');
 
     delete_engine = document.getElementById('delete_engine_btn');
+    delete_engine.innerHTML = "Select An Engine To Delete";
     delete_engine.classList.remove('armed');
     delete_engine.classList.add('unclickable');
     delete_engine.classList.add('disarmed');
 });
 
 $('.saved_engines').on('click', '#delete_engine_btn', function(e) {
-    e.target.innerHTML = "Select An Engine To Change Live Engine";
-    e.target.classList.remove('armed');
-    e.target.classList.add('unclickable');
-    e.target.classList.add('disarmed');
-
-    e.target.innerHTML = "Select An Engine To Change Live Engine";
-    e.target.classList.remove('armed');
-    e.target.classList.add('unclickable');
-    e.target.classList.add('disarmed');
-
     update_live = document.getElementById('set_engine_button');
     update_live.classList.remove('armed');
     update_live.classList.add('unclickable');
@@ -126,6 +117,16 @@ $('.saved_engines').on('click', '#delete_engine_btn', function(e) {
     delete_engine.classList.remove('armed');
     delete_engine.classList.add('unclickable');
     delete_engine.classList.add('disarmed');
+
+    delete_engine.innerHTML = "Select An Engine To Delete";
+    delete_engine.classList.remove('armed');
+    delete_engine.classList.add('unclickable');
+    delete_engine.classList.add('disarmed');
+
+    update_live.innerHTML = "Select An Engine To Change Live Engine";
+    update_live.classList.remove('armed');
+    update_live.classList.add('unclickable');
+    update_live.classList.add('disarmed');
 
     delete_story = e.target.getAttribute('engine_id');
     delete_name = e.target.getAttribute('engine_name');
