@@ -68,9 +68,10 @@ def view_live_story():
         live_story = 'NONE'
         try:
             live_story = app_state.get().get('active_story_id')
+            story_name = db.collection('stories').document(live_story).get().get('story_name')
         except KeyError:
             print('No Live Story Field')
-        return {'list': live_story}, 200
+        return {'story_id': live_story, 'story_name': story_name}, 200
     return None, 200
 
 @editor_blueprint.route('/editor/update_live_story', methods=['POST'])
@@ -130,3 +131,18 @@ def save_story():
             stories.document(story_id).set(story_data)
 
     return {'success': True, 'retry': False, 'msg': 'Story successfully saved'}, 200, {'ContentType': 'application/json'}
+
+
+@editor_blueprint.route('/editor/delete_engine', methods=['POST'])
+def delete_engine():
+    if current_user is not None and current_user.admin == True:
+        live_story = db.collection('application_states').document('application_state').get().get('active_story_id')
+        engine_id = request.form['engine_id']
+        if engine_id == live_story:
+            return {'success': False}, 200
+        
+        print(engine_id)
+        print(db.collection('stories').document(engine_id).get().get('story_name'))
+        db.collection('stories').document(engine_id).delete()
+
+        return {'success': True}, 200
