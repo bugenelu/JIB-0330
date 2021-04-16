@@ -582,6 +582,10 @@ $('#save_story').click(function(e) {
         if (status == "success") {
             if (response['responseJSON']['success']) {
                 alert(response['responseJSON']['msg']);
+                old_id = editor.getStoryState(current_story)['story_id'];
+                document.getElementById(old_id).id = current_story_id;
+                editor.editStoryID(current_story, current_story_id);
+
             } else {
                 if (response['responseJSON']['retry']) {
                     if (confirm(response['responseJSON']['msg'])) {
