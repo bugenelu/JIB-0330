@@ -131,13 +131,14 @@ function generateWizard(e) {
                 menu: {
   					edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
   					format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats fontformats fontsizes align lineheight | removeformat' },
-  					tools: { title: 'Tools', items: 'wordcount' },
-    				HTML: { title: 'HTML', items: 'code' }
+  					tools: { title: 'Tools', items: 'wordcount | code' },
+    				// HTML: { title: 'HTML', items: 'code' }
   				},
                 plugins: [
                     ' advlist anchor autolink codesample fullscreen help image imagetools',
                     ' lists link media noneditable preview',
-                    ' searchreplace table visualblocks wordcount'
+                    ' searchreplace table visualblocks wordcount',
+                    ' code'
                 ],
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image tinydrive',
                 spellchecker_dialog: true,
@@ -319,9 +320,15 @@ function refreshOpenPage() {
     if (!(Object.keys(editor.openStories).includes(current_story))) {
         current_page = null;
         $('#page-body').empty();
+        page_pane_child = document.createElement('p');
+        page_pane_child.setAttribute('id', 'page-pane-child')
+        $('#page-body')[0].appendChild(page_pane_child);
         return;
     } else if (!(Object.keys(editor.getStoryState(current_story)['page_nodes']).includes(current_page))) {
         $('#page-body').empty();
+        page_pane_child = document.createElement('p');
+        page_pane_child.setAttribute('id', 'page-pane-child')
+        $('#page-body')[0].appendChild(page_pane_child);
         return;
     }
 
