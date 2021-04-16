@@ -261,7 +261,8 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 .parent2 {
-	height: 100%;
+	height: 92%;
+  margin: 0px 5px 5px 5px;
 }
 
 #storage {
@@ -287,7 +288,7 @@ input[type=submit]:hover, input[type=button]:hover {
   overflow-x: hidden;
   width: 19%;
   min-width: 15%;
-  height: inherit;
+  height: 100%;
 }
 
 .div7 h1 {
@@ -302,6 +303,7 @@ input[type=submit]:hover, input[type=button]:hover {
   flex-direction: column;
   margin-left: auto;
   margin-right: 3px;
+  height: 100%;
 }
 
 .collapsible {
@@ -493,6 +495,7 @@ input[type="submit"].popout {
   padding-right: 15px;
   width: inherit;
   max-width: 65%;
+  height: 100%;
 }
 
 #story-name {
@@ -500,11 +503,9 @@ input[type="submit"].popout {
 }
 
 #page-list-parent {
-  /* max-height: 100%; */
-  height: inherit;
-  max-height: 82%;
+  max-height: 85%;
+  height: 84%;
   overflow: hidden;
-  /* max-height: 850px; */
   display: flex;
   flex-direction: row; 
   width: 100%;
@@ -767,5 +768,5 @@ label.error {
 }
 
 .spacer {
-  height: 80px;
+  height: 8%;
 }
