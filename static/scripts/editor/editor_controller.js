@@ -411,9 +411,8 @@ function updatePageParentNodes(page_id) {
 * Event listener for when a story is to be loaded onto the UI
 */
 $('.div5').on('click', '.storybox', function(e) {
-    get_story_data(e);
-    // refreshPageList();
-    // refreshMetaData();
+    current_story = e.target.innerHTML;
+    current_page = null;
     refreshAllPage();
 });
 
@@ -421,6 +420,7 @@ $('.div5').on('click', '.storybox', function(e) {
 * Event listener for when a story is selected to be opened from database
 */
 $('.popup').on('click', '.open_story', function(e) {
+    get_story_data(e);
     new_btn = document.createElement('button');
     new_btn.innerHTML = e.target.innerHTML;
     new_btn.setAttribute('class', 'storybox');
@@ -549,7 +549,6 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
         }
     }
     handlerFunction += ')';
-    console.log(handlerFunction);
     fake_btn.setAttribute('onclick', handlerFunction);
     fake_btn.click();
 
@@ -561,44 +560,55 @@ $('#editor_wizard').on('click', '.submit_wizard', function(e) {
 * Event listener for saving changes to the databasea
 */
 $('#save_story').click(function(e) {
-    if (!confirm('Confirm Save?')) {
-        return;
-    }
     if (current_story == null) {
         alert('No story selected to be saved');
         return;
     }
 
-    current_story_id = editor.getStoryState(current_story)['story_id'];
+    current_story_id = prompt('Engine ID to Save As', editor.getStoryState(current_story)['story_id']);
+    editor.getStoryState(current_story)['story_id'] = current_story_id;
+    if (!confirm('Confirm Save?')) {
+        return;
+    }
+
+    data = editor.getStoryState(current_story);
+    data['story_id'] = current_story_id;
 
     $.post("/editor/save_story", 
     {
         'story_id': current_story_id,
-        'story_data': JSON.stringify(editor.getStoryState(current_story)),
+        'story_data': JSON.stringify(data),
         'confirm_save': false
     },
     function(data, status, response) {
         console.log(response);
         if (status == "success") {
-
             if (response['responseJSON']['success']) {
-                alert('Story saved successfully');
+                alert(response['responseJSON']['msg']);
             } else {
-                if (response['responseJSON']['rename']) {
-                    alert('Attempting to override existing story');
-
-                    new_story_id = current_story_id;
-                    $.post("/editor/save_story", 
-                    {
-                        'story_id': new_story_id,
-                        'story_data': JSON.stringify(editor.getStoryState(current_story)),
-                        'confirm_save': true
-                    },
-                    function(data, status, response) {
-
-                    });
+                if (response['responseJSON']['retry']) {
+                    if (confirm(response['responseJSON']['msg'])) {
+                        new_story_id = current_story_id;
+                        $.post("/editor/save_story", 
+                        {
+                            'story_id': new_story_id,
+                            'story_data': JSON.stringify(editor.getStoryState(current_story)),
+                            'confirm_save': true
+                        },
+                        function(data, status, response) {
+                            if (status == 'success') {
+                                if (response['responseJSON']['success']) {
+                                    alert(response['responseJSON']['msg']);
+                                } else {
+                                    alert(response['responseJSON']['msg']);
+                                }
+                            } else {
+                                alert('Failed to properly contact server for save');
+                            }
+                        });
+                    }
                 } else {
-                    alert('Cannot save over live story, duplicate engine and try saving again');
+                    alert(response['responseJSON']['msg']);
                 }
             }
         } else {
