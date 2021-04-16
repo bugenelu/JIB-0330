@@ -205,9 +205,14 @@ function refreshStoryPopup() {
     create_btn.setAttribute('id', 'create_story');
     create_btn.innerHTML = 'New Engine';
     create_btn.setAttribute('index', '2');          // This value is HARDCODED, sue me
+    import_btn = document.createElement('button');
+    import_btn.setAttribute('id', 'import_story');
+    import_btn.innerHTML = 'Import Engine';
+    import_btn.setAttribute('index', '3');          // This value is HARDCODED, sue me
     $('#popup-box')[0].appendChild(close_btn);
     $('#popup-box')[0].appendChild(header);
     $('#popup-box')[0].appendChild(create_btn);
+    $('#popup-box')[0].appendChild(import_btn);
     open_stories = Object.keys(editor.openStories);
 
     btn_names = []

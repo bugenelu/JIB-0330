@@ -118,7 +118,7 @@ header{
 }
 button, input[type="submit"] {
   min-width: 140px;
-  margin: 20px 10px;
+  margin: 10px 0px 10px 10px;
   color: var(--darkgray);
   font-family: Muli;
   font-size: 18px;
@@ -521,10 +521,11 @@ input[type="submit"].popout {
   width: 100%;
 }
 
-#save_story {
+button.save_export {
   background: #838DD8; 
   border-color: #838DD8;
 }
+
 
 #discard_story {
   background: #D88D83; 
@@ -653,8 +654,7 @@ button.page_op {
 button.engine_op {
   background: var(--paleorange);
   border: solid 1px var(--paleorange);
-  margin: 0px;
-  margin-left: 4px;
+  margin: 10px 0px 10px 10px;
 }
 
 .div7 button {
