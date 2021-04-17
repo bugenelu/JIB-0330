@@ -17,13 +17,9 @@
 	<div>
 		{% for file in files %}
 			<div class="content" id="{{ file[0] }}">
-				<form method="POST" class="hidden-form" action="/file/{{ file[0] }}" target="_blank">
-					<input style="display: none" name="file" type="text" value="{{ file[0] }}">
-					<input type="submit" value="{{ file[0] }}">
-					<!-- <i class="fas fa-edit rename_file"></i> -->
-					<i class="fas fa-file-download download_file"></i>
-					<i class="fas fa-trash-alt delete_file"></i>
-				</form>
+				<a href="/file/{{ file[0] }}" target="_blank" class="file-link">{{ file[0] }}</a>
+				<i class="fas fa-file-download download_file"></i>
+				<i class="fas fa-trash-alt delete_file"></i>
 				<p> Timestamp: {{ file[1] }} </p>
 				<p> Size: {{ file[2] }} {{ file[3] }} </p>
 				<p> URL: {{ url_root }}file/{{ file[0] }} </p>

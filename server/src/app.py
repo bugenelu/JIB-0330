@@ -400,14 +400,11 @@ def upload():
 
 
 # Serves the page of an open file
-@app.route('/file/<file>', methods=['POST'])
+@app.route('/file/<file>')
 @admin_login_required
 def open_file(file):
-    if request.method == 'POST':
-        fileName = request.form['file']
-        filePath = app.config['UPLOAD_FOLDER'] + '/'
-        return send_from_directory(filePath, fileName)
-    return render_response(render_template('admin_pages/media_manager.html'))
+    filePath = app.config['UPLOAD_FOLDER'] + '/'
+    return send_from_directory(filePath, file)
 
 
 # @app.route('/rename_file', methods=['POST'])
