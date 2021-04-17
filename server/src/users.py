@@ -6,7 +6,7 @@ from werkzeug.local import LocalProxy
 from functools import wraps
 
 # Built-in modules imports
-import os, json, sys, requests, uuid, hashlib, string, random
+import os, json, sys, requests, uuid, hashlib, string, random, time
 from datetime import datetime, timedelta
 
 # Local imports
@@ -943,26 +943,23 @@ def media():
     Requires that the user is logged in as an admin
     """
 
-    # Returns the media manager page
-    return render_response(render_template('admin_pages/media_manager.html'))
-
-
-# Serves the file explorer page
-@user_blueprint.route('/files')
-@admin_login_required
-def files():
-    """profile()
-    Serves the files page
-    Accessed at '/files' via a GET request
-    Requires that the user is logged in as an admin
-    """
-
     # The file names
     files = []
 
     # Gets the names of all files in the file_uploads folder
     for file in os.listdir('file_uploads'):
-        files.append(file)
+        seconds = os.path.getmtime('file_uploads/' + file)
+        timestamp = time.ctime(seconds)
+        sizeb = os.stat('file_uploads/' + file).st_size
+        sizek = sizeb/1024
+        sizeg = round(sizek/1024, 2)
+        sizek = round(sizek, 2)
+        size = sizek
+        sizetype = 'KB'
+        if sizeg > 2:
+            size = sizeg
+            sizetype = 'GB'
+        files.append([file, timestamp, size, sizetype])
 
     # Returns the files page with the files
-    return render_response(render_template('admin_pages/files.html', files=files, url_root=request.url_root))
+    return render_response(render_template('admin_pages/media_manager.html', files=files, url_root=request.url_root))

@@ -10,7 +10,7 @@ app.register_blueprint(example_blueprint)
 """
 
 # Flask imports
-from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response, abort, send_from_directory
+from flask import Flask, flash, get_flashed_messages, render_template, request, redirect, url_for, session, make_response, abort, send_from_directory, send_file
 
 # Firebase imports
 import firebase_admin
@@ -396,18 +396,52 @@ def upload():
             #flash('Files uploaded successfully')
             return render_response(redirect(request.url))
     # Returns the file_upload.html template with the given values
-    return render_response(render_template('admin_pages/file_upload.html'))
+    return render_template('admin_pages/file_upload.html')
 
 
 # Serves the page of an open file
-@app.route('/file/<file>', methods=['GET', 'POST'])
+@app.route('/file/<file>', methods=['POST'])
 @admin_login_required
 def open_file(file):
     if request.method == 'POST':
         fileName = request.form['file']
         filePath = app.config['UPLOAD_FOLDER'] + '/'
         return send_from_directory(filePath, fileName)
-    return render_response(render_template('admin_pages/files.html'))
+    return render_response(render_template('admin_pages/media_manager.html'))
+
+
+# @app.route('/rename_file', methods=['POST'])
+# @admin_login_required
+# def rename_file():
+#     file = request.form['file']
+#     fileRename = request.form['rename']
+#     fileType = file.rsplit('.', 1)[1].lower()
+#     fileRename = fileRename + '.' + fileType
+#     src = os.path.join(app.config['UPLOAD_FOLDER'], file)
+#     dst = os.path.join(app.config['UPLOAD_FOLDER'], fileRename)
+#     os.rename(src, dst)
+#     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@app.route('/download_file', methods=['POST'])
+@admin_login_required
+def download_file():
+    file = request.form['file']
+    directory = os.getcwd()
+    path = os.path.join(directory, app.config['UPLOAD_FOLDER'])
+    path = os.path.join(path, file)
+    return send_file(path, as_attachment=True, attachment_filename=file)
+
+
+@app.route('/delete_file', methods=['POST'])
+@admin_login_required
+def delete_file():
+    file = request.form['file']
+    directory = os.getcwd()
+    path = os.path.join(directory, app.config['UPLOAD_FOLDER'])
+    path = os.path.join(path, file)
+    os.remove(path)
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/admin/editor')

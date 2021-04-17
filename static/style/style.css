@@ -353,6 +353,11 @@ input[type=submit]:hover, input[type=button]:hover {
   text-decoration: none;
 }
 
+.content p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .popup {
   z-index: 2;
   display: block;
@@ -537,6 +542,24 @@ button.save_export {
   cursor: pointer;
   vertical-align: top;
   margin-top: 10px;
+}
+
+.fa-edit {
+  color: var(--darkgray);
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.fa-file-download {
+  color: var(--darkgray);
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.fa-trash-alt {
+  color: var(--darkgray);
+  font-size: 30px;
+  cursor: pointer;
 }
 
 .story-nav {
