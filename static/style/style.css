@@ -104,6 +104,7 @@ header{
   margin-top: 15%;
   text-align: center;
   color: var(--offwhite);
+  margin-bottom: 25px;
 }
 .header-content h1{
   color: var(--palegreen);

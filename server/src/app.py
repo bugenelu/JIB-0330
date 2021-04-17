@@ -378,12 +378,10 @@ def upload():
     if request.method == 'POST':
         # Checks to make sure a file was uploaded
         if 'file' not in request.files:
-            #flash('No file part')
             return render_response(redirect(request.url))
         file = request.files['file']
         # Checks to make sure the file has an actual name and not just empty
         if file.filename == '':
-            #flash('No selected file')
             return render_response(redirect(request.url))
         # Checks to make sure the file extension/type is allowed
         if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']:
@@ -391,10 +389,7 @@ def upload():
             filename = secure_filename(file.filename)
             # Saves the file in the specified upload folder
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            #flash('File uploaded successfully')
-        else:
-            #flash('Files uploaded successfully')
-            return render_response(redirect(request.url))
+        return render_response(redirect(url + url_for('media')))
     # Returns the file_upload.html template with the given values
     return render_template('admin_pages/file_upload.html')
 
