@@ -552,13 +552,13 @@ button.save_export {
 
 .fa-file-download {
   color: var(--darkgray);
-  font-size: 30px;
+  font-size: 25px;
   cursor: pointer;
 }
 
 .fa-trash-alt {
   color: var(--darkgray);
-  font-size: 30px;
+  font-size: 25px;
   cursor: pointer;
 }
 
@@ -815,4 +815,13 @@ a.file-link {
 
 a.file-link:hover {
   color: var(--offwhite);
+}
+
+.file-container {
+  margin-bottom: 25px;
+  padding: 10px 15px;
+}
+
+p.file-detail {
+  margin: 0px;
 }

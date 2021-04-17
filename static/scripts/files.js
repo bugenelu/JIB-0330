@@ -1,37 +1,7 @@
 $(function() {
-    // $(".rename_file").on('click', function() {
-    //     domain = window.location.protocol + "//" + window.location.hostname + (window.location.port == "" ? "" : ":") + window.location.port
-    //     $.ajax({
-    //         url: domain + "/rename_file",
-    //         type: "POST",
-    //         data: $("form").serialize(),
-    //         success: function() {
-    //             $(this).parent().hide()
-    //         }
-    //     })
-    // })
-
-    // $(".download_file").on('click', function() {
-    //     $("")
-    // 	domain = window.location.protocol + "//" + window.location.hostname + (window.location.port == "" ? "" : ":") + window.location.port
-    //     $.ajax({
-    //         url: domain + "/download_file",
-    //         type: "POST",
-    //         data: $("form").serialize(),
-    //         success: function() {
-    //         }
-    //     })
-    // })
-
-	// $(".delete_file").on('click', function() {
-	// 	domain = window.location.protocol + "//" + window.location.hostname + (window.location.port == "" ? "" : ":") + window.location.port
- //        $.ajax({
- //            url: domain + "/delete_file",
- //            type: "POST",
- //            data: $("form").serialize(),
- //            success: function() {
- //                $(this).parent().hide()
- //            }
- //        })
-	// })
-})
+	$(".delete-file-button").click(function() {
+		if (confirm("Are you sure you want to delete " + $(this).attr("value") + "?")) {
+			window.location.href = $(this).attr("target");
+		}
+	});
+});

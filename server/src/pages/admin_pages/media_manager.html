@@ -16,13 +16,13 @@
 	</section>
 	<div>
 		{% for file in files %}
-			<div class="content" id="{{ file[0] }}">
+			<div class="content file-container" id="{{ file[0] }}">
 				<a href="/file/{{ file[0] }}" target="_blank" class="file-link">{{ file[0] }}</a>
-				<a href="/download_file/{{ file[0] }}" target="_blank"><i class="fas fa-file-download download_file"></i></a>
-				<a href="/delete_file/{{ file[0] }}"><i class="fas fa-trash-alt delete_file"></i></a>
-				<p> Timestamp: {{ file[1] }} </p>
-				<p> Size: {{ file[2] }} {{ file[3] }} </p>
-				<p> URL: {{ url_root }}file/{{ file[0] }} </p>
+				<a href="/download_file/{{ file[0] }}" target="_blank"><i class="fas fa-file-download download-file file-button"></i></a>
+				<span class="delete-file-button" target="/delete_file/{{ file[0] }}" value="{{ file[0] }}"><i class="fas fa-trash-alt delete-file file-button"></i></span>
+				<p class="file-detail"> Timestamp: {{ file[1] }} </p>
+				<p class="file-detail"> Size: {{ file[2] }} {{ file[3] }} </p>
+				<p class="file-detail"> URL: {{ url_root }}file/{{ file[0] }} </p>
 			</div>
 		{% endfor %}
 	</div>
