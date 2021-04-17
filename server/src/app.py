@@ -428,7 +428,6 @@ def media():
 
 # Serves the page of an open file
 @app.route('/file/<file>')
-@admin_login_required
 def open_file(file):
     filePath = app.config['UPLOAD_FOLDER'] + '/'
     return send_from_directory(filePath, file)
