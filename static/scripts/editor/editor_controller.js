@@ -7,6 +7,7 @@ story_data = {'story_id': [], 'story_name': []};
 
 refreshStoryPopup();
 initializeWizard();
+window.onbeforeunload = function() {return true;}
 
 /**
  * Gets a dictionay containing the list of Page IDs and Page Names
@@ -596,7 +597,7 @@ $('#save_story').click(function(e) {
     }
 
     current_story_id = prompt('Engine ID to Save As', editor.getStoryState(current_story)['story_id']);
-    editor.getStoryState(current_story)['story_id'] = current_story_id;
+    // editor.getStoryState(current_story)['story_id'] = current_story_id;
     if (!confirm('Confirm Save?')) {
         return;
     }

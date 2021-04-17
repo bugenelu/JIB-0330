@@ -116,17 +116,17 @@ def save_story():
             loop_id = stories.document(doc).get().get('story_id')
             if loop_name == story_data['story_name'] and loop_id != story_id:
                 # Attempting to save something with a duplicate name
-                msg = 'Attempted to save engine with name already used by engine with ID ' + loop_id + '. To save, change current story name or override existing engine with ID'
+                msg = 'Attempted to save engine with name already used by engine with ID ' + loop_id + '. To save, change current story name or overwrite existing engine with ID'
                 return {'success': False, 'retry': False, 'msg': msg}, 200, {'ContentType': 'application/json'}
 
         if not confirm_save:
             if story_id == live_story_id:
                 return {'success': False, 'retry': False, 
-                    'msg': 'Attempted to override live enine. Duplicate engine and try saving again.'}, 200, {'ContentType': 'application/json'}
+                    'msg': 'Attempted to overwrite live enine. Duplicate engine and try saving again.'}, 200, {'ContentType': 'application/json'}
                 # return {'success': False, 'rename': False}, 200, {'ContentType': 'application/json'}
             elif stories.document(story_id).get().exists:
                 return {'success': False, 'retry': True,
-                    'msg': 'You are about to override an existing engine. Are you sure you want to override? If not, try saving with a different engine ID'}, 200, {'ContentType': 'application/json'}
+                    'msg': 'You are about to overwrite an existing engine. Are you sure you want to overwrite? If not, try saving with a different engine ID'}, 200, {'ContentType': 'application/json'}
                 # return {'success': False, 'rename': True}, 200, {'ContentType': 'application/json'}
 
         if stories.document(story_id).get().exists:

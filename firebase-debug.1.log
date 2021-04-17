@@ -1,0 +1,16 @@
+[debug] [2021-04-17T15:09:29.170Z] ----------------------------------------------------------------------
+[debug] [2021-04-17T15:09:29.172Z] Command:       C:\Program Files (x86)\nodejs\node.exe C:\Users\Matt Fishel\Documents\GitRepos\JIB-0330\node_modules\firebase-tools\lib\bin\firebase.js emulators:export local_test_folder
+[debug] [2021-04-17T15:09:29.172Z] CLI Version:   9.6.1
+[debug] [2021-04-17T15:09:29.172Z] Platform:      win32
+[debug] [2021-04-17T15:09:29.173Z] Node Version:  v14.16.0
+[debug] [2021-04-17T15:09:29.174Z] Time:          Sat Apr 17 2021 11:09:29 GMT-0400 (Eastern Daylight Time)
+[debug] [2021-04-17T15:09:29.174Z] ----------------------------------------------------------------------
+[debug] [2021-04-17T15:09:29.174Z] 
+[debug] [2021-04-17T15:09:29.181Z] >>> HTTP REQUEST GET http://localhost:4400/  
+ 
+[debug] [2021-04-17T15:09:29.201Z] <<< HTTP RESPONSE 200 {"x-powered-by":"Express","content-type":"application/json; charset=utf-8","content-length":"50","etag":"W/\"32-BXYjzeYT6j4X3uIpYPbnUms9Yjo\"","date":"Sat, 17 Apr 2021 15:09:29 GMT","connection":"keep-alive","keep-alive":"timeout=5"}
+[info] i  Found running emulator hub for project ga-knowledge-hub at http://localhost:4400 
+[info] i  Creating export directory C:\Users\Matt Fishel\Documents\GitRepos\JIB-0330\local_test_folder 
+[info] i  Exporting data to: C:\Users\Matt Fishel\Documents\GitRepos\JIB-0330\local_test_folder 
+[debug] [2021-04-17T15:09:29.204Z] >>> HTTP REQUEST POST http://localhost:4400/_admin/export  
+ {"path":"C:\\Users\\Matt Fishel\\Documents\\GitRepos\\JIB-0330\\local_test_folder"}
