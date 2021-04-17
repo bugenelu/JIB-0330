@@ -650,7 +650,7 @@ button#view_storymap {
   margin-top: 4px;
   background-color: var(--paleyellow);
   border-color: var(--paleyellow);
-  display: none;
+  /* display: none; */
 }
 
 button.page_op {
@@ -736,7 +736,7 @@ tr:last-child td {
   z-index: 5;
 } */
 
-
+/* 
 #map_frame {
   z-index: 3;
   width: 80%;
@@ -747,7 +747,7 @@ tr:last-child td {
   left: 10%;
   top: 10%;
   overflow: hidden;
-}
+} */
 
 input.error {
   border: 2px solid red;

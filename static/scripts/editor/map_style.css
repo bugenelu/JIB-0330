@@ -9,21 +9,38 @@ line {
     stroke-dasharray: 8, 4;
 }
 
-#map_canvas .map_page_button {
-    color: red;
+.map_page_button {
+    color: white;
     overflow: hidden;
     padding: 0;
-    border-width: 3;
+    border-width: 0px;
+    margin: 0px 0px 0px 0px;
+    font-size: 12px;
+    background-color: #085785;
+    border-color: #085785;
 }
 
 #map_frame {
+    display: none;
     overflow: hidden;
-    position: absolute;
-    top: 100px;
-    left: 100px;
+    position: relative;
+    /* background-color: darkgray; */
+    min-height: 42%;
+    min-width: 100%;
+    /* top: 100px;
+    left: 100px; */
+    justify-content: center;
 }
 
 #map_canvas {
     cursor: move;
     position: absolute;
 }
+
+/* #map_parent {
+    width: 80%;
+    height: 80%;
+    z-index: 3;
+    background-color: white;
+    display: none;
+} */

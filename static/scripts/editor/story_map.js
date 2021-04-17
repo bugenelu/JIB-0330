@@ -136,8 +136,8 @@ function load_map(data, current_page_id) {
     // set frame dimensions
     const frame_height = Math.min(y_dimension, max_frame_height);
     const frame_width = Math.min(x_dimension, max_frame_width);
-    frame.style.height = frame_height + "px";
-    frame.style.width = frame_width + "px";
+    // frame.style.height = frame_height + "px";
+    // frame.style.width = frame_width + "px";
     
     // TODO: Add button functionality creation: set 'current page', refresh 'page-pane', hide 'map_container'
     // main loop to create buttons
@@ -146,7 +146,7 @@ function load_map(data, current_page_id) {
         // make new layer
         let layer_div = document.createElement('div');
         let attrib = "position:absolute;"
-        attrib = attrib.concat("top:" + y_pos + ";");
+        attrib = attrib.concat("top:" + y_pos + "px;");
         layer_div.setAttribute("style", attrib);
         layer_div.setAttribute("class", "map_layer");
         const x_mid = (max_width * (button_width + button_spacer) - button_spacer) * .5;
@@ -160,13 +160,14 @@ function load_map(data, current_page_id) {
             // make and append page to layer
             let page_div = document.createElement('button')
             let attrib = "position:absolute;";
-            attrib = attrib.concat("left:"+ x_pos +";");
-            attrib = attrib.concat("height:"+ button_height +";");
-            attrib = attrib.concat("width:"+ button_width +";");
+            attrib = attrib.concat("left:"+ x_pos +"px;");
+            attrib = attrib.concat("height:"+ button_height +"px;");
+            attrib = attrib.concat("width:"+ button_width +"px;");
             page_div.setAttribute("style", attrib);
             page_div.setAttribute("class", "map_page_button");
             page_div.setAttribute("page_id", page["page_id"]);
             page_div.innerHTML = page["page_name"];
+            page_div.setAttribute('onclick', 'load_storymap_btn("' + page['page_id'] + '")');
             layer_div.appendChild(page_div);
             
             // record page position for edge creation

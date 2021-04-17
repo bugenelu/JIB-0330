@@ -174,6 +174,7 @@ function generateWizard(e) {
 * Note this does not include the open story popup or the wizard
 */
 function refreshAllPage() {
+    $('#map_frame')[0].style.display = 'none';
     refreshOpenStoryOptions();
     refreshPageList();
     refreshMetaData();
@@ -465,6 +466,21 @@ $('.div7').on('click', '.page_button', function(e) {
     refreshAllPage();
 });
 
+// $('.map_layer').on('click', '.map_page_button', function(e) {
+    
+// });
+
+function load_storymap_btn(page_id) {
+    // current_page = e.target.getAttribute('page_id');
+    current_page = page_id;
+
+    // page_pane.style.display = page_pane.style.display == 'none' ?
+    //         '' : 'none';
+    story_map.style.display = story_map.style.display == 'none' ?
+        'block' : 'none';
+    refreshAllPage();
+}
+
 /*
 * Event listener for when a Page Node is selected to be viewed from a child node
 */
@@ -702,17 +718,17 @@ $('.div7').on('click', '#view_storymap', function(e) {
             $('#map_canvas').empty();
             header = document.createElement('h1');
             header.innerHTML = 'Story Map';
-            $('#map_canvas')[0].appendChild(header);
+            // $('#map_canvas')[0].appendChild(header);
 
             tree_data = editor.getStoryPageTree(current_story);
-            focus_page = current_page == null ?
-                editor.getStoryState(current_story)['root_id'] : current_page;
-
+            // focus_page = current_page == null ?
+            //     editor.getStoryState(current_story)['root_id'] : current_page;
+            focus_page = editor.getStoryState(current_story)['root_id'];
             load_map(tree_data, focus_page);
         }
 
-        page_pane.style.display = page_pane.style.display == 'none' ?
-            '' : 'none';
+        // page_pane.style.display = page_pane.style.display == 'none' ?
+        //     '' : 'none';
         story_map.style.display = story_map.style.display == 'none' ?
             'block' : 'none';
     }
