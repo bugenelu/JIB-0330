@@ -18,8 +18,8 @@
 		{% for file in files %}
 			<div class="content" id="{{ file[0] }}">
 				<a href="/file/{{ file[0] }}" target="_blank" class="file-link">{{ file[0] }}</a>
-				<i class="fas fa-file-download download_file"></i>
-				<i class="fas fa-trash-alt delete_file"></i>
+				<a href="/download_file/{{ file[0] }}" target="_blank"><i class="fas fa-file-download download_file"></i></a>
+				<a href="/delete_file/{{ file[0] }}"><i class="fas fa-trash-alt delete_file"></i></a>
 				<p> Timestamp: {{ file[1] }} </p>
 				<p> Size: {{ file[2] }} {{ file[3] }} </p>
 				<p> URL: {{ url_root }}file/{{ file[0] }} </p>

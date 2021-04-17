@@ -23,7 +23,7 @@ from werkzeug.utils import secure_filename
 import mock
 
 # Built-in modules imports
-import os, json, sys, requests, uuid
+import os, json, sys, requests, uuid, time
 from datetime import datetime
 
 # Local imports
@@ -399,6 +399,38 @@ def upload():
     return render_template('admin_pages/file_upload.html')
 
 
+# Serves the media manager page
+@app.route('/media')
+@admin_login_required
+def media():
+    """media()
+    Serves the media manager page
+    Accessed at '/media' via a GET request
+    Requires that the user is logged in as an admin
+    """
+
+    # The file names
+    files = []
+
+    # Gets the names of all files in the file_uploads folder
+    for file in os.listdir('file_uploads'):
+        seconds = os.path.getmtime('file_uploads/' + file)
+        timestamp = time.ctime(seconds)
+        sizeb = os.stat('file_uploads/' + file).st_size
+        sizek = sizeb/1024
+        sizeg = round(sizek/1024, 2)
+        sizek = round(sizek, 2)
+        size = sizek
+        sizetype = 'KB'
+        if sizeg > 2:
+            size = sizeg
+            sizetype = 'GB'
+        files.append([file, timestamp, size, sizetype])
+
+    # Returns the files page with the files
+    return render_response(render_template('admin_pages/media_manager.html', files=files, url_root=request.url_root))
+
+
 # Serves the page of an open file
 @app.route('/file/<file>')
 @admin_login_required
@@ -420,25 +452,19 @@ def open_file(file):
 #     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-@app.route('/download_file', methods=['POST'])
+@app.route('/download_file/<file>')
 @admin_login_required
-def download_file():
-    file = request.form['file']
-    directory = os.getcwd()
-    path = os.path.join(directory, app.config['UPLOAD_FOLDER'])
-    path = os.path.join(path, file)
+def download_file(file):
+    path = os.path.join(app.config['UPLOAD_FOLDER'], file)
     return send_file(path, as_attachment=True, attachment_filename=file)
 
 
-@app.route('/delete_file', methods=['POST'])
+@app.route('/delete_file/<file>')
 @admin_login_required
-def delete_file():
-    file = request.form['file']
-    directory = os.getcwd()
-    path = os.path.join(directory, app.config['UPLOAD_FOLDER'])
-    path = os.path.join(path, file)
+def delete_file(file):
+    path = os.path.join(app.config['UPLOAD_FOLDER'], file)
     os.remove(path)
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    return render_response(redirect(url + url_for('media')))
 
 
 @app.route('/admin/editor')

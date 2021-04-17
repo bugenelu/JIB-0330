@@ -807,3 +807,12 @@ label.error {
   background-color: var(--offwhite);
   padding: 50px;
 }*/
+
+a.file-link {
+  text-decoration: underline;
+  margin-right: 15px;
+}
+
+a.file-link:hover {
+  color: var(--offwhite);
+}
