@@ -24,7 +24,7 @@
 							<input style="display: none" name="prev_page_id" type="text" value="{{ page['page_id'] }}">
 							<input style="display: none" name="history_id" type="number" value="{{ history }}">
 							<input style="display: none" name="forward" type="text" value="False">
-							<input type="submit" value="Back">
+							<input type="submit" value="Back to {{ back_name }}">
 						</form>
 					{% endif %}
 					{% if favorited %}
@@ -41,7 +41,7 @@
 		{% else %}
 		<section class="story-content">
 		{% endif %}
-			<p class="storytext">{{ page['page_body_text'] | safe }}</p>
+			<div class="storytext">{{ page['page_body_text'] | safe }}</div>
 		</section>
 
 		{% for child in page['page_children'] %}

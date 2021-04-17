@@ -1,0 +1,42 @@
+<!-- Include the TinyMCE script -->
+<!-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+
+<!-- Initialize TinyMCE as part of a web form -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="tiny_mce_style.css">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+      tinymce.init({
+ 	    selector: 'textarea',  // change this value according to your HTML
+ 	    content_css: 'default',
+  		// plugins: 'advlist link image lists code',
+  		a_plugin_option: true,
+  		a_configuration_option: 400,
+  		height: 450,
+  		// plugins: 'code'
+  		menu: {
+  			edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
+  			format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats fontformats fontsizes align lineheight | removeformat' },
+  			tools: { title: 'Tools', items: 'wordcount' },
+    		HTML: { title: 'HTML', items: 'code' }
+  		},
+  		plugins: 'code wordcount',  // required by the code menu item
+  		menubar: 'edit format tools HTML'  // adds happy to the menu bar
+	  });
+    </script>
+
+  </head>
+
+  <body>
+    <form method="post">
+      <textarea id="mytextarea">Hello, World!</textarea>
+    </form>
+  </body>
+</html>

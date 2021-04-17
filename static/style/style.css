@@ -1,10 +1,12 @@
 /*Declare Color Variables*/
 :root {
-	--offwhite: rgba(255, 255, 255, 0.90);
+	--offwhite: hsl(0, 0%, 90%);
 	--darkgray: #2D3030;
 	--palegreen: #8DD883;
   --paleyellow: #D8D883;
   --palepurple: #D083D8;
+  --paleorange: #FFDFBF;
+  --palered: #D38080;
 }
 
 /*Add Custom Font Family*/
@@ -102,6 +104,7 @@ header{
   margin-top: 15%;
   text-align: center;
   color: var(--offwhite);
+  margin-bottom: 25px;
 }
 .header-content h1{
   color: var(--palegreen);
@@ -116,7 +119,7 @@ header{
 }
 button, input[type="submit"] {
   min-width: 140px;
-  margin: 20px 10px;
+  margin: 10px 0px 10px 10px;
   color: var(--darkgray);
   font-family: Muli;
   font-size: 18px;
@@ -132,6 +135,10 @@ button:hover {
   font-weight: bold;
 }
 
+button.unclickable {
+  pointer-events: none;
+}
+
 button:hover.unclickable {
   font-style: normal;
   font-weight: normal;
@@ -139,11 +146,12 @@ button:hover.unclickable {
 }
 
 /*Style Story Text */
-p.storytext {
+.storytext {
 	text-align: center;
 	font-family: Muli, Helvetica, sans-serif;
 	font-size: 2em;
 	color: var(--palegreen);
+  margin: 5px 10px 10px 5px;
 /*	text-shadow: 2px 2px 5px black;*/
 }
 
@@ -219,70 +227,76 @@ input[type=submit]:hover, input[type=button]:hover {
 	text-align: center;
 }
 
-.div1 { 
-	grid-area: 1 / 1 / 2 / 2; 
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: repeat(3, 1fr);
-	grid-column-gap: 0px;
-	grid-row-gap: 0px;
+.engine_info { 
+  height: 100%;
 }
 
-.div2 { 
+.open_or_new { 
 	padding: 100px;
 	grid-area: 1 / 2 / 2 / 4; 
 }
 
-.div3 { 
+.live_engine_display { 
 	border-radius: 10px;
 	border: 3px solid var(--palegreen);
-	grid-area: 1 / 1 / 2 / 2; 
+  height: 15%;
+  margin: 5px;
 }
-.div4 { 
+.saved_engines { 
 	border-radius: 10px;
 	border: 3px solid var(--palegreen);
-	grid-area: 2 / 1 / 4 / 2; 
+  height: 82%;
+  margin: 5px;
 }
 
-.div2 button {
+#set_engine_button {
+  margin-bottom: 50px
+}
+
+#delete_engine_btn {
+  margin-top: 50px;
+}
+
+.open_or_new button {
 	width: 300px;
-	margin-bottom: 30px;
-	font-size: 50px;
+	/* margin-bottom: 30px; */
+	font-size: 30px;
+  position: relative;
+  top: 200px
 }
 
-.div4 button {
+.saved_engines button {
 	margin-bottom: 5px;
 }
 
 .parent2 {
-	display: grid;
-	/* grid-template-columns: repeat(3, 1fr);
-	grid-template-rows: repeat(5, 1fr); */
-	grid-column-gap: 0px;
-	grid-row-gap: 0px;
-	height: 100%;
+	height: 92%;
+  margin: 0px 5px 5px 5px;
 }
 
-.div5 { 
-	border: 1px solid var(--palegreen);
-	grid-area: 1 / 1 / 2 / 4; 
+#storage {
+/*  max-height: 9%;*/
+  width: 100%; 
+/*	border: 1px solid var(--palegreen);*/
+  display: flex;
+  flex-flow: row wrap;
 }
 
-.div6 { 
+.div6 {
+  min-height: 8%;
+  width: 100%; 
   color: var(--offwhite);
-  font-family: Muli;
   font-size: 20px;
   border: 1px solid var(--palegreen);
-	grid-area: 2 / 1 / 3 / 4; 
 }
 
 .div7 { 
   color: var(--offwhite);
-  border: 1px solid var(--palegreen);
-/*	grid-area: 3 / 1 / 9 / 1;*/
+/*  border: 1px solid var(--palegreen);*/
   overflow: scroll;
   overflow-x: hidden;
-  width: 15%;
+  width: 19%;
+  min-width: 15%;
   height: 100%;
 }
 
@@ -292,11 +306,13 @@ input[type=submit]:hover, input[type=button]:hover {
   color: var(--offwhite);
 }
 
-.div8 { 
-	/*grid-area: 3 / 2 / 9 / 4;*/ 
-  width: 20%;
-  position: absolute;
-  right: 30px;
+.div8 {  
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: 3px;
+  height: 100%;
 }
 
 .collapsible {
@@ -336,6 +352,11 @@ input[type=submit]:hover, input[type=button]:hover {
 
 .content a {
   text-decoration: none;
+}
+
+.content p {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .popup {
@@ -439,13 +460,32 @@ input[type=submit]:hover, input[type=button]:hover {
   cursor: pointer;
 }
 
-.popout {
+input[type="submit"].popout {
   position: fixed;
   top: calc(1vh + 0.375vw);
   left: 1.375vw;
   color: var(--palegreen);
   font-size: 2.25vw;
   cursor: pointer;
+  background-color: transparent;
+  min-width: 0;
+  width: 2.25vw;
+  height: 2.25vw;
+  padding: 0;
+  outline: none;
+}
+
+.popout {
+  position: fixed;
+  top: calc(1vh + 0.375vw);
+  left: 1.375vw;
+  color: var(--palegreen);
+  font-size: 2.25vw;
+  background-color: transparent;
+  min-width: 0;
+  width: 2.25vw;
+  height: 2.25vw;
+  padding: 0;
 }
 
 .mimic-link {
@@ -463,10 +503,13 @@ input[type=submit]:hover, input[type=button]:hover {
   display: flex;
 }
 
-#page-pane { 
-  /*width: 1000px;*/
-  min-width: 60%;
-  max-width: 67%;
+#page-pane {
+  font-size: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: inherit;
+  max-width: 65%;
+  height: 100%;
 }
 
 #story-name {
@@ -474,16 +517,20 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 #page-list-parent {
-  /* max-height: 100%; */
-  max-height: 850px;
-  display: flex; 
+  max-height: 85%;
+  height: 84%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row; 
   width: 100%;
+  border: 1px solid var(--palegreen);
 }
 
-#save_story {
+button.save_export {
   background: #838DD8; 
   border-color: #838DD8;
 }
+
 
 #discard_story {
   background: #D88D83; 
@@ -498,8 +545,26 @@ input[type=submit]:hover, input[type=button]:hover {
   margin-top: 10px;
 }
 
+.fa-edit {
+  color: var(--darkgray);
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.fa-file-download {
+  color: var(--darkgray);
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.fa-trash-alt {
+  color: var(--darkgray);
+  font-size: 25px;
+  cursor: pointer;
+}
+
 .story-nav {
-  position: fixed;
+  position: absolute;
   left: 90px;
   top: 38px;
   height: 50px;
@@ -521,12 +586,19 @@ input[type=submit]:hover, input[type=button]:hover {
 }
 
 input[type="submit"].storylink {
+  all: unset;
   color: white;
   background-color: transparent;
   text-align: center;
-  width: 100%;
+  width: auto;
   text-decoration: underline;
   font-size: 32px;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+  padding:0;
+  cursor: pointer;
 }
 
 .collapsible-content .hidden-form input[type="submit"], .content .hidden-form input[type="submit"] {
@@ -534,14 +606,21 @@ input[type="submit"].storylink {
   color: white;
   text-decoration: underline;
   text-align: left;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
 }
 
 #parent-nodes, #child-nodes {
   display: flex;
   width: 100%;
-  overflow: auto;
+  flex-flow: row wrap;
+  /* overflow: auto;
   text-align: center;
+  justify-content: center; */
   justify-content: center;
+  text-align: center;
 }
 
 #editor_wizard > input, #editor_wizard > label {
@@ -570,6 +649,17 @@ p#page-pane-child {
 /*  text-shadow: 2px 2px 5px black;*/
 }
 
+p.link_text {
+  text-align: center;
+  font-family: Muli, Helvetica, sans-serif;
+  font-size: 1em;
+  color: var(--offwhite);
+  text-decoration: underline;
+  margin-top: .1em;
+  margin-bottom: 0;
+/*  text-shadow: 2px 2px 5px black;*/
+}
+
 button.page_button {
   font-size: 15px;
   margin: 0px;
@@ -577,11 +667,27 @@ button.page_button {
   margin-top: 4px;
 }
 
-button.wizard_btns {
+button#view_storymap {
+  font-size: 15px;
+  margin: 0px;
+  margin-left: 4px;
+  margin-top: 4px;
+  background-color: var(--paleyellow);
+  border-color: var(--paleyellow);
+  /* display: none; */
+}
+
+button.page_op {
   background: var(--paleyellow);
   border: solid 1px var(--paleyellow);
   margin: 0px;
   margin-top: 4px;
+}
+
+button.engine_op {
+  background: var(--paleorange);
+  border: solid 1px var(--paleorange);
+  margin: 10px 0px 10px 10px;
 }
 
 .div7 button {
@@ -594,4 +700,129 @@ button.wizard_btns {
   width: 250px;
   white-space: nowrap;
   overflow: hidden; 
+}
+
+.table-container {
+  padding: 25px 50px;
+  margin-left: 10vw;
+  width: calc(80vw - 100px);
+  background-color: var(--offwhite);
+  border-radius: 10px;
+}
+
+table {
+  color: black;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th:first-child, td:first-child {
+  width: 50px;
+}
+
+th {
+  padding: 15px;
+  margin-top: 25px;
+  border-bottom: 2px solid #777;
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid #777;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-toggle {
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.armed {
+  background: var(--palered);
+  border: solid 1px var(--palered);
+}
+
+.disarmed {
+  background: var(--paleorange);
+  border: solid 1px var(--paleorange);
+}
+
+/* #map_iframe {
+  position: absolute;
+  width: 1000px;
+  height: 1000px;
+  top: 50px;
+  left: 50px;
+  z-index: 5;
+} */
+
+/* 
+#map_frame {
+  z-index: 3;
+  width: 80%;
+  height: 80%;
+  background-color: white;
+  display: none;
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  overflow: hidden;
+} */
+
+input.error {
+  border: 2px solid red;
+}
+
+label.error {
+  display: none !important;
+}
+
+#form_container form input, #form_container form label, #form_container form select {
+    display: block;
+    width: 95%;
+    margin-left: 2%;
+    margin-right: 2%;
+    text-align: left;
+    font-size: smaller;
+}
+
+.add_storybox {
+  background:var(--paleyellow);
+  border:var(--paleyellow);
+}
+
+#metadata {
+  width: 100%;
+}
+
+.spacer {
+  height: 8%;
+}
+
+/*#import-upload {
+  position: absolute;
+  background-color: var(--offwhite);
+  padding: 50px;
+}*/
+
+a.file-link {
+  text-decoration: underline;
+  margin-right: 15px;
+}
+
+a.file-link:hover {
+  color: var(--offwhite);
+}
+
+.file-container {
+  margin-bottom: 25px;
+  padding: 10px 15px;
+}
+
+p.file-detail {
+  margin: 0px;
 }

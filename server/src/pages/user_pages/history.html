@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <head>
     <title>History | GA Knowledge Hub</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
 </head>
 
 <body>
@@ -23,7 +23,7 @@
 				<div class="collapsible-content">
 				{% for elem in element %}
 					<div>
-						<form method="POST" class="hidden-form" action="/story/{{ elem[1] }}">
+						<form method="POST" class="hidden-form" action="/story/{{ elem[1] }}" target="_blank">
 							<input style="display: none" name="prev_page_id" type="text" value="">
 							<input style="display: none" name="history_id" type="number" value="{{ history_index - 1 }}">
 							<input style="display: none" name="forward" type="text" value="True">
@@ -43,7 +43,13 @@
 					<iframe class="history-preview-page" src="/story/{{ elem[1] }}?preview=True"></iframe>
 					<i class="fas fa-chevron-circle-right preview-nav preview-nav-right {% if loop.index == 1 %}disabled{% endif %}" value="{{ history_index }}-{{ loop.index - 1}}"></i>
 					<i class="fas fa-times preview-close"></i>
-					<a href="/story/{{ elem[1] }}" target="_blank"><i class="fas fa-external-link-alt popout"></i></a>
+					<form method="POST" class="hidden-form" action="/story/{{ elem[1] }}" target="_blank">
+						<input style="display: none" name="prev_page_id" type="text" value="">
+						<input style="display: none" name="history_id" type="number" value="{{ history_index - 1 }}">
+						<input style="display: none" name="forward" type="text" value="True">
+						<i class="fas fa-external-link-alt popout"></i>
+						<input type="submit" class="popout" value="">
+					</form>
 				</div>
 			{% endfor %}
 		{% endfor %}

@@ -7,7 +7,6 @@ Welcome to the Editor. The Editor is responsible for:
     Rendering the current state (and data) of open StoryGraph objects for the Admin UI
     Rendering StoryGraph objects to JSON for storage in a database
 
----
 The Editor keeps an Object representing its open StoryGraphs with 'story_name' keys.
 The values are StoryStacks of StoryGraphs with the top of the stack being the most recent version of
 a particular graph identified by the key.
@@ -20,11 +19,19 @@ NOTE:
 Be careful when implementing functions that are meant to *read* from StoryGraphs in stacks not to
 *pop* a StoryGraph from the stack. This would cause the version to be lost.
 
+NOTE: Starting 4/9/21, the preferred term for a complete interactive narrative is 'Engine', which replaces
+use of the term 'Story'. This change will be reflected in labels of the UI. However, work to convert function 
+and variable names must wait until minimum viability is reached. Labels in Editor.getOperations() have been
+updated.
+
+TODO: Update terminology in the code base to reflect the preferred 'Engine' term 
+    e.g StoryGraph -> EngineGraph, StoryStack -> EngineStack, etc.
+
 */
 
 class Editor {
     /**
-     * 
+     *
      * @param {string} database - identifier for the database, to read and write stories
      */
     constructor() {
@@ -35,13 +42,13 @@ class Editor {
      * NOTE: With the exception of openStory() and addNodeInGraph(), all Editor operations expect strings for all parameters.
      * Use "name" fields for button labels
      * Use "parameter" lists iterively to generate wizards that collect parameters from the UI. Parameter names have been standardized where possible.
-     * 
-     * Parameter Types: 
-     * 
+     *
+     * Parameter Types:
+     *
      *     implicit:
      *     "current_story"
      *     "current_page"
-     * 
+     *
      *     user input required:
      *     "database_story" - select a story from the database
      *     "text" - a short string
@@ -49,14 +56,15 @@ class Editor {
      *     "page_select" - choose a page in the current story
      *     "story_select" - select a story that is open in the editor
      *     "link_select" - select a link from the current page
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * Use "function" fields to add function calls to UI elements
-     * 
+     *
      * @returns {Object} that has name, parameters, and function calls for edit operations that will need representations in the UI.
      */
     getOperations() {
+        // TODO: update 'story_name', 'story_id' parameters to 'engine_name', 'engine_id'
         return [
             {
                 "name": "Undo Last Edit",
@@ -68,6 +76,7 @@ class Editor {
                         "param_type": "current_story" // implicit
                     }
                 ],
+                "global_op": false,
                 "function": "undoLast(story_name)"
             },
             // {
@@ -83,8 +92,8 @@ class Editor {
             //     "function": "openStory(story_data)" // openStory requires an Object which is received from the database
             // },
             {
-                "name": "Close Story",
-                "op_label": "Would you like to close this story? Unsaved changes are lost.",
+                "name": "Close Engine",
+                "op_label": "Would you like to close this engine? Unsaved changes are lost.",
                 "params": [
                     {
                         "param": "story_name",
@@ -92,30 +101,30 @@ class Editor {
                         "param_type": "current_story" // implicit
                     }
                 ],
+                "global_op": true,
                 "function": "closeStory(story_name)"
             },
-            // {
-            //     "name": "New Story",
-            //     "op_label": "Create a new story.",
-            //     "params": [
-            //         {
-            //             "param": "story_name",
-            //             "param_label": "New Story Name",
-            //             "param_type": "text"
-            //         },
-            //         {
-            //             "param": "story_id",
-            //             "param_label": "Unique ID For This Story", // I don't even know anymore (-MF)
-            //             "param_type": "text"
-            //         },
-            //         "story_name",
-            //         "story_id"
-            //     ],
-            //     "function": "newStory(story_name, story_id)"
-            // },
             {
-                "name": "Duplicate Story",
-                "op_label": "Would you like to duplicate this story?",
+                "name": "New Engine",
+                "op_label": "Create a new engine.",
+                "params": [
+                    {
+                        "param": "story_name",
+                        "param_label": "New Engine Name",
+                        "param_type": "text"
+                    },
+                    {
+                        "param": "story_id",
+                        "param_label": "Unique ID For This Engine",
+                        "param_type": "text"
+                    },
+                ],
+                "global_op": true,
+                "function": "newStory(story_name, story_id)"
+            },
+            {
+                "name": "Duplicate Engine", 
+                "op_label": "Would you like to duplicate this Engine?",
                 "params": [
                     {
                         "param": "story_name",
@@ -123,11 +132,12 @@ class Editor {
                         "param_type": "current_story" // implicit
                     },
                 ],
+                "global_op": true,
                 "function": "duplicateStory(story_name)"
             },
             {
-                "name": "Edit Story Name",
-                "op_label": "Please enter a new name for this story.",
+                "name": "Edit Engine Name",
+                "op_label": "Please enter a new name for this engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -136,15 +146,16 @@ class Editor {
                     },
                     {
                         "param": "update_name",
-                        "param_label": "New Story Name",
+                        "param_label": "New Engine Name",
                         "param_type": "text"
                     }
                 ],
+                "global_op": true,
                 "function": "editStoryName(story_name, update_name)"
             },
             {
-                "name": "Duplicate Story From Page",
-                "op_label": "Please select the page from which you would like to duplicate this story.",
+                "name": "Duplicate Engine From Page",
+                "op_label": "Please select the page from which you would like to duplicate this story and enter a new new for the duplicate engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -157,28 +168,29 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": true,
                 "function": "duplicateFromPage(story_name, page_id)"
             },
+            // {
+            //     "name": "Edit Story ID",
+            //     "op_label": "Please input a new ID for this story.",
+            //     "params": [
+            //         {
+            //             "param": "story_name",
+            //             "param_label": null,
+            //             "param_type": "current_story" // implicit
+            //         },
+            //         {
+            //             "param": "update_id",
+            //             "param_label": "New Story ID",
+            //             "param_type": "text" // seems like there are going to be restrictions on characters for this parameter ...
+            //         }
+            //     ],
+            //     "function": "editStoryID(story_name, update_id)"
+            // },
             {
-                "name": "Edit Story ID",
-                "op_label": "Please input a new ID for this story.",
-                "params": [
-                    {
-                        "param": "story_name",
-                        "param_label": null,
-                        "param_type": "current_story" // implicit
-                    },
-                    {
-                        "param": "update_id",
-                        "param_label": "New Story ID",
-                        "param_type": "text" // seems like there are going to be restrictions on characters for this parameter ...
-                    }
-                ],
-                "function": "editStoryID(story_name, update_id)"
-            },
-            {
-                "name": "Change Story Root",
-                "op_label": "Select a new root page for this story.",
+                "name": "Change Engine Root",
+                "op_label": "Select a new root page for this engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -191,11 +203,12 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": true,
                 "function": "editRootID(story_name, page_id)"
             },
             {
-                "name": "Connect Stories",
-                "op_label": "Select a page in this story to receive a link to a selected story.",
+                "name": "Connect Engines",
+                "op_label": "Select a page in this engine to receive a link to the selected engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -206,7 +219,7 @@ class Editor {
                         "param": "page_id",
                         "param_label": "Parent Story Page",
                         "param_type": "dropdown"
-                    }, 
+                    },
                     {
                         "param": "substory_name",
                         "param_label": "Substory",
@@ -218,11 +231,12 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": true,
                 "function": "connectStoryGraphs(story_name, page_id, substory_name, link_text)"
             },
             {
-                "name": "Add Page to Story",
-                "op_label": "Create a new page to add to this story.",
+                "name": "Add Page to Engine",
+                "op_label": "Create a new page to add to this engine.",
                 "params": [
                     {
                         "param": "story_name",
@@ -233,12 +247,12 @@ class Editor {
                         "param": "parent_id",
                         "param_label": "Parent Page",
                         "param_type": "dropdown"
-                    }, 
-                    {
-                        "param": "page_body_text",
-                        "param_label": "New Page Content",
-                        "param_type": "rich_text"
                     },
+                    // {
+                    //     "param": "page_body_text",
+                    //     "param_label": "New Page Content",
+                    //     "param_type": "rich_text"
+                    // },
                     {
                         "param": "page_name",
                         "param_label": "New Page Name",
@@ -249,12 +263,13 @@ class Editor {
                         "param_label": "Link Text",
                         "param_type": "text"
                     }
-                ], 
+                ],
+                "global_op": false,
                 "function": "addNodeInGraph(story_name, parent_id, page_body_text, page_name, link_text)"
             },
             {
                 "name": "Delete Page",
-                "op_label": "Deleting a page also removes its descendant trees and opens them as new stories.",
+                "op_label": "Deleting a page also removes its descendant pages and opens them as new engines.",
                 "params": [
                     {
                         "param": "story_name",
@@ -267,6 +282,7 @@ class Editor {
                         "param_type": "dropdown"
                     }
                 ],
+                "global_op": false,
                 "function": "deleteNodeFromGraph(story_name, page_id)"
             },
             {
@@ -289,6 +305,7 @@ class Editor {
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "editPageName(story_name, page_id, page_name)"
             },
             {
@@ -311,7 +328,8 @@ class Editor {
                         "param_type": "rich_text"
                     }
                 ],
-                "function": "editPageText(story_name, page_id, page_text)" 
+                "global_op": false,
+                "function": "editPageText(story_name, page_id, page_text)"
             },
             {
                 "name": "Add Link",
@@ -328,16 +346,17 @@ class Editor {
                         "param_type": "current_page" // implicit
                     },
                     {
-                        "param": "child_id",
+                        "param": "page_id",
                         "param_label": "Page Link Target",
                         "param_type": "dropdown"
-                    }, 
+                    },
                     {
                         "param": "link_text",
                         "param_label": "Link Text",
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "addLinkInGraph(story_name, page_id, child_id, link_text)"
             },
             {
@@ -358,8 +377,9 @@ class Editor {
                         "param": "child_id",
                         "param_label": "Link To Delete",
                         "param_type": "dropdown"
-                    } 
+                    }
                 ],
+                "global_op": false,
                 "function": "deleteLinkInGraph(story_name, page_id, child_id)"
             },
             {
@@ -380,20 +400,21 @@ class Editor {
                         "param": "child_id",
                         "param_label": "Link To Edit Text",
                         "param_type": "dropdown"
-                    }, 
+                    },
                     {
                         "param": "link_text",
                         "param_label": "New Link Text",
                         "param_type": "text"
                     }
                 ],
+                "global_op": false,
                 "function": "editLinkText(story_name, page_id, child_id, link_text)"
             }
         ]
     }
-    
+
     /**
-     * 
+     *
      * @returns {Object} with the current state of each StoryGraph in this.openStories
      */
     getState() {
@@ -406,7 +427,7 @@ class Editor {
     }
 
     /**
-     * 
+     *
      * @param {string} story_name - the story to retreive current state for
      * @returns {Object} with the current state of the indicated story
      */
@@ -415,12 +436,20 @@ class Editor {
     }
 
     /**
-     * 
-     * @param {string} story_name 
+     *
+     * @param {string} story_name
      * @returns {string[]} a list of nice page names for the indicated story
      */
     getStoryPageList(story_name) {
         return this.openStories[story_name].getCurrent().getPageNameList();
+    }
+
+    /**
+     * @param {string} story_name
+     * @returns {Object} with data to draw a map of the story's pages
+     */
+    getStoryPageTree(story_name) {
+        return this.openStories[story_name].getCurrent().getPageTree();
     }
 
     getOpenStoryIDs() {
@@ -429,6 +458,51 @@ class Editor {
         for (let i = 0; i < all_story_names.length; i++)
             open_story_ids.push(this.openStories[all_story_names[i]].getCurrent().toJSON()['story_id']);
         return open_story_ids;
+    }
+
+    /**
+     * 
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @returns {Object} representing the current contents of a page in an engine
+     */
+    getPageData(story_name, page_id) {
+        return this.openStories[story_name].getCurrent().page_nodes[page_id].toJSON();
+    }
+
+    /**
+     * 
+     * @param {string} story_name 
+     * @param {string} page_id 
+     * @returns A list of the page's children
+     */
+    getPageChildList(story_name, page_id) {
+        let page = this.getPageData(story_name, page_id);
+        let children = [];
+        for (const child in page.page_children) {
+            children.push(page.page_children[child]);
+        }
+        return children;
+    }
+
+    /**
+     * TODO: Comment needed
+     * @returns {string[]} array of strings that are the names of the open stories
+     */
+    getOpenStoryNames() {
+        return Object.keys(this.openStories);
+    }
+
+    /**
+     * TODO: Comment needed
+     * @returns 
+     */
+    getOpenStoryData() {
+        let all_story_names = Object.keys(this.openStories);
+        let open_story_ids = []
+        for (let i = 0; i < all_story_names.length; i++)
+            open_story_ids.push(this.openStories[all_story_names[i]].getCurrent().toJSON()['story_id']);
+        return {'story_name': all_story_names, 'story_id': open_story_ids};
     }
 
     /**
@@ -448,9 +522,9 @@ class Editor {
     }
 
     /**
-     * 
+     *
      * @param {string} story_name - string identifies story to close. deletes the story's stack from this.openStories
-     * 
+     *
      * TODO: what about a check to see if the story has been saved so work isn't lost?
      */
     closeStory(story_name) {
@@ -460,19 +534,30 @@ class Editor {
     }
 
     /**
-     * 
-     * @param {string} story_name - a name to identify the story
-     * @param {string} story_id - a unique identifier for the story
+     * Creates a new StoryGraph i.e. engine with an empty root node. 
+     * All StoryGraphs must always have at least one PageNode.
+     * @param {string} story_name - a name to identify the engine
+     * @param {string} story_id - a unique identifier for the engine
      */
     newStory(story_name, story_id) {
         if (!(story_name in Object.keys(this.openStories))) {
+            let page_name = "New Story Root Page";
+            let page_id = story_id.concat("_root");
+            let empty_root_page = {
+                "page_name": page_name,
+                "page_id": page_id,
+                "page_body_text": "",
+                "page_parents": [],
+                "page_children": {}
+                }
             let data = {
                 "story_id": story_id,
                 "story_name": story_name,
-                "root_id": '',
-                "root_name": '',
+                "root_id": page_id,
+                "root_name": page_name,
                 "page_nodes": {}
             }
+            data.page_nodes[page_id] = empty_root_page;
             this.openStories[story_name] = new StoryStack(new StoryGraph(data));
         }
     }
@@ -483,46 +568,76 @@ class Editor {
      */
     duplicateStory(story_name) {
         let stamp = Date.now().toString();
-        let copy_name = story_name.concat(stamp.substr(stamp.length - 12));
+        let copy_name = story_name.concat(" copy");
         let data = this.openStories[story_name].getCurrent().toJSON();
-        data.story_id = data.story_id.concat(stamp);
+        data.story_id = data.story_id.concat(stamp.substring(stamp.length - 4));
         data.story_name = copy_name;
         this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
     }
-    
+
     /**
      * TODO: Testing needed.
-     * 
      * Creates a duplicate of the indicated story with an updated name in a new StoryStack
-     * @param {string} story_name 
-     * @param {string} update_name 
+     * @param {string} story_name
+     * @param {string} update_name
      */
     editStoryName(story_name, update_name) {
         let data = this.openStories[story_name].getCurrent().toJSON();
         data.story_name = update_name;
-        this.openStories[update_name] = new StoryStack(new StoryGraph(data));
+        this.openStories[story_name].push(new StoryGraph(data));
+        this.openStories[update_name] = this.openStories[story_name];
+        delete this.openStories[story_name];
     }
 
     /**
      * Creates a duplicate of the indicated story beginning at the indicated page with a new StoryStack
-     * @param {string} story_name 
-     * @param {string} page_id 
+     * @param {string} story_name
+     * @param {string} page_id
      */
     duplicateFromPage(story_name, page_id) {
-        let data = this.openStories[story_name].getCurrent().reachable(page_id);
-        data.story_id = data.story_id.concat("." + page_id);
-        data.story_name = data.story_name.concat("." + page_id);
-        this.openStories[copy_name] = new StoryStack(new StoryGraph(data));
+        let pages = this.openStories[story_name].getCurrent().reachableNodes(page_id);
+        let data = this.storyDataFromPages(pages, page_id);
+        this.openStories[data.story_name] = new StoryStack(new StoryGraph(data));
+        return;
+    }
+    
+    /**
+     * Helper function in duplicateFromPage. Creates the Object to construct a new StoryGraph from the indicated page.
+     * @param {*} page_data 
+     * @param {*} root_id 
+     * @returns 
+     */
+    storyDataFromPages(page_data, root_id) {
+        let data = {
+            "story_id": null,
+            "story_name": null,
+            "root_id": null,
+            "root_name": null,
+            "page_nodes": null,
+        };
+        data.page_nodes = page_data;
+        data.story_id = root_id.concat("_engine");
+        data.story_name = page_data[root_id].page_name;
+        data.root_id = root_id;
+        data.root_name = page_data[root_id].page_name;
+        return data;
     }
 
     /**
      * Undoes the last edit to a StoryGraph
-     * @param {string} story_name - identifes the story to step backwards 
+     * @param {string} story_name - identifes the story to step backwards
      * @returns {StoryGraph} version that was removed from this.openStories. Could be saved in a redo cache.
      */
     undoLast(story_name) {
         if (this.openStories[story_name].size > 1) {
-            return this.openStories[story_name].pop();
+            let undone = this.openStories[story_name].pop();
+            let un_name = undone.story_name;
+            let new_name = this.openStories[story_name].getCurrent().story_name;
+            if (un_name != new_name) {
+                this.openStories[new_name] = this.openStories[un_name];
+                delete this.openStories[un_name];
+            }
+            return undone;
         } else {
             console.log('error: attempted to undo initial state');
             return null;
@@ -531,8 +646,8 @@ class Editor {
 
     /**
      * Testing needed
-     * @param {string} story_name 
-     * @param {string} update_id 
+     * @param {string} story_name
+     * @param {string} update_id
      */
     editStoryID(story_name, update_id) {
         update = this.openStories[story_name].getCurrent().getCopy();
@@ -542,19 +657,20 @@ class Editor {
 
     /**
      * Testing needed
-     * @param {string} story_name 
-     * @param {string} new_root_id 
-     * @returns 
+     * @param {string} story_name
+     * @param {string} new_root_id
+     * @returns
      */
     editRootID(story_name, new_root_id) {
-        current = this.openStories[story_name].getCurrent();
-        if (!(new_root_id in Object.keys(current.page_nodes))) {
+        let current = this.openStories[story_name].getCurrent();
+        if (!(new_root_id in current.page_nodes)) {
             console.log('attempted to assign unknown page. aborted')
             return false;
         } else {
-            update = this.openStories[story_name].getCurrent.getCopy();
+            let update = this.openStories[story_name].getCurrent().getCopy();
             update.root_id = new_root_id;
             update.root_name = update.page_nodes[new_root_id].page_name;
+            this.openStories[story_name].push(update);
             return true;
         }
     }
@@ -568,7 +684,7 @@ class Editor {
      */
     connectStoryGraphs(story_name, page_id, substory_name, link_text) {
         let parent_graph = this.openStories[story_name].getCurrent();
-        let child_graph = this.openStories[substory_name].getCurrent(); 
+        let child_graph = this.openStories[substory_name].getCurrent();
         let update = parent_graph.addSubtree(child_graph, page_id, link_text);
         this.openStories[story_name].push(update);
     }
@@ -601,35 +717,40 @@ class Editor {
             update.page_nodes[new_node.page_id] = new_node;
             this.openStories[story_name].push(update);
         } else {
-            console.log("failed to add node:" 
+            console.log("failed to add node:"
                         + "parent_id is null while graph has existing root.");
         }
     }
 
     /**
-     * Deletes a node from a StoryGraph and pushes the new version to that graph's stack. Unreachable descendants are also removed. 
+     * Deletes a node from a StoryGraph and pushes the new version to that graph's stack. Unreachable descendants are also removed.
      * Opens new stacks for the subtrees of nodes reachable from each child of the deleted node.
-     * @param {string} story_name 
-     * @param {string} node_id 
+     * @param {string} story_name
+     * @param {string} node_id
      */
     deleteNodeFromGraph(story_name, page_id) {
         let graph = this.openStories[story_name].getCurrent();
-        let updates = graph.deleteNode(page_id);
-        this.openStories[story_name].push(updates[0]);
-        if (updates.length > 1) {
-            updates.shift();
-            updates.forEach(update => {
-                this.openStories[update.story_name] = new StoryStack(update);
-            });
+        if (graph.getGraphSize() > 1) {
+            let updates = graph.deleteNode(page_id);
+            this.openStories[story_name].push(updates[0]);
+            if (updates.length > 1) {
+                updates.shift();
+                updates.forEach(update => {
+                    this.openStories[update.story_name] = new StoryStack(update);
+                });
+            }
+        } else {
+            console.log("Illegal Editor Operation: Attempted to delete last remaining page in an engine. " 
+                        + "An engine must always have at least one page.");
         }
     }
 
     /**
      * Testing needed
      * udpate the name of a page in a graph and add the updated version to that graph's stack
-     * @param {string} story_name 
-     * @param {string} page_id 
-     * @param {string} page_name 
+     * @param {string} story_name
+     * @param {string} page_id
+     * @param {string} page_name
      */
     editPageName(story_name, page_id, page_name) {
         let current = this.openStories[story_name].getCurrent();
@@ -639,9 +760,9 @@ class Editor {
 
     /**
      * Update the text of a page in a graph and add the updated version to that graph's stack
-     * @param {string} story_name 
-     * @param {string} page_id 
-     * @param {string} page_text 
+     * @param {string} story_name
+     * @param {string} page_id
+     * @param {string} page_text
      */
     editPageText(story_name, page_id, page_text) {
         let current = this.openStories[story_name].getCurrent();
@@ -651,13 +772,13 @@ class Editor {
 
     /**
      * Adds a link between two existing pages in the indicated story graph. Link points from page_id to child_id pages.
-     * @param {string} story_name 
-     * @param {string} page_id 
-     * @param {string} child_id 
-     * @param {string} link_text 
+     * @param {string} story_name
+     * @param {string} page_id
+     * @param {string} child_id
+     * @param {string} link_text
      */
     addLinkInGraph(story_name, page_id, child_id, link_text) {
-        let data = this.openStories[story_name].getCurrent().toJSON;
+        let data = this.openStories[story_name].getCurrent().toJSON();
         let child_name = data.page_nodes[child_id].page_name;
         data.page_nodes[page_id].page_children[child_id] = {
             "child_id": child_id,
@@ -669,10 +790,10 @@ class Editor {
 
     /**
      * Update the text of a link in a graph and add the updated version to that graph's stack
-     * @param {string} story_name 
-     * @param {string} page_id 
-     * @param {string} child_id 
-     * @param {string} link_text 
+     * @param {string} story_name
+     * @param {string} page_id
+     * @param {string} child_id
+     * @param {string} link_text
      */
     editLinkText(story_name, page_id, child_id, link_text) {
         let data = this.openStories[story_name].getCurrent().toJSON();
@@ -682,9 +803,9 @@ class Editor {
 
     /**
      * TODO: testing needed
-     * @param {string} story_name 
-     * @param {string} page_id 
-     * @param {string} child_id 
+     * @param {string} story_name
+     * @param {string} page_id
+     * @param {string} child_id
      */
     deleteLinkInGraph(story_name, page_id, child_id) {
         let update = this.openStories[story_name].getCurrent().getCopy();
@@ -700,7 +821,7 @@ class Editor {
 class StoryStack {
 
     /**
-     * 
+     *
      * @param {StoryGraph} story_graph - an optional StoryGraph object to add when the stack is constructed.
      */
     constructor(story_graph = null) {
@@ -713,7 +834,7 @@ class StoryStack {
     }
 
     /**
-     * 
+     *
      * @param {StoryGraph} version - pushes a StoryGraph to this stack.
      */
     push(version) {
@@ -726,20 +847,20 @@ class StoryStack {
     }
 
     /**
-     * 
+     *
      * @returns {StoryGraph} popped from top of this stack.
      */
     pop() {
         if (this.size > 0) {
             this.size -=1;
-            return this.versions.pop();    
+            return this.versions.pop();
         } else {
             return null;
         }
     }
 
     /**
-     * 
+     *
      * @returns {StoryGraph} at the top of this stack without popping.
      */
     getCurrent() {
@@ -753,7 +874,7 @@ class StoryStack {
 
 class StoryGraph {
     /**
-     * 
+     *
      * @param {Object} story_data - Object with { story_id, story_name, root_id, root_name, page_nodes{} }
      */
     constructor(story_data) {
@@ -778,7 +899,7 @@ class StoryGraph {
     }
 
     /**
-     * 
+     *
      * @returns {PageNode[]} array of all PageNodes in this StoryGraphy
      */
     getPageList() {
@@ -786,19 +907,79 @@ class StoryGraph {
     }
 
     /**
-     * 
+     *
      * @returns {Object} a dictionary containing page_name as value and page_id as key
      */
     getPageNameList() {
-        let page_info = {};
-        this.getPageList().forEach(page => {
-            page_info[page.page_id] = page.page_name;
-        });
+        // let page_info = {};
+        // this.getPageList().forEach(page => {
+        //     page_info[page.page_id] = page.page_name;
+        // });
+        // return page_info;
+        let page_info = [];
+        if (this.root_id == null) {
+            return page_info;
+        }
+        let visited_set = new Set();
+        let open_list = [this.page_nodes[this.root_id]];
+        while (open_list.length > 0) {
+            let current = open_list.shift();
+            if (!visited_set.has(current)) {
+                visited_set.add(current);
+                let page_elem = {}
+                page_elem["page_id"] = current.page_id;
+                page_elem["page_name"] = current.page_name;
+                page_info.push(page_elem);
+                Object.keys(current.page_children).forEach(child => {
+                    open_list.push(this.page_nodes[child]);
+                });
+            }
+        }
+        for (const current in this.page_nodes) {
+            let current_page = this.page_nodes[current];
+            if (!visited_set.has(current_page)) {
+                let page_elem = {}
+                page_elem["page_id"] = current_page.page_id;
+                page_elem["page_name"] = current_page.page_name;
+                page_info.push(page_elem);
+            }
+        }
         return page_info;
     }
 
     /**
-     * 
+     * @returns {Object} with information to represent this Story's page map
+     */
+    getPageTree() {
+        let layers = [];
+        if (this.root_id == null) {
+            return page_info;
+        }
+        let visited_set = new Set();
+        let edge_set = new Set();
+        let open_list = [[this.page_nodes[this.root_id], 0]];
+        while (open_list.length > 0) {
+            let current = open_list.shift();
+            if (!visited_set.has(current[0])) {
+                visited_set.add(current[0]);
+                if (layers.length <= current[1]) {
+                  layers.push([]);
+                }
+                let page_elem = {};
+                page_elem["page_id"] = current[0].page_id;
+                page_elem["page_name"] = current[0].page_name;
+                layers[current[1]].push(page_elem);
+                Object.keys(current[0].page_children).forEach(child => {
+                    edge_set.add([current[0].page_id, child]);
+                    open_list.push([this.page_nodes[child], current[1] + 1]);
+                });
+            }
+        }
+        return [layers, edge_set];
+    }
+
+    /**
+     *
      * @returns {Object} with metadata for this StoryGraph
      */
     getInfo() {
@@ -818,7 +999,7 @@ class StoryGraph {
     }
 
     /**
-     * 
+     *
      * @returns {Object} representing the contents of this StoryGraph and its metadata
      */
     toJSON() {
@@ -829,9 +1010,9 @@ class StoryGraph {
         });
         return data;
     }
-    
+
     /**
-     * 
+     *
      * @returns {StoryGraph} constructed from representation of this StoryGraph i.e. a deep copy
      */
     getCopy() {
@@ -839,7 +1020,7 @@ class StoryGraph {
     }
 
     /**
-     * Takes a PageNode and appends it as a child of the 
+     * Takes a PageNode and appends it as a child of the
      * designated parent in a deep copy of this StoryGraph.
      * @param {PageNode} node_to_add - the PageNode to append
      * @param {string} parent_id - the id of the parent PageNode for the new node
@@ -859,9 +1040,9 @@ class StoryGraph {
     }
 
     /**
-     * 
-     * @param {StoryGraph} subtree_to_add 
-     * @param {string} parent_id - id of the PageNode to recieve the root of the subtree as a child. 
+     *
+     * @param {StoryGraph} subtree_to_add
+     * @param {string} parent_id - id of the PageNode to recieve the root of the subtree as a child.
      * @param {string} link_text - the text for the new link.
      * @returns {StoryGraph} that is the new graph
      */
@@ -882,9 +1063,9 @@ class StoryGraph {
     }
 
     /**
-     * 
-     * @param {string} page_id 
-     * @param {string} new_text 
+     *
+     * @param {string} page_id
+     * @param {string} new_text
      * @returns {StoryGraph} for which this is the updated graph.
      */
      updatePageName(page_id, new_text) {
@@ -895,9 +1076,9 @@ class StoryGraph {
 
 
     /**
-     * 
-     * @param {string} page_id 
-     * @param {string} new_text 
+     *
+     * @param {string} page_id
+     * @param {string} new_text
      * @returns {StoryGraph} for which this is the updated graph.
      */
     updatePageText(page_id, new_text) {
@@ -907,18 +1088,18 @@ class StoryGraph {
     }
 
     /**
-     * 
+     *
      * @param {string} page_id - the id of the PageNode parent that has the link to update
      * @param {string} child_id - the id of the ChildLink
      * @param {string} new_text - the new link text
-     * @returns 
+     * @returns
      */
     updatePageLink(page_id, child_id, new_text) {
         const new_graph = this.getCopy();
         new_graph.page_nodes[page_id].page_children[child_id].updateLinkText(new_text);
         return new_graph;
     }
-    
+
     /**
      * deletes a specified page from the tree.
      * @param {string} page_id - the id of the page to remove.
@@ -964,7 +1145,7 @@ class StoryGraph {
 
     /**
      * Returns an Object[] array representing PageNodes reached from the root. For use in constructing new StoryGraphs after a delete.
-     * @param {string} root_id - id of the start node 
+     * @param {string} root_id - id of the start node
      * @param {string[]} exclusion_id - the id's of any nodes to ignore if encountered in the BFS
      * @param {boolean} return_nodes - set to true if return array should be PageNodes instead of Objects. Default is false.
      * @returns an array of Objects representing PageNodes reached via BFS from the root PageNode.
@@ -982,7 +1163,7 @@ class StoryGraph {
             }
             let children = Object.keys(this_node.page_children);
             for (var i = 0; i < children.length; i++) {
-                if (!open_list.includes(this.page_nodes[children[i]]) 
+                if (!open_list.includes(this.page_nodes[children[i]])
                     && !visited_list.includes(this.page_nodes[children[i]])) {
                     if (exclusion_ids != null && (exclusion_ids.includes(children[i]))) {
                         continue;
@@ -1005,9 +1186,9 @@ class StoryGraph {
 class PageNode {
     /**
      * Constructor parameter object fields: page_id, page_name, page_body_text, page_parents, page_children
-     * 
+     *
      * Note: page_chilrden is an object with data to create ChildLink objects
-     * 
+     *
      * @param {Object} page_data - an object representing the contents of this PageNode.
      */
     constructor(page_data) {
@@ -1018,23 +1199,23 @@ class PageNode {
         let children = Object.values(page_data.page_children);
         this.page_children = {};
         children.forEach(child => {
-            this.page_children[child.child_id] = 
+            this.page_children[child.child_id] =
                 new ChildLink(child.child_id, child.child_name, child.link_text);
         });
     }
 
     /**
-     * 
-     * @param {String} child_id 
-     * @param {String} child_name 
-     * @param {String} link_text 
+     *
+     * @param {String} child_id
+     * @param {String} child_name
+     * @param {String} link_text
      */
     addLink(child_id, child_name, link_text) {
         this.page_children[child_id] = new ChildLink(child_id, child_name, link_text);
     }
 
     /**
-     * 
+     *
      * @param {string} new_name - new name for this PageNode
      */
     updatePageName(new_name) {
@@ -1042,7 +1223,7 @@ class PageNode {
     }
 
     /**
-     * 
+     *
      * @param {string} new_text - new text for this PageNode
      */
     updateBodyText(new_text) {
@@ -1050,15 +1231,15 @@ class PageNode {
     }
 
     /**
-     * 
+     *
      * @param {string} child_id - id of the ChildLink to remove from this PageNode.
      */
     removeLink(child_id) {
-        this.page_children.delete[child_id];
+        delete this.page_children[child_id];
     }
 
     /**
-     * 
+     *
      * @returns {Object} representing the contents of this PageNode.
      */
     toJSON() {

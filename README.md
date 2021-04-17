@@ -14,7 +14,7 @@ Twine Version: 2.3.9 (Desktop)
 2. Once Node.js is installed, run 'npm install' in the project root directory.
 
 ## Run each time
-1. Run the Firebase Emulator with 'firebase emulators:start --import=local_test_data'
+1. Run the Firebase Emulator with 'deploy local'
 2. Run 'python app.py'
 3. Navigate to 'localhost:8080' to use the application
 4. Navigate to 'localhost:4000' to see the Firestore Emulator UI, including the emulated
