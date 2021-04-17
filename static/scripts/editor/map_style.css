@@ -29,7 +29,7 @@ line {
     min-width: 100%;
     /* top: 100px;
     left: 100px; */
-    justify-content: center;
+    /* justify-content: center; */
 }
 
 #map_canvas {

@@ -167,6 +167,7 @@ function load_map(data, current_page_id) {
             page_div.setAttribute("class", "map_page_button");
             page_div.setAttribute("page_id", page["page_id"]);
             page_div.innerHTML = page["page_name"];
+            page_div.setAttribute('title', page['page_name']);
             page_div.setAttribute('onclick', 'load_storymap_btn("' + page['page_id'] + '")');
             layer_div.appendChild(page_div);
             
