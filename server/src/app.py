@@ -60,27 +60,42 @@ app.register_blueprint(errors_blueprint)
 app.register_blueprint(editor_blueprint)
 
 
-# Maps url extension '/' to this function
 @app.route('/')
 def index():
+    """index()
+    Serves the home page
+    Accessed at '/' via a GET request
+    """
+
+    # Checks if the user is logged in
     if current_user:
+        # Checks if the user is an admin
         if current_user.admin:
             # Returns the admin homepage
             return render_response(render_template('admin_pages/homepage.html', first_name=current_user.first_name))
-        # Returns the user homepage
+
+        # Gets the active engine to link to with the 'Begin Story' button
         begin_story = db.collection('application_states').document('application_state').get().get('active_story_id')
+
+        # Gets the most recent story to link to with the 'Continue Story' button
         most_recent_history = None
         continue_story = None
+        # Loops over the stories in the user's history
         for index, history in enumerate(current_user.history):
+            # Sets the continue_story to the first story in the user's history
             if most_recent_history is None:
                 most_recent_history = index
                 continue_story = current_user.history[most_recent_history]['story'] + '/' + current_user.history[most_recent_history]['pages'][-1]
+
+            # Checks if each story was more recently accessed than the current_story; if so, updates the current_story
             elif history['last_updated'].replace(tzinfo=None) > current_user.history[most_recent_history]['last_updated'].replace(tzinfo=None):
                 most_recent_history = index
                 continue_story = current_user.history[most_recent_history]['story'] + '/' + current_user.history[most_recent_history]['pages'][-1]
+
+        # Returns the user homepage
         return render_response(render_template('user_pages/homepage.html', first_name=current_user.first_name, begin_story=begin_story, continue_story=continue_story, history=most_recent_history))
 
-    # Returns the index.html template with the given values
+    # Returns the homepage
     return render_response(render_template('home.html'))
 
 
@@ -91,6 +106,11 @@ allowed_user_attr = ['first_name', 'last_name', 'email']
 # Serves the root page of the specified story
 @app.route('/story/<story>')
 def story_root(story):
+    """story_root()
+    Serves the root page of a story
+    Accessed at '/story/<story' via a GET request
+    """
+
     # Gets the DocumentReference to the story document in Firestore
     story_ref = db.collection('stories').document(story)
 
@@ -165,6 +185,11 @@ def story_root(story):
 # Serves the specified page of the specified story
 @app.route('/story/<story>/<page_id>', methods=['GET', 'POST'])
 def story_page(story, page_id):
+    """story_page()
+    Serves a page of a story
+    Accessed at '/story/<story/<page_id>' via a GET or POST request
+    """
+
     # Gets the DocumentReference to the story document in Firestore
     story_ref = db.collection('stories').document(story)
 
