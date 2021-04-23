@@ -6,6 +6,8 @@ open_story_list = [] // names of the open stories
 open_story_btn = null;
 all_page_ids = null;
 
+$.ajaxSetup({ cache: false }); // Prevents ajax from caching requests
+
 $.get('/editor/get_all_stories', function(event, status) {
     if (status == 'success') {
         // Success
