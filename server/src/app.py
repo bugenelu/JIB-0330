@@ -448,7 +448,7 @@ def media():
         files.append([file, timestamp, size, sizetype])
 
     # Returns the files page with the files
-    return render_response(render_template('admin_pages/media_manager.html', files=files, url_root=request.url_root))
+    return render_response(render_template('admin_pages/media_manager.html', files=files, url_root=url))
 
 
 # Serves the page of an open file

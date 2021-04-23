@@ -22,7 +22,7 @@
 				<span class="delete-file-button" target="/delete_file/{{ file[0] }}" value="{{ file[0] }}"><i class="fas fa-trash-alt delete-file file-button"></i></span>
 				<p class="file-detail"> Timestamp: {{ file[1] }} </p>
 				<p class="file-detail"> Size: {{ file[2] }} {{ file[3] }} </p>
-				<p class="file-detail"> URL: {{ url_root }}file/{{ file[0] }} </p>
+				<p class="file-detail"> URL: {{ url_root }}/file/{{ file[0] }} </p>
 			</div>
 		{% endfor %}
 	</div>
