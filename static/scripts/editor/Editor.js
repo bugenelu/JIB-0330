@@ -1108,12 +1108,20 @@ class StoryGraph {
     deleteNode(page_id) {
         let new_graphs = [];
         let data_from_root = this.getInfo();
-        data_from_root.story_id = data_from_root.story_id.concat("-1");
-        data_from_root.story_name = data_from_root.story_name.concat("-1");
+        data_from_root.story_id = data_from_root.story_id;
+        data_from_root.story_name = data_from_root.story_name;
         if (page_id == data_from_root.root_id) {
-            data_from_root.root_id = null;
-            data_from_root.root_name = null;
-            data_from_root.page_nodes = {};
+            data_from_root.root_id = "root";
+            data_from_root.root_name = "empty root";
+            data_from_root.page_nodes = {
+                "root": {
+                    "page_id": "root",
+                    "page_name": "empty_root",
+                    "page_body_text": "",
+                    "page_parents": [],
+                    "page_children": {},
+                }
+            };
             new_graphs.push(new StoryGraph(data_from_root));
         } else {
             let page_nodes = this.reachableNodes(this.root_id, [page_id]);
