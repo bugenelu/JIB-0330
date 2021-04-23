@@ -5,6 +5,8 @@ current_page = null;    // The current page being displayed by the UI
 quill = null;           // Quill Editor Element
 story_data = {'story_id': [], 'story_name': []};
 
+$.ajaxSetup({ cache: false }); // Prevents ajax from caching requests
+
 refreshStoryPopup();
 initializeWizard();
 window.onbeforeunload = function() {return true;}
