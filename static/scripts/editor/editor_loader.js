@@ -57,7 +57,7 @@ $.get('/editor/view_live_story', function(event, status, response) {
 
 $(".saved_engines").on("click", ".displayed_story", function(e) {
     var set_engine = document.getElementById("set_engine_button");
-    set_engine.innerHTML = "Set Live Engine To " + e.target.innerHTML;
+    set_engine.innerHTML = "Set Live Engine To \"" + e.target.innerHTML + "\"";
     set_engine.setAttribute('engine_id', e.target.id);
     set_engine.setAttribute('engine_name', e.target.innerHTML);
     set_engine.classList.remove('unclickable');
@@ -65,7 +65,7 @@ $(".saved_engines").on("click", ".displayed_story", function(e) {
     set_engine.classList.add('armed');
 
     var delete_engine = document.getElementById('delete_engine_btn');
-    delete_engine.innerHTML = 'Delete Live Engine ' + e.target.innerHTML;
+    delete_engine.innerHTML = 'Delete Engine "' + e.target.innerHTML + '"';
     delete_engine.setAttribute('engine_id', e.target.id);
     delete_engine.setAttribute('engine_name', e.target.innerHTML);
     delete_engine.classList.remove('unclickable');
