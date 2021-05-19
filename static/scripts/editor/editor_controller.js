@@ -133,7 +133,7 @@ function generateWizard(e) {
                 height: 450,
                 menu: {
   					edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
-  					format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats fontformats fontsizes align lineheight | removeformat' },
+  					format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats fontformats fontsizes align lineheight | forecolor backcolor | removeformat' },
   					tools: { title: 'Tools', items: 'wordcount | code' },
     				// HTML: { title: 'HTML', items: 'code' }
   				},
@@ -141,7 +141,8 @@ function generateWizard(e) {
                     ' advlist anchor autolink codesample fullscreen help image imagetools',
                     ' lists link media noneditable preview',
                     ' searchreplace table visualblocks wordcount',
-                    ' code'
+                    ' code',
+                    ' textcolor'
                 ],
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image tinydrive',
                 spellchecker_dialog: true,
